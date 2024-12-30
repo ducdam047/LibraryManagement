@@ -1,0 +1,36 @@
+package com.example.librarymanagement.controllers;
+
+import com.example.librarymanagement.dtos.models.BookModel;
+import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
+import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.services.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/book")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;
+
+    @PostMapping("/add-book")
+    public ApiResponse<BookModel> addBook(@RequestBody BookAddRequest request) {
+        return ApiResponse.<BookModel>builder()
+                .code(201)
+                .message("The book was added successfully")
+                .data(bookService.addBook(request))
+                .build();
+    }
+
+    @DeleteMapping("/delete-book/{bookId}")
+    public ApiResponse<String> deleteBook(@PathVariable int bookId) {
+        bookService.deleteBook(bookId);
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("The book was deleted successfully")
+                .data("Book with ID " + bookId + " has been deleted")
+                .build();
+    }
+}
