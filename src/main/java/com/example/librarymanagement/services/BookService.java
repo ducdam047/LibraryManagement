@@ -15,6 +15,9 @@ import com.example.librarymanagement.repositories.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class BookService {
@@ -28,6 +31,9 @@ public class BookService {
     @Autowired
     private PublisherRepository publisherRepository;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     public BookModel toModel(Book book) {
         return new BookModel(
                 book.getTitle(),
@@ -35,13 +41,17 @@ public class BookService {
                 book.getCategory().getCategoryName(),
                 book.getPublisher().getPublisherName(),
                 book.getIsbn(),
+                book.getImageUrl(),
                 book.getTotalCopies(),
                 book.getStatus()
         );
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public BookModel addBook(BookAddRequest request) {
+    public BookModel addBook(BookAddRequest request, MultipartFile imageFile) throws IOException {
+        String imageUrl = cloudinaryService.uploadImage(imageFile);
+        request.setImageUrl(imageUrl);
+
         Category category = categoryRepository.findByCategoryName(request.getCategoryName())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
         Publisher publisher = publisherRepository.findByPublisherName(request.getPublisherName())
@@ -53,7 +63,7 @@ public class BookService {
                 .category(category)
                 .publisher(publisher)
                 .isbn(request.getIsbn())
-
+                .imageUrl(request.getImageUrl())
                 .status(BookStatus.AVAILABLE.name())
                 .build();
         bookRepository.save(book);

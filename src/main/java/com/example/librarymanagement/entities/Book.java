@@ -35,6 +35,9 @@ public class Book {
     @Column(name = "isbn")
     String isbn;
 
+    @Column(name = "image")
+    String imageUrl;
+
     @Column(name = "total_copies")
     String totalCopies;
 

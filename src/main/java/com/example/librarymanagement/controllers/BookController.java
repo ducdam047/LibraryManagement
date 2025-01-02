@@ -5,8 +5,12 @@ import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.services.BookService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/book")
@@ -16,11 +20,14 @@ public class BookController {
     private BookService bookService;
 
     @PostMapping("/add-book")
-    public ApiResponse<BookModel> addBook(@RequestBody BookAddRequest request) {
+    public ApiResponse<BookModel> addBook(
+            @RequestParam("bookData") String bookData,
+            @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        BookAddRequest request = new ObjectMapper().readValue(bookData, BookAddRequest.class);
         return ApiResponse.<BookModel>builder()
                 .code(201)
                 .message("The book was added successfully")
-                .data(bookService.addBook(request))
+                .data(bookService.addBook(request, imageFile))
                 .build();
     }
 

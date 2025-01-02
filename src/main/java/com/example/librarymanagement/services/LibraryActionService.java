@@ -54,6 +54,7 @@ public class LibraryActionService {
           book.getCategory().getCategoryName(),
           book.getPublisher().getPublisherName(),
           book.getIsbn(),
+          book.getImageUrl(),
           book.getTotalCopies(),
           book.getStatus()
         );
