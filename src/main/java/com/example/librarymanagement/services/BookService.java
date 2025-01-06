@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService {
@@ -57,6 +59,17 @@ public class BookService {
         Publisher publisher = publisherRepository.findByPublisherName(request.getPublisherName())
                 .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND));
 
+        List<Book> books = bookRepository.findAllByTitle(request.getTitle());
+        int updateTotalCopies = 1;
+
+        if(!books.isEmpty()) {
+            updateTotalCopies = books.get(0).getTotalCopies() + 1;
+            for(Book existingBook : books) {
+                existingBook.setTotalCopies(updateTotalCopies);
+                bookRepository.save(existingBook);
+            }
+        }
+
         Book book = Book.builder()
                 .title(request.getTitle())
                 .author(request.getAuthor())
@@ -64,8 +77,10 @@ public class BookService {
                 .publisher(publisher)
                 .isbn(request.getIsbn())
                 .imageUrl(request.getImageUrl())
+                .totalCopies(updateTotalCopies)
                 .status(BookStatus.AVAILABLE.name())
                 .build();
+
         bookRepository.save(book);
         return toModel(book);
     }

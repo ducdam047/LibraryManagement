@@ -39,7 +39,7 @@ public class Book {
     String imageUrl;
 
     @Column(name = "total_copies")
-    String totalCopies;
+    int totalCopies;
 
     @Column(name = "status")
     String status;
