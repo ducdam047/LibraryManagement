@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ public class BookService {
 
     public BookModel toModel(Book book) {
         return new BookModel(
+                book.getBookId(),
                 book.getTitle(),
                 book.getAuthor(),
                 book.getCategory().getCategoryName(),
@@ -47,6 +49,16 @@ public class BookService {
                 book.getTotalCopies(),
                 book.getStatus()
         );
+    }
+
+    public List<BookModel> getAllBook() {
+        List<Book> books = bookRepository.findByStatus(BookStatus.AVAILABLE.name());
+        List<BookModel> bookModels = new ArrayList<>();
+        for(Book book : books) {
+            BookModel bookModel = toModel(book);
+            bookModels.add(bookModel);
+        }
+        return bookModels;
     }
 
     @PreAuthorize("hasRole('ADMIN')")

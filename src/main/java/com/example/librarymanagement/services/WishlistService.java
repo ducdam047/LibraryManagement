@@ -35,6 +35,7 @@ public class WishlistService {
 
     public WishlistModel toModel(Wishlist wishlist) {
         return new WishlistModel(
+                wishlist.getWishlistId(),
                 wishlist.getBook().getTitle(),
                 wishlist.getDescription(),
                 wishlist.getCreatedAt(),

@@ -15,6 +15,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WishlistModel {
 
+    int wishlistId;
     String bookName;
     String description;
     LocalDate createdAt;

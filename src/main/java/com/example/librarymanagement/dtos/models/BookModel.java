@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookModel {
 
+    int bookId;
     String title;
     String author;
     String categoryName;

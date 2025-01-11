@@ -49,14 +49,15 @@ public class LibraryActionService {
 
     public BookModel toModel(Book book) {
         return new BookModel(
-          book.getTitle(),
-          book.getAuthor(),
-          book.getCategory().getCategoryName(),
-          book.getPublisher().getPublisherName(),
-          book.getIsbn(),
-          book.getImageUrl(),
-          book.getTotalCopies(),
-          book.getStatus()
+                book.getBookId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getCategory().getCategoryName(),
+                book.getPublisher().getPublisherName(),
+                book.getIsbn(),
+                book.getImageUrl(),
+                book.getTotalCopies(),
+                book.getStatus()
         );
     }
 

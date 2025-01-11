@@ -7,10 +7,12 @@ import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/book")
@@ -18,6 +20,12 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @GetMapping()
+    public ResponseEntity<List<BookModel>> getBooks() {
+        List<BookModel> bookModels = bookService.getAllBook();
+        return ResponseEntity.ok(bookModels);
+    }
 
     @PostMapping("/add-book")
     public ApiResponse<BookModel> addBook(
