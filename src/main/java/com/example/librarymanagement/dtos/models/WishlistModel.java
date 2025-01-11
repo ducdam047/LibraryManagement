@@ -19,5 +19,5 @@ public class WishlistModel {
     String bookName;
     String description;
     LocalDate createdAt;
-    int userId;
+    String fullName;
 }

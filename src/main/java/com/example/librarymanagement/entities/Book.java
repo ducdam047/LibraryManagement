@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Entity
 @Table(name = "book")
 @Data
@@ -43,4 +45,7 @@ public class Book {
 
     @Column(name = "status")
     String status;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Wishlist> wishlists;
 }
