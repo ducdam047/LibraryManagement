@@ -61,7 +61,7 @@ public class WishlistService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public WishlistModel addWishlist(AddToWishlistRequest request) {
+    public WishlistModel addToWishlist(AddToWishlistRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
@@ -81,5 +81,12 @@ public class WishlistService {
             return toModel(wishlist);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public void deleteFromWishlist(int wishlistId) {
+        if(!wishlistRepository.existsById(wishlistId))
+            throw new AppException(ErrorCode.WISHLIST_NOT_FOUND);
+        wishlistRepository.deleteById(wishlistId);
     }
 }
