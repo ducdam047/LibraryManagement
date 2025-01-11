@@ -73,7 +73,7 @@ public class LibraryActionService {
     public EvaluateModel toModel(Evaluate evaluate) {
         return new EvaluateModel(
                 evaluate.getUser().getFullName(),
-                evaluate.getTitle(),
+                evaluate.getBook().getTitle(),
                 evaluate.getRating(),
                 evaluate.getComment(),
                 evaluate.getEvaluateDay()
@@ -160,10 +160,15 @@ public class LibraryActionService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            Book bookEvaluate = bookRepository.findFirstByTitle(request.getTitle())
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_EVALUATED));
+
+            if(evaluateRepository.existsByBook_BookId(bookEvaluate.getBookId()))
+                throw new AppException(ErrorCode.BOOK_EVALUATED);
 
             Evaluate evaluate = Evaluate.builder()
                     .user(userCurrent)
-                    .title(request.getTitle())
+                    .book(bookEvaluate)
                     .rating(request.getRating())
                     .comment(request.getComment())
                     .evaluateDay(LocalDate.now())
