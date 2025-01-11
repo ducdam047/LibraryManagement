@@ -37,7 +37,7 @@ public class WishlistController {
     public ApiResponse<String> deleteFromWishlist(@PathVariable int wishlistId) {
         wishlistService.deleteFromWishlist(wishlistId);
         return ApiResponse.<String>builder()
-                .code(200)
+                .code(204)
                 .message("The book was deleted from wish list successfully")
                 .data("Book removed")
                 .build();

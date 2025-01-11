@@ -35,7 +35,7 @@ public class BookController {
     public ApiResponse<String> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
         return ApiResponse.<String>builder()
-                .code(200)
+                .code(204)
                 .message("The book was deleted successfully")
                 .data("Book with ID " + bookId + " has been deleted")
                 .build();
