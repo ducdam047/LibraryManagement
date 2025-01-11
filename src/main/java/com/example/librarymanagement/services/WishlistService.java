@@ -71,6 +71,12 @@ public class WishlistService {
             Book bookWishlist = bookRepository.findFirstByTitle(request.getBookName())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
+            List<Wishlist> wishlists = wishlistRepository.findByUser_UserId(userCurrent.getUserId());
+            for(Wishlist wishlist : wishlists) {
+                if(wishlistRepository.existsByBook_BookId(bookWishlist.getBookId()))
+                    throw new AppException(ErrorCode.ADDED_TO_WISHLIST);
+            }
+
             Wishlist wishlist = Wishlist.builder()
                     .book(bookWishlist)
                     .description(request.getDescription())
