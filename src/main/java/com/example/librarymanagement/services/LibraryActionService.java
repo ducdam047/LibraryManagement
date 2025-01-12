@@ -138,12 +138,6 @@ public class LibraryActionService {
             userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
             bookReturn.setStatus(BookStatus.AVAILABLE.name());
 
-            LocalDate returnDay = LocalDate.now();
-            if(returnDay.isAfter(borrowRecord.getDueDay())) {
-                userCurrent.setStatus(UserStatus.LOCKED.name());
-                // phạt
-            }
-
             userRepository.save(userCurrent);
             bookRepository.save(bookReturn);
             borrowRecordRepository.delete(borrowRecord);

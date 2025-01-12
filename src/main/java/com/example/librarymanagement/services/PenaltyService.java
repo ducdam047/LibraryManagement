@@ -1,0 +1,50 @@
+package com.example.librarymanagement.services;
+
+import com.example.librarymanagement.entities.BorrowRecord;
+import com.example.librarymanagement.entities.User;
+import com.example.librarymanagement.enums.UserStatus;
+import com.example.librarymanagement.repositories.BorrowRecordRepository;
+import com.example.librarymanagement.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class PenaltyService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BorrowRecordRepository borrowRecordRepository;
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkOverdueBorrowBook() {
+        LocalDate today = LocalDate.now();
+        List<BorrowRecord> overDueRecords = borrowRecordRepository.findByDueDayBefore(today);
+
+        System.out.println("Found " + overDueRecords.size() + " overdue records");
+
+        for(BorrowRecord record : overDueRecords) {
+            User user = record.getUser();
+            System.out.println("Processing overdue record for user: " + user.getFullName());
+
+            if(!user.getStatus().equals(UserStatus.LOCKED.name())) {
+                user.setStatus(UserStatus.LOCKED.name());
+                userRepository.save(user);
+                System.out.println("User " + user.getFullName() + " has been locked");
+            }
+
+            applyPenalty(user, record);
+            System.out.println("-----------------------------------------------");
+        }
+    }
+
+    private void applyPenalty(User user, BorrowRecord borrowRecord) {
+        // Penalty
+        System.out.println("Penalty!");
+    }
+}
