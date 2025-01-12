@@ -44,6 +44,16 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/profile")
+    public ApiResponse<User> profileUser() {
+        User user = userService.getProfile();
+        return ApiResponse.<User>builder()
+                .code(200)
+                .message("Show profile")
+                .data(user)
+                .build();
+    }
+
     @PostMapping("/update/{userId}")
     public ApiResponse<User> updateUser(@PathVariable int userId, @RequestBody UserUpdateRequest request) {
         User user = userService.updateUser(userId, request);

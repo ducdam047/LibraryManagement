@@ -11,6 +11,7 @@ import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,14 @@ public class UserService {
                 .role(UserRole.USER.name())
                 .build();
         return userRepository.save(user);
+    }
+
+    @PostAuthorize("returnObject.email == authentication.name")
+    public User getProfile() {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
     }
 
     @PostAuthorize("returnObject.email == authentication.name")
