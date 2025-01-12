@@ -5,6 +5,7 @@ import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BorrowRecordRepository;
 import com.example.librarymanagement.repositories.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class PenaltyService {
 
     @Autowired
     private BorrowRecordRepository borrowRecordRepository;
+
+    @PostConstruct
+    public void checkPenalty() {
+        checkOverdueBorrowBook();
+    }
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkOverdueBorrowBook() {

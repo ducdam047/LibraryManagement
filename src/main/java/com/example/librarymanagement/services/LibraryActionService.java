@@ -87,7 +87,7 @@ public class LibraryActionService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookBorrow = bookRepository.findFirstByTitle(request.getTitle())
+            Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
             if(userCurrent.getStatus().equals("LOCKED"))
                 throw new RuntimeException("Your account has been locked");
