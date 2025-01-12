@@ -2,7 +2,6 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
-import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.entities.Publisher;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookService {
