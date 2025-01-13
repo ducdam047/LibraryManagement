@@ -67,7 +67,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @GetMapping("/reloadUser")
     public User reloadUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
