@@ -54,12 +54,22 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/update/{userId}")
+    @PutMapping("/update/{userId}")
     public ApiResponse<User> updateUser(@PathVariable int userId, @RequestBody UserUpdateRequest request) {
         User user = userService.updateUser(userId, request);
         return ApiResponse.<User>builder()
                 .code(200)
                 .message("User updated successfully")
+                .data(user)
+                .build();
+    }
+
+    @GetMapping("/reloadUser")
+    public ApiResponse<User> reloadUser() {
+        User user = userService.reloadUser();
+        return ApiResponse.<User>builder()
+                .code(200)
+                .message("Reload user successfully")
                 .data(user)
                 .build();
     }
