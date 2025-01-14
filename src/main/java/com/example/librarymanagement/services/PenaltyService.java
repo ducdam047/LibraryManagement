@@ -41,11 +41,12 @@ public class PenaltyService {
             if(!user.getStatus().equals(UserStatus.LOCKED.name())) {
                 user.setStatus(UserStatus.LOCKED.name());
                 userRepository.save(user);
+                applyPenalty(user, record);
                 System.out.println("User " + user.getFullName() + " has been locked");
+                System.out.println("-----------------------------------------------");
+            } else {
+                System.out.println("Processed");
             }
-
-            applyPenalty(user, record);
-            System.out.println("-----------------------------------------------");
         }
     }
 
