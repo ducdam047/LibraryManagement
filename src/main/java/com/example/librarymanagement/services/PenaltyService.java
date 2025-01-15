@@ -2,6 +2,7 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.entities.BorrowRecord;
 import com.example.librarymanagement.entities.User;
+import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BorrowRecordRepository;
 import com.example.librarymanagement.repositories.UserRepository;
@@ -40,7 +41,10 @@ public class PenaltyService {
 
             if(!user.getStatus().equals(UserStatus.LOCKED.name())) {
                 user.setStatus(UserStatus.LOCKED.name());
+                record.setStatus(RecordStatus.OVERDUE.name());
                 userRepository.save(user);
+                borrowRecordRepository.save(record);
+
                 applyPenalty(user, record);
                 System.out.println("User " + user.getFullName() + " has been locked");
                 System.out.println("-----------------------------------------------");

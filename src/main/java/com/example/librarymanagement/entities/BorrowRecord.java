@@ -1,5 +1,6 @@
 package com.example.librarymanagement.entities;
 
+import com.example.librarymanagement.enums.RecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +25,7 @@ public class BorrowRecord {
     @JoinColumn(name = "user")
     User user;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book")
     Book book;
 
@@ -33,4 +34,7 @@ public class BorrowRecord {
 
     @Column(name = "due_day")
     LocalDate dueDay;
+
+    @Column(name = "status")
+    String status;
 }

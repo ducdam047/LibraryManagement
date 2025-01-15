@@ -13,6 +13,7 @@ import com.example.librarymanagement.entities.Evaluate;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
+import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
@@ -104,6 +105,7 @@ public class LibraryActionService {
                     .book(bookBorrow)
                     .borrowDay(borrowDay)
                     .dueDay(dueDay)
+                    .status(RecordStatus.BORROWED.name())
                     .build();
             borrowRecordRepository.save(borrowRecord);
 
@@ -128,7 +130,7 @@ public class LibraryActionService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findByIsbn(request.getIsbn())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord borrowRecord = borrowRecordRepository.findByBook(bookReturn)
+            BorrowRecord borrowRecord = borrowRecordRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             if(userCurrent.getBookBorrowing()==1) {
                 userCurrent.setStatus(UserStatus.ACTIVE.name());
@@ -137,10 +139,11 @@ public class LibraryActionService {
             }
             userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
             bookReturn.setStatus(BookStatus.AVAILABLE.name());
+            borrowRecord.setStatus(RecordStatus.RETURNED.name());
 
             userRepository.save(userCurrent);
             bookRepository.save(bookReturn);
-            borrowRecordRepository.delete(borrowRecord);
+            borrowRecordRepository.save(borrowRecord);
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
