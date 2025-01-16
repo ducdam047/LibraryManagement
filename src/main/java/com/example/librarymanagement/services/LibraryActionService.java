@@ -90,6 +90,9 @@ public class LibraryActionService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+            boolean bookExists = borrowRecordRepository.existsByBook_Title(request.getTitle());
+            if(bookExists)
+                throw new RuntimeException("You are borrowing this book");
             if(userCurrent.getStatus().equals("LOCKED"))
                 throw new RuntimeException("Your account has been locked");
             if(userCurrent.getBookBorrowing()==3)
