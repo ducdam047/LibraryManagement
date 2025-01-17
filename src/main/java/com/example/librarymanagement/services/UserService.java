@@ -43,6 +43,7 @@ public class UserService {
                 .email(request.getEmail())
                 .phoneNumber(reloadUser().getPhoneNumber())
                 .cid(reloadUser().getCid())
+                .address(request.getAddress())
                 .status(UserStatus.ACTIVE.name())
                 .bookBorrowing(0)
                 .role(UserRole.USER.name())
@@ -67,7 +68,8 @@ public class UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
-        user.setCid(reloadUser().getCid());
+        user.setCid(request.getCid());
+        user.setAddress(request.getAddress());
         return userRepository.save(user);
     }
 

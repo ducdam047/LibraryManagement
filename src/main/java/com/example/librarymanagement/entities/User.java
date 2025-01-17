@@ -36,6 +36,9 @@ public class User {
     @Column(name = "cid")
     String cid;
 
+    @Column(name = "address")
+    String address;
+
     @Column(name = "status")
     String status;
 

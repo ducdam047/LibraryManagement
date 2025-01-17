@@ -13,4 +13,5 @@ public class UserUpdateRequest {
     String password;
     String phoneNumber;
     String cid;
+    String address;
 }
