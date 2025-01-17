@@ -30,6 +30,12 @@ public class User {
     @Column(name = "email")
     String email;
 
+    @Column(name = "phone_number")
+    String phoneNumber;
+
+    @Column(name = "cid")
+    String cid;
+
     @Column(name = "status")
     String status;
 

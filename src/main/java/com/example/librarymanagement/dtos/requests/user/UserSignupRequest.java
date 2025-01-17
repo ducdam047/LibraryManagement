@@ -13,4 +13,6 @@ public class UserSignupRequest {
     String username;
     String password;
     String confirmPassword;
+    String phoneNumber;
+    String cid;
 }

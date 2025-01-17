@@ -41,6 +41,8 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .fullName(request.getFullName())
                 .email(request.getEmail())
+                .phoneNumber(reloadUser().getPhoneNumber())
+                .cid(reloadUser().getCid())
                 .status(UserStatus.ACTIVE.name())
                 .bookBorrowing(0)
                 .role(UserRole.USER.name())
@@ -64,6 +66,8 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setCid(reloadUser().getCid());
         return userRepository.save(user);
     }
 
