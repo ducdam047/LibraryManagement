@@ -14,5 +14,5 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Inte
     Optional<BorrowRecord> findByBook(Book book);
     boolean existsByBook_Title(String title);
     Optional<BorrowRecord> findByBookAndStatus(Book book, String status);
-    List<BorrowRecord> findByDueDayBefore(LocalDate currentDate);
+    List<BorrowRecord> findByStatusAndDueDayBefore(String status, LocalDate currentDate);
 }
