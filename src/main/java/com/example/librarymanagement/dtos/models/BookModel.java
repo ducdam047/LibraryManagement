@@ -17,5 +17,7 @@ public class BookModel {
     String isbn;
     String imageUrl;
     int totalCopies;
+    int availableCopies;
+    int borrowedCopies;
     String status;
 }

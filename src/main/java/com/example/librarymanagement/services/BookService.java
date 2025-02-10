@@ -45,6 +45,8 @@ public class BookService {
                 book.getIsbn(),
                 book.getImageUrl(),
                 book.getTotalCopies(),
+                book.getAvailableCopies(),
+                book.getBorrowedCopies(),
                 book.getStatus()
         );
     }
@@ -71,7 +73,6 @@ public class BookService {
 
         List<Book> books = bookRepository.findAllByTitle(request.getTitle());
         int updateTotalCopies = 1;
-
         if(!books.isEmpty()) {
             updateTotalCopies = books.get(0).getTotalCopies() + 1;
             for(Book existingBook : books) {

@@ -43,6 +43,12 @@ public class Book {
     @Column(name = "total_copies")
     int totalCopies;
 
+    @Column(name = "available_copies")
+    int availableCopies;
+
+    @Column(name = "borrowed_copies")
+    int borrowedCopies;
+
     @Column(name = "status")
     String status;
 

@@ -58,6 +58,8 @@ public class LibraryActionService {
                 book.getIsbn(),
                 book.getImageUrl(),
                 book.getTotalCopies(),
+                book.getAvailableCopies(),
+                book.getBorrowedCopies(),
                 book.getStatus()
         );
     }
