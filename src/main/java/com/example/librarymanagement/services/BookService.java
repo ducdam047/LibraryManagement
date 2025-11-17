@@ -73,10 +73,13 @@ public class BookService {
 
         List<Book> books = bookRepository.findAllByTitle(request.getTitle());
         int updateTotalCopies = 1;
+        int updateAvailableCopies = 1;
         if(!books.isEmpty()) {
             updateTotalCopies = books.get(0).getTotalCopies() + 1;
+            updateAvailableCopies = books.get(0).getAvailableCopies() + 1;
             for(Book existingBook : books) {
                 existingBook.setTotalCopies(updateTotalCopies);
+                existingBook.setAvailableCopies(updateAvailableCopies);
                 bookRepository.save(existingBook);
             }
         }
@@ -89,6 +92,7 @@ public class BookService {
                 .isbn(request.getIsbn())
                 .imageUrl(request.getImageUrl())
                 .totalCopies(updateTotalCopies)
+                .availableCopies(updateAvailableCopies)
                 .status(BookStatus.AVAILABLE.name())
                 .build();
 
