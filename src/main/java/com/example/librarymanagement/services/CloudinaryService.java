@@ -38,7 +38,8 @@ public class CloudinaryService {
                     file.getBytes(),
                     ObjectUtils.asMap(
                             "resource_type", "raw",
-                            "folder", "library/pdf"
+                            "folder", "library/pdf",
+                            "format", "pdf"
                     )
             );
             return uploadResult.get("secure_url").toString();

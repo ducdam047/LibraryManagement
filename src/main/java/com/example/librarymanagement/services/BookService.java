@@ -80,11 +80,11 @@ public class BookService {
         if(!books.isEmpty()) {
             updateTotalCopies = books.get(0).getTotalCopies() + 1;
             updateAvailableCopies = books.get(0).getAvailableCopies() + 1;
-//            for(Book existingBook : books) {
-//                existingBook.setTotalCopies(updateTotalCopies);
-//                existingBook.setAvailableCopies(updateAvailableCopies);
-//                bookRepository.save(existingBook);
-//            }
+            for(Book existingBook : books) {
+                existingBook.setTotalCopies(updateTotalCopies);
+                existingBook.setAvailableCopies(updateAvailableCopies);
+            }
+            bookRepository.saveAll(books);
         }
 
         Book book = Book.builder()
