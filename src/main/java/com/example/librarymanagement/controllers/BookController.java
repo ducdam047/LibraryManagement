@@ -30,12 +30,13 @@ public class BookController {
     @PostMapping("/add-book")
     public ApiResponse<BookModel> addBook(
             @RequestParam("bookData") String bookData,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
         BookAddRequest request = new ObjectMapper().readValue(bookData, BookAddRequest.class);
         return ApiResponse.<BookModel>builder()
                 .code(201)
                 .message("The book was added successfully")
-                .data(bookService.addBook(request, imageFile))
+                .data(bookService.addBook(request, imageFile, pdfFile))
                 .build();
     }
 

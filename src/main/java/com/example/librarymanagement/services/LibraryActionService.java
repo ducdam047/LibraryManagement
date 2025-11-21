@@ -57,6 +57,7 @@ public class LibraryActionService {
                 book.getPublisher().getPublisherName(),
                 book.getIsbn(),
                 book.getImageUrl(),
+                book.getPdfUrl(),
                 book.getTotalCopies(),
                 book.getAvailableCopies(),
                 book.getBorrowedCopies(),

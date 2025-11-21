@@ -44,6 +44,7 @@ public class BookService {
                 book.getPublisher().getPublisherName(),
                 book.getIsbn(),
                 book.getImageUrl(),
+                book.getPdfUrl(),
                 book.getTotalCopies(),
                 book.getAvailableCopies(),
                 book.getBorrowedCopies(),
@@ -62,9 +63,11 @@ public class BookService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public BookModel addBook(BookAddRequest request, MultipartFile imageFile) throws IOException {
+    public BookModel addBook(BookAddRequest request, MultipartFile imageFile, MultipartFile pdfFile) throws IOException {
         String imageUrl = cloudinaryService.uploadImage(imageFile);
-        request.setImageUrl(imageUrl);
+        String pdfUrl = null;
+        if(pdfFile!=null && !pdfFile.isEmpty())
+            pdfUrl = cloudinaryService.uploadPdf(pdfFile);
 
         Category category = categoryRepository.findByCategoryName(request.getCategoryName())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -77,11 +80,11 @@ public class BookService {
         if(!books.isEmpty()) {
             updateTotalCopies = books.get(0).getTotalCopies() + 1;
             updateAvailableCopies = books.get(0).getAvailableCopies() + 1;
-            for(Book existingBook : books) {
-                existingBook.setTotalCopies(updateTotalCopies);
-                existingBook.setAvailableCopies(updateAvailableCopies);
-                bookRepository.save(existingBook);
-            }
+//            for(Book existingBook : books) {
+//                existingBook.setTotalCopies(updateTotalCopies);
+//                existingBook.setAvailableCopies(updateAvailableCopies);
+//                bookRepository.save(existingBook);
+//            }
         }
 
         Book book = Book.builder()
@@ -90,7 +93,8 @@ public class BookService {
                 .category(category)
                 .publisher(publisher)
                 .isbn(request.getIsbn())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageUrl)
+                .pdfUrl(pdfUrl)
                 .totalCopies(updateTotalCopies)
                 .availableCopies(updateAvailableCopies)
                 .status(BookStatus.AVAILABLE.name())
