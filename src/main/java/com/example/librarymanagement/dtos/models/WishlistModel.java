@@ -21,4 +21,5 @@ public class WishlistModel {
     LocalDate createdAt;
     String fullName;
     String imageUrl;
+    int bookId;
 }
