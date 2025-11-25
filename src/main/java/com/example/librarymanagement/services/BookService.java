@@ -5,14 +5,19 @@ import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.entities.Publisher;
+import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.CategoryRepository;
 import com.example.librarymanagement.repositories.PublisherRepository;
+import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +32,9 @@ public class BookService {
     private BookRepository bookRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private CategoryRepository categoryRepository;
 
     @Autowired
@@ -34,6 +42,12 @@ public class BookService {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private ReadingService readingService;
+
+    @Autowired
+    private WishlistService wishlistService;
 
     public BookModel toModel(Book book) {
         return new BookModel(
@@ -52,14 +66,24 @@ public class BookService {
         );
     }
 
-    public List<BookModel> getAllBook() {
-        List<Book> books = bookRepository.findByStatus(BookStatus.AVAILABLE.name());
-        List<BookModel> bookModels = new ArrayList<>();
-        for(Book book : books) {
-            BookModel bookModel = toModel(book);
-            bookModels.add(bookModel);
+    public List<BookModel> getAvailableBooks() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            int userId = userCurrent.getUserId();
+            List<Integer> readingIds = readingService.getReadingBookIds(userId);
+            List<Integer> wishlistIds = wishlistService.getWishlistBookIds(userId);
+
+            return bookRepository.findByStatus(BookStatus.AVAILABLE.name())
+                    .stream()
+                    .filter(b -> !readingIds.contains(b.getBookId()))
+                    .filter(b -> !wishlistIds.contains(b.getBookId()))
+                    .map(this::toModel)
+                    .toList();
         }
-        return bookModels;
+        throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

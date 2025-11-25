@@ -44,6 +44,13 @@ public class ReadingService {
         );
     }
 
+    public List<Integer> getReadingBookIds(int userId) {
+        return readingRepository.findByUser_UserId(userId)
+                .stream()
+                .map(r -> r.getBook().getBookId())
+                .toList();
+    }
+
     @PreAuthorize("hasRole('USER')")
     public List<ReadingModel> getReadingList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

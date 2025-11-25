@@ -45,8 +45,15 @@ public class WishlistService {
         );
     }
 
+    public List<Integer> getWishlistBookIds(int userId) {
+        return wishlistRepository.findByUser_UserId(userId)
+                .stream()
+                .map(w -> w.getBook().getBookId())
+                .toList();
+    }
+
     @PreAuthorize("hasRole('USER')")
-    public List<WishlistModel> getAllWishlist() {
+    public List<WishlistModel> getWishlist() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");

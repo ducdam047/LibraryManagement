@@ -19,8 +19,8 @@ public class WishlistController {
     private WishlistService wishlistService;
 
     @GetMapping()
-    public ResponseEntity<List<WishlistModel>> getAllWishlist() {
-        List<WishlistModel> wishlistModels = wishlistService.getAllWishlist();
+    public ResponseEntity<List<WishlistModel>> getWishlist() {
+        List<WishlistModel> wishlistModels = wishlistService.getWishlist();
         return ResponseEntity.ok(wishlistModels);
     }
 
