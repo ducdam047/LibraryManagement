@@ -18,7 +18,8 @@ public enum ErrorCode {
     BORROW_RECORD_NOT_FOUND(1008, "Borrow record not found", HttpStatus.NOT_FOUND),
     WISHLIST_NOT_FOUND(1009, "Wishlist not found", HttpStatus.NOT_FOUND),
     WISHLIST_EXISTED(1010, "This book was added", HttpStatus.CONFLICT),
-    BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT)
+    BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT),
+    READING_NOT_FOUND(1012, "Reading not found", HttpStatus.NOT_FOUND)
     ;
 
     int code;

@@ -3,6 +3,7 @@ package com.example.librarymanagement.controllers;
 import com.example.librarymanagement.dtos.models.ReadingModel;
 import com.example.librarymanagement.dtos.requests.reading.ReadingAddRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.entities.Reading;
 import com.example.librarymanagement.services.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,22 @@ public class ReadingController {
     public ResponseEntity<ReadingModel> getReadingBook(@PathVariable int id) {
         ReadingModel readingModel = readingService.getReadingBook(id);
         return ResponseEntity.ok(readingModel);
+    }
+
+    @GetMapping("/book/{bookId}")
+    public ResponseEntity<ReadingModel> getReadingBookId(@PathVariable int bookId) {
+        ReadingModel readingModel = readingService.getReadingBookId(bookId);
+        return ResponseEntity.ok(readingModel);
+    }
+
+    @PostMapping("/add/{bookId}")
+    public ApiResponse<Reading> addToReading(@PathVariable int bookId) {
+        Reading reading = readingService.addToReading(bookId);
+        return ApiResponse.<Reading>builder()
+                .code(201)
+                .message("Book added to Reading successfully")
+                .data(reading)
+                .build();
     }
 
     @PostMapping("/save")

@@ -77,6 +77,45 @@ public class ReadingService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public ReadingModel getReadingBookId(int bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            Reading reading = readingRepository.findByUser_UserIdAndBook_BookId(userCurrent.getUserId(), bookId)
+                    .orElseThrow(() -> new AppException(ErrorCode.READING_NOT_FOUND));
+            return toModel(reading);
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public Reading addToReading(int bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            Book book = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+            Optional<Reading> existed = readingRepository.findByUser_UserIdAndBook_BookId(userCurrent.getUserId(), bookId);
+
+            if(existed.isPresent())
+                return existed.get();
+
+            Reading reading = Reading.builder()
+                    .user(userCurrent)
+                    .book(book)
+                    .page(1)
+                    .lastDay(LocalDate.now())
+                    .build();
+            return readingRepository.save(reading);
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public ReadingModel saveReading(ReadingAddRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {

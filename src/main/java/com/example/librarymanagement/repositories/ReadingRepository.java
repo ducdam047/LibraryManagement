@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface ReadingRepository extends JpaRepository<Reading, Integer> {
 
     List<Reading> findByUser_UserId(int userId);
+    Optional<Reading> findByBook_BookId(int bookId);
     Optional<Reading> findByUser_UserIdAndBook_BookId(int userId, int bookId);
 }
