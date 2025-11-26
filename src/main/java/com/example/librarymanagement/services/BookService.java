@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -73,23 +74,27 @@ public class BookService {
     }
 
     public List<BookModel> getAvailableBooks() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("sub");
-            User userCurrent = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
-            int userId = userCurrent.getUserId();
-            List<Integer> readingIds = readingService.getReadingBookIds(userId);
-            List<Integer> wishlistIds = wishlistService.getWishlistBookIds(userId);
-
-            return bookRepository.findByStatus(BookStatus.AVAILABLE.name())
-                    .stream()
-                    .filter(b -> !readingIds.contains(b.getBookId()))
-                    .filter(b -> !wishlistIds.contains(b.getBookId()))
-                    .map(this::toModel)
-                    .toList();
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED);
+        List<Book> books = bookRepository.findByStatus(BookStatus.AVAILABLE.name());
+        return books.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if(authentication.getPrincipal() instanceof Jwt jwt) {
+//            String email = jwt.getClaimAsString("sub");
+//            User userCurrent = userRepository.findByEmail(email)
+//                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+//            int userId = userCurrent.getUserId();
+//            List<Integer> readingIds = readingService.getReadingBookIds(userId);
+//            List<Integer> wishlistIds = wishlistService.getWishlistBookIds(userId);
+//
+//            return bookRepository.findByStatus(BookStatus.AVAILABLE.name())
+//                    .stream()
+//                    .filter(b -> !readingIds.contains(b.getBookId()))
+//                    .filter(b -> !wishlistIds.contains(b.getBookId()))
+//                    .map(this::toModel)
+//                    .toList();
+//        }
+//        throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
