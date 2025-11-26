@@ -21,6 +21,12 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @GetMapping("/{bookId}")
+    public ResponseEntity<BookModel> getBook(@PathVariable int bookId) {
+        BookModel bookModel = bookService.getBook(bookId);
+        return ResponseEntity.ok(bookModel);
+    }
+
     @GetMapping("/available")
     public ResponseEntity<List<BookModel>> getAvailableBooks() {
         List<BookModel> bookModels = bookService.getAvailableBooks();

@@ -66,6 +66,12 @@ public class BookService {
         );
     }
 
+    public BookModel getBook(int bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        return toModel(book);
+    }
+
     public List<BookModel> getAvailableBooks() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {

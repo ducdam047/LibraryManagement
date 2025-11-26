@@ -70,6 +70,13 @@ public class ReadingService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public ReadingModel getReadingBook(int id) {
+        Reading reading = readingRepository.findById(id).orElse(null);
+        if(reading==null) return null;
+        return toModel(reading);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public ReadingModel saveReading(ReadingAddRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {

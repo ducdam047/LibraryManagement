@@ -18,10 +18,16 @@ public class WishlistController {
     @Autowired
     private WishlistService wishlistService;
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<WishlistModel>> getWishlist() {
         List<WishlistModel> wishlistModels = wishlistService.getWishlist();
         return ResponseEntity.ok(wishlistModels);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<WishlistModel> getWishlistBook(@PathVariable int id) {
+        WishlistModel wishlistModel = wishlistService.getWishlistBook(id);
+        return ResponseEntity.ok(wishlistModel);
     }
 
     @PostMapping("/add-wishlist")

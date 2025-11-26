@@ -71,6 +71,13 @@ public class WishlistService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public WishlistModel getWishlistBook(int id) {
+        Wishlist wishlist = wishlistRepository.findById(id).orElse(null);
+        if(wishlist==null) return null;
+        return toModel(wishlist);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public WishlistModel addToWishlist(AddToWishlistRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {

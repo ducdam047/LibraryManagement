@@ -23,6 +23,12 @@ public class ReadingController {
         return ResponseEntity.ok(readingModels);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReadingModel> getReadingBook(@PathVariable int id) {
+        ReadingModel readingModel = readingService.getReadingBook(id);
+        return ResponseEntity.ok(readingModel);
+    }
+
     @PostMapping("/save")
     public ApiResponse<ReadingModel> saveReading(@RequestBody ReadingAddRequest request) {
         return ApiResponse.<ReadingModel>builder()
