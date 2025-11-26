@@ -30,7 +30,7 @@ public class WishlistController {
         return ResponseEntity.ok(wishlistModel);
     }
 
-    @PostMapping("/add-wishlist")
+    @PostMapping("/save")
     public ApiResponse<WishlistModel> addToWishlist(@RequestBody AddToWishlistRequest request) {
         return ApiResponse.<WishlistModel>builder()
                 .code(201)
@@ -39,7 +39,7 @@ public class WishlistController {
                 .build();
     }
 
-    @DeleteMapping("/delete-wishlist/{wishlistId}")
+    @DeleteMapping("/remove/{wishlistId}")
     public ApiResponse<String> deleteFromWishlist(@PathVariable int wishlistId) {
         wishlistService.deleteFromWishlist(wishlistId);
         return ApiResponse.<String>builder()

@@ -41,6 +41,7 @@ public class WishlistService {
                 wishlist.getCreatedAt(),
                 wishlist.getUser().getFullName(),
                 wishlist.getBook().getImageUrl(),
+                wishlist.getBook().getPdfUrl(),
                 wishlist.getBook().getBookId()
         );
     }
