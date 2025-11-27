@@ -38,7 +38,7 @@ public class CloudinaryService {
                     file.getBytes(),
                     ObjectUtils.asMap(
                             "resource_type", "raw",
-                            "folder", "library/pdf",
+                            "folder", "library/pdfs",
                             "format", "pdf"
                     )
             );
