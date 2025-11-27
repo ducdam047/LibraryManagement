@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,7 +76,18 @@ public class BookService {
 
     public List<BookModel> getAvailableBooks() {
         List<Book> books = bookRepository.findByStatus(BookStatus.AVAILABLE.name());
-        return books.stream()
+
+        List<Book> uniqueBooks = books.stream()
+                .collect(Collectors.toMap(
+                        Book::getTitle,
+                        b -> b,
+                        (b1, b2) -> b1,
+                        LinkedHashMap::new
+                ))
+                .values()
+                .stream()
+                .toList();
+        return uniqueBooks.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
