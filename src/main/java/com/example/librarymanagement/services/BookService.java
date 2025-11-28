@@ -75,7 +75,7 @@ public class BookService {
     }
 
     public List<BookModel> getAvailableBooks() {
-        List<Book> books = bookRepository.findByStatus(BookStatus.AVAILABLE.name());
+        List<Book> books = bookRepository.findAll();
 
         List<Book> uniqueBooks = books.stream()
                 .collect(Collectors.toMap(
