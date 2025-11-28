@@ -210,6 +210,12 @@ public class LibraryActionService {
         return findBooks(BookRepository::findAll);
     }
 
+    public BookModel searchTitle(String title) {
+        Book book = bookRepository.findFirstByTitle(title)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+        return toModel(book);
+    }
+
     public List<BookModel> searchAuthor(String author) {
         return findBooks(repo -> repo.findByAuthor(author));
     }

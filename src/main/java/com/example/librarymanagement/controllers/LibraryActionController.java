@@ -58,6 +58,12 @@ public class LibraryActionController {
                 .build();
     }
 
+    @GetMapping("/searchTitle/{title}")
+    public ResponseEntity<BookModel> searchTitle(@PathVariable String title) {
+        BookModel book = libraryActionService.searchTitle(title);
+        return ResponseEntity.ok(book);
+    }
+
     @GetMapping("/searchAuthor/{author}")
     public ResponseEntity<List<BookModel>> searchAuthor(@PathVariable String author) {
         List<BookModel> books = libraryActionService.searchAuthor(author);
