@@ -74,7 +74,7 @@ public class BookService {
         return toModel(book);
     }
 
-    public List<BookModel> getAvailableBooks() {
+    public List<BookModel> getFeaturedBooks() {
         List<Book> books = bookRepository.findAll();
 
         List<Book> uniqueBooks = books.stream()

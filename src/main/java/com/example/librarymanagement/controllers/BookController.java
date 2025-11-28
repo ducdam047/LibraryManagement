@@ -29,7 +29,7 @@ public class BookController {
 
     @GetMapping("/available")
     public ResponseEntity<List<BookModel>> getAvailableBooks() {
-        List<BookModel> bookModels = bookService.getAvailableBooks();
+        List<BookModel> bookModels = bookService.getFeaturedBooks();
         return ResponseEntity.ok(bookModels);
     }
 
