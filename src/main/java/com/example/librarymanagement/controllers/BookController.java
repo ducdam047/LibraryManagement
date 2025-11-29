@@ -27,8 +27,8 @@ public class BookController {
         return ResponseEntity.ok(bookModel);
     }
 
-    @GetMapping("/available")
-    public ResponseEntity<List<BookModel>> getAvailableBooks() {
+    @GetMapping("/featured")
+    public ResponseEntity<List<BookModel>> getFeaturedBooks() {
         List<BookModel> bookModels = bookService.getFeaturedBooks();
         return ResponseEntity.ok(bookModels);
     }
