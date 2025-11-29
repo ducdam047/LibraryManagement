@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.services.ActionService;
 import com.example.librarymanagement.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @Autowired
+    private ActionService actionService;
+
     @GetMapping("/{bookId}")
     public ResponseEntity<BookModel> getBook(@PathVariable int bookId) {
         BookModel bookModel = bookService.getBook(bookId);
@@ -31,6 +35,12 @@ public class BookController {
     public ResponseEntity<List<BookModel>> getFeaturedBooks() {
         List<BookModel> bookModels = bookService.getFeaturedBooks();
         return ResponseEntity.ok(bookModels);
+    }
+
+    @GetMapping("/category/{categoryName}")
+    public ResponseEntity<List<BookModel>> filterCategory(@PathVariable String categoryName) {
+        List<BookModel> books = actionService.filterCategory(categoryName);
+        return ResponseEntity.ok(books);
     }
 
     @PostMapping("/add-book")

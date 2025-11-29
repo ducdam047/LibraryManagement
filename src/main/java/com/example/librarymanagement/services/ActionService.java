@@ -83,6 +83,18 @@ public class ActionService {
         );
     }
 
+    private List<BookModel> findBooks(Function<BookRepository, List<Book>> finder) {
+        List<Book> books = finder.apply(bookRepository);
+        if(books.isEmpty())
+            throw new AppException(ErrorCode.BOOK_NOT_FOUND);
+        return books.stream().map(this::toModel).collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public List<BookModel> filterCategory(String category) {
+        return findBooks(repo -> repo.findByCategory_CategoryName(category));
+    }
+
     @PreAuthorize("hasRole('USER')")
     public BorrowRecordModel borrowBook(BorrowBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -198,13 +210,6 @@ public class ActionService {
         return "Book with title: " + bookExtend.getTitle() + " has been extended";
     }
 
-    private List<BookModel> findBooks(Function<BookRepository, List<Book>> finder) {
-        List<Book> books = finder.apply(bookRepository);
-        if(books.isEmpty())
-            throw new AppException(ErrorCode.BOOK_NOT_FOUND);
-        return books.stream().map(this::toModel).collect(Collectors.toList());
-    }
-
     public List<BookModel> getBooks() {
         return findBooks(BookRepository::findAll);
     }
@@ -221,9 +226,5 @@ public class ActionService {
 
     public List<BookModel> searchPublisher(String publisherName) {
         return findBooks(repo -> repo.findByPublisher_PublisherName(publisherName));
-    }
-
-    public List<BookModel> searchCategory(String categoryName) {
-        return findBooks(repo -> repo.findByCategory_CategoryName(categoryName));
     }
 }

@@ -75,10 +75,4 @@ public class LibraryActionController {
         List<BookModel> books = actionService.searchPublisher(publisherName);
         return ResponseEntity.ok(books);
     }
-
-    @GetMapping("/searchCategory/{categoryName}")
-    public ResponseEntity<List<BookModel>> searchCategory(@PathVariable String categoryName) {
-        List<BookModel> books = actionService.searchCategory(categoryName);
-        return ResponseEntity.ok(books);
-    }
 }
