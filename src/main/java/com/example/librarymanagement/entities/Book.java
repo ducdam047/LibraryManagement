@@ -59,5 +59,8 @@ public class Book {
     List<Wishlist> wishlists;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Reading> readings;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Evaluate> evaluates;
 }

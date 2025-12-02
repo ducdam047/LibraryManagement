@@ -7,17 +7,14 @@ import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
-import com.example.librarymanagement.entities.Book;
-import com.example.librarymanagement.entities.BorrowRecord;
-import com.example.librarymanagement.entities.Evaluate;
-import com.example.librarymanagement.entities.User;
+import com.example.librarymanagement.entities.*;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.BorrowRecordRepository;
+import com.example.librarymanagement.repositories.BorrowRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +39,7 @@ public class ActionService {
     private BookRepository bookRepository;
 
     @Autowired
-    private BorrowRecordRepository borrowRecordRepository;
+    private BorrowRepository borrowRepository;
 
     @Autowired
     private EvaluateRepository evaluateRepository;
@@ -104,7 +101,7 @@ public class ActionService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = borrowRecordRepository.existsByBook_Title(request.getTitle());
+            boolean bookExists = borrowRepository.existsByBook_Title(request.getTitle());
             if(bookExists)
                 throw new RuntimeException("You are borrowing this book");
             if(userCurrent.getStatus().equals("LOCKED"))
@@ -124,7 +121,7 @@ public class ActionService {
                     .dueDay(dueDay)
                     .status(RecordStatus.BORROWED.name())
                     .build();
-            borrowRecordRepository.save(borrowRecord);
+            borrowRepository.save(borrowRecord);
 
             userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() + 1);
             userCurrent.setStatus(UserStatus.BORROWING.name());
@@ -147,7 +144,7 @@ public class ActionService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findByIsbn(request.getIsbn())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord borrowRecord = borrowRecordRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
+            BorrowRecord borrowRecord = borrowRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             if(userCurrent.getBookBorrowing()==1) {
                 userCurrent.setStatus(UserStatus.ACTIVE.name());
@@ -160,7 +157,7 @@ public class ActionService {
 
             userRepository.save(userCurrent);
             bookRepository.save(bookReturn);
-            borrowRecordRepository.save(borrowRecord);
+            borrowRepository.save(borrowRecord);
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
@@ -197,7 +194,7 @@ public class ActionService {
     public String extendBook(ExtendBookRequest request) {
         Book bookExtend = bookRepository.findByIsbn(request.getIsbn())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-        BorrowRecord borrowRecord = borrowRecordRepository.findByBook(bookExtend)
+        BorrowRecord borrowRecord = borrowRepository.findByBook(bookExtend)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
         LocalDate extendDay = LocalDate.now();
         if(extendDay.isAfter(borrowRecord.getDueDay()))
@@ -206,7 +203,7 @@ public class ActionService {
             throw new RuntimeException("The extending period must not exceed 3 days");
         int extendDays = request.getExtendDays();
         borrowRecord.setDueDay(borrowRecord.getDueDay().plusDays(extendDays));
-        borrowRecordRepository.save(borrowRecord);
+        borrowRepository.save(borrowRecord);
         return "Book with title: " + bookExtend.getTitle() + " has been extended";
     }
 

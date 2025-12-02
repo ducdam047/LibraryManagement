@@ -4,7 +4,7 @@ import com.example.librarymanagement.entities.BorrowRecord;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.enums.UserStatus;
-import com.example.librarymanagement.repositories.BorrowRecordRepository;
+import com.example.librarymanagement.repositories.BorrowRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class PenaltyService {
     private UserRepository userRepository;
 
     @Autowired
-    private BorrowRecordRepository borrowRecordRepository;
+    private BorrowRepository borrowRepository;
 
     @PostConstruct
     public void checkPenalty() {
@@ -31,7 +31,7 @@ public class PenaltyService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkOverdueBorrowBook() {
         LocalDate today = LocalDate.now();
-        List<BorrowRecord> overDueRecords = borrowRecordRepository.findByStatusAndDueDayBefore(RecordStatus.BORROWED.name(), today);
+        List<BorrowRecord> overDueRecords = borrowRepository.findByStatusAndDueDayBefore(RecordStatus.BORROWED.name(), today);
 
         System.out.println("Found " + overDueRecords.size() + " overdue records");
 
@@ -39,7 +39,7 @@ public class PenaltyService {
             User user = record.getUser();
             System.out.println("Processing overdue record for user: " + user.getFullName());
             record.setStatus(RecordStatus.OVERDUE.name());
-            borrowRecordRepository.save(record);
+            borrowRepository.save(record);
 
             if(!user.getStatus().equals(UserStatus.LOCKED.name())) {
                 user.setStatus(UserStatus.LOCKED.name());
