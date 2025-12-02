@@ -1,5 +1,6 @@
 package com.example.librarymanagement.controllers;
 
+import com.example.librarymanagement.dtos.requests.user.UserChangePasswordRequest;
 import com.example.librarymanagement.dtos.requests.user.UserLoginRequest;
 import com.example.librarymanagement.dtos.requests.user.UserSignupRequest;
 import com.example.librarymanagement.dtos.requests.user.UserUpdateRequest;
@@ -60,6 +61,16 @@ public class UserController {
         return ApiResponse.<User>builder()
                 .code(200)
                 .message("User updated successfully")
+                .data(user)
+                .build();
+    }
+
+    @PutMapping("/changePassword/{userId}")
+    public ApiResponse<User> changePassword(@PathVariable int userId, @RequestBody UserChangePasswordRequest request) {
+        User user = userService.changePassword(userId, request);
+        return ApiResponse.<User>builder()
+                .code(200)
+                .message("User change password successfully")
                 .data(user)
                 .build();
     }

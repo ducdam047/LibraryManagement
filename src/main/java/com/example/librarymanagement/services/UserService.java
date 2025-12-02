@@ -1,5 +1,6 @@
 package com.example.librarymanagement.services;
 
+import com.example.librarymanagement.dtos.requests.user.UserChangePasswordRequest;
 import com.example.librarymanagement.dtos.requests.user.UserSignupRequest;
 import com.example.librarymanagement.dtos.requests.user.UserUpdateRequest;
 import com.example.librarymanagement.entities.User;
@@ -66,10 +67,18 @@ public class UserService {
 
         user.setFullName(request.getFullName());
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
         user.setCid(request.getCid());
         user.setAddress(request.getAddress());
+        return userRepository.save(user);
+    }
+
+    @PostAuthorize("returnObject.email == authentication.name")
+    public User changePassword(int userId, UserChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 

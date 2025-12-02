@@ -6,11 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
+public class UserChangePasswordRequest {
 
-    String fullName;
-    String username;
-    String phoneNumber;
-    String cid;
-    String address;
+    String password;
 }
