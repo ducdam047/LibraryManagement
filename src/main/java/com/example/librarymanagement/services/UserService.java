@@ -1,8 +1,8 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.requests.user.UserChangePasswordRequest;
-import com.example.librarymanagement.dtos.requests.user.UserSignupRequest;
-import com.example.librarymanagement.dtos.requests.user.UserUpdateRequest;
+import com.example.librarymanagement.dtos.requests.user.ChangePasswordRequest;
+import com.example.librarymanagement.dtos.requests.user.SignupRequest;
+import com.example.librarymanagement.dtos.requests.user.UpdateRequest;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.enums.UserRole;
@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,7 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User signupUser(UserSignupRequest request) {
+    public User signupUser(SignupRequest request) {
         if(userRepository.existsByEmail(request.getEmail()) || userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
         if(!request.getPassword().equals(request.getConfirmPassword()))
@@ -61,7 +60,7 @@ public class UserService {
     }
 
     @PostAuthorize("returnObject.email == authentication.name")
-    public User updateUser(int userId, UserUpdateRequest request) {
+    public User updateUser(int userId, UpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -74,7 +73,7 @@ public class UserService {
     }
 
     @PostAuthorize("returnObject.email == authentication.name")
-    public User changePassword(int userId, UserChangePasswordRequest request) {
+    public User changePassword(int userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 

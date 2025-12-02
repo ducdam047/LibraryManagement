@@ -1,6 +1,6 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.requests.user.UserLoginRequest;
+import com.example.librarymanagement.dtos.requests.user.LoginRequest;
 import com.example.librarymanagement.dtos.responses.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
@@ -35,7 +35,7 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public AuthenticationResponse authenticate(UserLoginRequest request) {
+    public AuthenticationResponse authenticate(LoginRequest request) {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated)

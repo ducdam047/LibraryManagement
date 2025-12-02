@@ -1,17 +1,15 @@
 package com.example.librarymanagement.controllers;
 
-import com.example.librarymanagement.dtos.requests.user.UserChangePasswordRequest;
-import com.example.librarymanagement.dtos.requests.user.UserLoginRequest;
-import com.example.librarymanagement.dtos.requests.user.UserSignupRequest;
-import com.example.librarymanagement.dtos.requests.user.UserUpdateRequest;
+import com.example.librarymanagement.dtos.requests.user.ChangePasswordRequest;
+import com.example.librarymanagement.dtos.requests.user.LoginRequest;
+import com.example.librarymanagement.dtos.requests.user.SignupRequest;
+import com.example.librarymanagement.dtos.requests.user.UpdateRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
 import com.example.librarymanagement.dtos.responses.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.AuthenticationService;
 import com.example.librarymanagement.services.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +25,7 @@ public class UserController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ApiResponse<User> signupUser(@RequestBody UserSignupRequest request) {
+    public ApiResponse<User> signupUser(@RequestBody SignupRequest request) {
         return ApiResponse.<User>builder()
                 .code(201)
                 .message("Registered successfully")
@@ -36,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthenticationResponse> loginUser(@RequestBody UserLoginRequest request) {
+    public ApiResponse<AuthenticationResponse> loginUser(@RequestBody LoginRequest request) {
         var data = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .code(200)
@@ -56,7 +54,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ApiResponse<User> updateUser(@PathVariable int userId, @RequestBody UserUpdateRequest request) {
+    public ApiResponse<User> updateUser(@PathVariable int userId, @RequestBody UpdateRequest request) {
         User user = userService.updateUser(userId, request);
         return ApiResponse.<User>builder()
                 .code(200)
@@ -66,7 +64,7 @@ public class UserController {
     }
 
     @PutMapping("/changePassword/{userId}")
-    public ApiResponse<User> changePassword(@PathVariable int userId, @RequestBody UserChangePasswordRequest request) {
+    public ApiResponse<User> changePassword(@PathVariable int userId, @RequestBody ChangePasswordRequest request) {
         User user = userService.changePassword(userId, request);
         return ApiResponse.<User>builder()
                 .code(200)
