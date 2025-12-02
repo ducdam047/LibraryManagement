@@ -9,4 +9,5 @@ import lombok.experimental.FieldDefaults;
 public class ChangePasswordRequest {
 
     String password;
+    String confirmPassword;
 }

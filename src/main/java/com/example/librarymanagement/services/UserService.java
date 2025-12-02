@@ -76,6 +76,8 @@ public class UserService {
     public User changePassword(int userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        if(!request.getPassword().equals(request.getConfirmPassword()))
+            throw new AppException(ErrorCode.PASSWORD_NOT_CONFIRM);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
