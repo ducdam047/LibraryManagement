@@ -24,9 +24,8 @@ public class Evaluate {
     @JoinColumn(name = "user")
     User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book")
-    Book book;
+    @Column(name = "title")
+    String title;
 
     @Column(name = "rating")
     String rating;

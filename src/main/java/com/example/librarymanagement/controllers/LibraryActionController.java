@@ -22,15 +22,6 @@ public class LibraryActionController {
     @Autowired
     private ActionService actionService;
 
-    @PostMapping("/evaluate-book")
-    public ApiResponse<EvaluateModel> evaluateBook(@RequestBody EvaluateBookRequest request) {
-        return ApiResponse.<EvaluateModel>builder()
-                .code(200)
-                .message("Evaluated successfully")
-                .data(actionService.evaluateBook(request))
-                .build();
-    }
-
     @PostMapping("/extend-book")
     public ApiResponse<String> extendBook(@RequestBody ExtendBookRequest request) {
         return ApiResponse.<String>builder()

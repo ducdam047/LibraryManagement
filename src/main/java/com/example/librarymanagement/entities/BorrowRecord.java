@@ -1,6 +1,5 @@
 package com.example.librarymanagement.entities;
 
-import com.example.librarymanagement.enums.RecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -37,4 +36,7 @@ public class BorrowRecord {
 
     @Column(name = "status")
     String status;
+
+    @Column(name = "extend_count")
+    int extendCount;
 }

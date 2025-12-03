@@ -73,7 +73,7 @@ public class ActionService {
     public EvaluateModel toModel(Evaluate evaluate) {
         return new EvaluateModel(
                 evaluate.getUser().getFullName(),
-                evaluate.getBook().getTitle(),
+                evaluate.getTitle(),
                 evaluate.getRating(),
                 evaluate.getComment(),
                 evaluate.getEvaluateDay()
@@ -93,34 +93,8 @@ public class ActionService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public EvaluateModel evaluateBook(EvaluateBookRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("sub");
-            User userCurrent = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookEvaluate = bookRepository.findFirstByTitle(request.getTitle())
-                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_EVALUATED));
-
-            if(evaluateRepository.existsByBook_BookId(bookEvaluate.getBookId()))
-                throw new AppException(ErrorCode.BOOK_EVALUATED);
-
-            Evaluate evaluate = Evaluate.builder()
-                    .user(userCurrent)
-                    .book(bookEvaluate)
-                    .rating(request.getRating())
-                    .comment(request.getComment())
-                    .evaluateDay(LocalDate.now())
-                    .build();
-            evaluateRepository.save(evaluate);
-            return toModel(evaluate);
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED);
-    }
-
-    @PreAuthorize("hasRole('USER')")
     public String extendBook(ExtendBookRequest request) {
-        Book bookExtend = bookRepository.findByIsbn(request.getIsbn())
+        Book bookExtend = bookRepository.findById(request.getBookId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         BorrowRecord borrowRecord = borrowRepository.findByBook(bookExtend)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));

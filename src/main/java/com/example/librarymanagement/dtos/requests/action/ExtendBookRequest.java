@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExtendBookRequest {
 
-    String isbn;
+    int bookId;
     int extendDays;
 }

@@ -2,10 +2,14 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.BorrowRecordModel;
+import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
+import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
+import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.BorrowRecord;
+import com.example.librarymanagement.entities.Evaluate;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
@@ -14,6 +18,7 @@ import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.BorrowRepository;
+import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +43,9 @@ public class BorrowService {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private EvaluateRepository evaluateRepository;
+
     public BookModel toModel(Book book) {
         return new BookModel(
                 book.getBookId(),
@@ -61,6 +69,16 @@ public class BorrowService {
                 borrowRecord.getBook().getTitle(),
                 borrowRecord.getBorrowDay(),
                 borrowRecord.getDueDay()
+        );
+    }
+
+    public EvaluateModel toModel(Evaluate evaluate) {
+        return new EvaluateModel(
+                evaluate.getUser().getFullName(),
+                evaluate.getTitle(),
+                evaluate.getRating(),
+                evaluate.getComment(),
+                evaluate.getEvaluateDay()
         );
     }
 
@@ -92,13 +110,13 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
             boolean bookExists = borrowRepository.existsByUserAndBook_Title(userCurrent, request.getTitle());
             if(bookExists)
-                throw new RuntimeException("You are borrowing this book");
+                throw new AppException(ErrorCode.BOOK_BORROWED);
             if(userCurrent.getStatus().equals("LOCKED"))
-                throw new RuntimeException("Your account has been locked");
+                throw new AppException(ErrorCode.ACCOUNT_LOCKED);
             if(userCurrent.getBookBorrowing()==3)
-                throw new RuntimeException("You have borrowed up to 3 books");
+                throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
             if(request.getBorrowDays()>5)
-                throw new RuntimeException("The borrowing period must not exceed 5 days");
+                throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
             int borrowDays = request.getBorrowDays();
             LocalDate borrowDay = LocalDate.now();
             LocalDate dueDay = borrowDay.plusDays(borrowDays);
@@ -109,6 +127,7 @@ public class BorrowService {
                     .borrowDay(borrowDay)
                     .dueDay(dueDay)
                     .status(RecordStatus.BORROWED.name())
+                    .extendCount(0)
                     .build();
             borrowRepository.save(borrowRecord);
 
@@ -158,6 +177,38 @@ public class BorrowService {
             userRepository.save(userCurrent);
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public EvaluateModel evaluateBook(EvaluateBookRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+            boolean bookExists = bookRepository.existsByTitle(request.getTitle());
+            if(!bookExists) throw new AppException(ErrorCode.BOOK_NOT_FOUND);
+
+            boolean evaluated = evaluateRepository.existsByUserAndTitle(userCurrent, request.getTitle());
+            if(evaluated) throw new AppException(ErrorCode.BOOK_EVALUATED);
+
+            BorrowRecord record = borrowRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
+                    .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
+            if(!(record.getStatus().equals("BORROWED") || record.getStatus().equals("RETURNED")))
+                throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
+
+            Evaluate evaluate = Evaluate.builder()
+                    .user(userCurrent)
+                    .title(request.getTitle())
+                    .rating(request.getRating())
+                    .comment(request.getComment())
+                    .evaluateDay(LocalDate.now())
+                    .build();
+            evaluateRepository.save(evaluate);
+            return toModel(evaluate);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }

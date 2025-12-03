@@ -60,7 +60,4 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Reading> readings;
-
-    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    List<Evaluate> evaluates;
 }

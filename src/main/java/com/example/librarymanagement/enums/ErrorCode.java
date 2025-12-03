@@ -19,7 +19,16 @@ public enum ErrorCode {
     WISHLIST_NOT_FOUND(1009, "Wishlist not found", HttpStatus.NOT_FOUND),
     WISHLIST_EXISTED(1010, "This book was added", HttpStatus.CONFLICT),
     BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT),
-    READING_NOT_FOUND(1012, "Reading not found", HttpStatus.NOT_FOUND)
+    READING_NOT_FOUND(1012, "Reading not found", HttpStatus.NOT_FOUND),
+    BOOK_BORROWED(2001, "You are borrowing this book", HttpStatus.CONFLICT),
+    ACCOUNT_LOCKED(3002, "Your account has been locked", HttpStatus.FORBIDDEN),
+    BORROW_LIMIT_REACHED(3003, "You have reached the maximum borrowing limit", HttpStatus.BAD_REQUEST),
+    BORROW_DAYS_EXCEEDED(3005, "The borrowing period must not exceed 5 days", HttpStatus.BAD_REQUEST),
+    EXTEND_DEADLINE_EXPIRED(3004, "The extension deadline has expired", HttpStatus.BAD_REQUEST),
+    EXTEND_LIMIT_EXCEEDED(3006, "You have reached the maximum number of extensions", HttpStatus.BAD_REQUEST),
+    EXTEND_DAY_EXCEEDED(3007, "The extension deadline has expired", HttpStatus.BAD_REQUEST),
+    NOT_BORROWED(3008, "You have not borrowed this book before", HttpStatus.BAD_REQUEST),
+    NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST)
     ;
 
     int code;
