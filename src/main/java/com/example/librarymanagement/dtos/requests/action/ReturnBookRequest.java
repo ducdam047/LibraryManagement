@@ -10,5 +10,5 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReturnBookRequest {
 
-    String isbn;
+    int bookId;
 }

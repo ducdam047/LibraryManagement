@@ -93,35 +93,6 @@ public class ActionService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public String returnBook(ReturnBookRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("sub");
-            User userCurrent = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookReturn = bookRepository.findByIsbn(request.getIsbn())
-                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord borrowRecord = borrowRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-            if(userCurrent.getBookBorrowing()==1) {
-                userCurrent.setStatus(UserStatus.ACTIVE.name());
-            } else if (userCurrent.getBookBorrowing()==0) {
-                throw new RuntimeException("You haven't borrowed any books yet");
-            }
-            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
-            bookReturn.setStatus(BookStatus.AVAILABLE.name());
-            borrowRecord.setStatus(RecordStatus.RETURNED.name());
-
-            userRepository.save(userCurrent);
-            bookRepository.save(bookReturn);
-            borrowRepository.save(borrowRecord);
-
-            return "Book with title: " + bookReturn.getTitle() + " has been returned";
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED);
-    }
-
-    @PreAuthorize("hasRole('USER')")
     public EvaluateModel evaluateBook(EvaluateBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {

@@ -3,6 +3,7 @@ package com.example.librarymanagement.services;
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.BorrowRecordModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
+import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.BorrowRecord;
 import com.example.librarymanagement.entities.User;
@@ -124,6 +125,39 @@ public class BorrowService {
             userRepository.save(userCurrent);
 
             return toModel(borrowRecord);
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public String returnBook(ReturnBookRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            Book bookReturn = bookRepository.findById(request.getBookId())
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+            BorrowRecord borrowRecord = borrowRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
+                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+
+            borrowRecord.setStatus(RecordStatus.RETURNED.name());
+            borrowRepository.save(borrowRecord);
+
+            List<Book> bookSameTitle = bookRepository.findAllByTitle(bookReturn.getTitle());
+            for(Book book : bookSameTitle) {
+                book.setAvailableCopies(book.getAvailableCopies() + 1);
+                book.setBorrowedCopies(book.getBorrowedCopies() - 1);
+            }
+            bookReturn.setStatus(BookStatus.AVAILABLE.name());
+            bookRepository.save(bookReturn);
+
+            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
+            if(userCurrent.getBookBorrowing()==0)
+                userCurrent.setStatus(UserStatus.ACTIVE.name());
+            userRepository.save(userCurrent);
+
+            return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }

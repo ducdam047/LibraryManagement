@@ -22,15 +22,6 @@ public class LibraryActionController {
     @Autowired
     private ActionService actionService;
 
-    @PostMapping("/return-book")
-    public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
-        return ApiResponse.<String>builder()
-                .code(200)
-                .message("Returned successfully")
-                .data(actionService.returnBook(request))
-                .build();
-    }
-
     @PostMapping("/evaluate-book")
     public ApiResponse<EvaluateModel> evaluateBook(@RequestBody EvaluateBookRequest request) {
         return ApiResponse.<EvaluateModel>builder()

@@ -3,6 +3,7 @@ package com.example.librarymanagement.controllers;
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.BorrowRecordModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
+import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.services.BorrowService;
@@ -31,6 +32,15 @@ public class BorrowController {
                 .code(200)
                 .message("Borrowed successfully")
                 .data(borrowService.borrowBook(request))
+                .build();
+    }
+
+    @PostMapping("/return-book")
+    public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("Returned successfully")
+                .data(borrowService.returnBook(request))
                 .build();
     }
 }
