@@ -22,15 +22,6 @@ public class LibraryActionController {
     @Autowired
     private ActionService actionService;
 
-    @PostMapping("/borrow-book")
-    public ApiResponse<BorrowRecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
-        return ApiResponse.<BorrowRecordModel>builder()
-                .code(200)
-                .message("Borrowed successfully")
-                .data(actionService.borrowBook(request))
-                .build();
-    }
-
     @PostMapping("/return-book")
     public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
         return ApiResponse.<String>builder()

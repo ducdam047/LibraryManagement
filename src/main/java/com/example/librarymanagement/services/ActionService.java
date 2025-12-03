@@ -93,49 +93,6 @@ public class ActionService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public BorrowRecordModel borrowBook(BorrowBookRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("sub");
-            User userCurrent = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
-                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = borrowRepository.existsByBook_Title(request.getTitle());
-            if(bookExists)
-                throw new RuntimeException("You are borrowing this book");
-            if(userCurrent.getStatus().equals("LOCKED"))
-                throw new RuntimeException("Your account has been locked");
-            if(userCurrent.getBookBorrowing()==3)
-                throw new RuntimeException("You have borrowed up to 3 books");
-            if(request.getBorrowDays()>5)
-                throw new RuntimeException("The borrowing period must not exceed 5 days");
-            int borrowDays = request.getBorrowDays();
-            LocalDate borrowDay = LocalDate.now();
-            LocalDate dueDay = borrowDay.plusDays(borrowDays);
-
-            BorrowRecord borrowRecord = BorrowRecord.builder()
-                    .user(userCurrent)
-                    .book(bookBorrow)
-                    .borrowDay(borrowDay)
-                    .dueDay(dueDay)
-                    .status(RecordStatus.BORROWED.name())
-                    .build();
-            borrowRepository.save(borrowRecord);
-
-            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() + 1);
-            userCurrent.setStatus(UserStatus.BORROWING.name());
-            bookBorrow.setStatus(BookStatus.BORROWED.name());
-
-            userRepository.save(userCurrent);
-            bookRepository.save(bookBorrow);
-
-            return toModel(borrowRecord);
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED);
-    }
-
-    @PreAuthorize("hasRole('USER')")
     public String returnBook(ReturnBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
