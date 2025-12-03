@@ -13,7 +13,6 @@ public interface BorrowRepository extends JpaRepository<BorrowRecord, Integer> {
 
     Optional<BorrowRecord> findByBook(Book book);
     boolean existsByUserAndBook_Title(User user, String title);
-    boolean existsByBook_Title(String title);
     Optional<BorrowRecord> findByBookAndStatus(Book book, String status);
     List<BorrowRecord> findByStatusAndDueDayBefore(String status, LocalDate currentDate);
     List<BorrowRecord> findByUser_UserIdAndStatus(int userId, String status);
