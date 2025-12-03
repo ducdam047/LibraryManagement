@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.models.BorrowRecordModel;
 import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
+import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
 import com.example.librarymanagement.entities.Book;
@@ -43,6 +44,15 @@ public class BorrowController {
                 .code(200)
                 .message("Returned successfully")
                 .data(borrowService.returnBook(request))
+                .build();
+    }
+
+    @PostMapping("/extend-book")
+    public ApiResponse<String> extendBook(@RequestBody ExtendBookRequest request) {
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("Extended successfully")
+                .data(borrowService.extendBook(request))
                 .build();
     }
 

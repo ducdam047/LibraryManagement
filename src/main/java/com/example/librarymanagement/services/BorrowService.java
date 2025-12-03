@@ -108,7 +108,7 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookBorrow = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = borrowRepository.existsByUserAndBook_Title(userCurrent, request.getTitle());
+            boolean bookExists = borrowRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.BORROWED.name());
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
             if(userCurrent.getStatus().equals("LOCKED"))
@@ -177,6 +177,36 @@ public class BorrowService {
             userRepository.save(userCurrent);
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public String extendBook(ExtendBookRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            Book bookExtend = bookRepository.findById(request.getBookId())
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+            BorrowRecord borrowRecord = borrowRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.BORROWED.name())
+                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+
+            if(borrowRecord.getExtendCount()==2)
+                throw new AppException(ErrorCode.EXTEND_LIMIT_EXCEEDED);
+            if(request.getExtendDays()<=0)
+                throw new AppException(ErrorCode.INVALID_EXTEND_DAY);
+            LocalDate extendDay = LocalDate.now();
+            if (extendDay.isAfter(borrowRecord.getDueDay()))
+                throw new AppException(ErrorCode.EXTEND_DEADLINE_EXPIRED);
+            if (request.getExtendDays() > 3)
+                throw new AppException(ErrorCode.EXTEND_DAY_EXCEEDED);
+            int extendDays = request.getExtendDays();
+            borrowRecord.setDueDay(borrowRecord.getDueDay().plusDays(extendDays));
+            borrowRecord.setExtendCount(borrowRecord.getExtendCount() + 1);
+            borrowRepository.save(borrowRecord);
+            return "Book with title: " + bookExtend.getTitle() + " has been extended";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }

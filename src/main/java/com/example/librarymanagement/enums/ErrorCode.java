@@ -28,7 +28,8 @@ public enum ErrorCode {
     EXTEND_LIMIT_EXCEEDED(3006, "You have reached the maximum number of extensions", HttpStatus.BAD_REQUEST),
     EXTEND_DAY_EXCEEDED(3007, "The extension deadline has expired", HttpStatus.BAD_REQUEST),
     NOT_BORROWED(3008, "You have not borrowed this book before", HttpStatus.BAD_REQUEST),
-    NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST)
+    NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST),
+    INVALID_EXTEND_DAY(3010, "The number of extension days must be greater than 0", HttpStatus.BAD_REQUEST)
     ;
 
     int code;
