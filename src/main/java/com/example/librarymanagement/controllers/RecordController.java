@@ -28,15 +28,21 @@ public class RecordController {
         return ResponseEntity.ok(bookModels);
     }
 
-    @GetMapping("/returned")
-    public ResponseEntity<List<BookModel>> getReturnedBookList() {
-        List<BookModel> bookModels = recordService.getReturnedBookList();
+    @GetMapping("/list-record-returned")
+    public ResponseEntity<List<RecordModel>> getReturnedBookList() {
+        List<RecordModel> bookModels = recordService.getReturnedBookList();
         return ResponseEntity.ok(bookModels);
     }
 
-    @GetMapping("/record/{bookId}")
+    @GetMapping("/record-active/{bookId}")
     public ResponseEntity<RecordModel> getBorrowedBook(@PathVariable int bookId) {
         RecordModel recordModel = recordService.getBorrowedBook(bookId);
+        return ResponseEntity.ok(recordModel);
+    }
+
+    @GetMapping("/record-returned/{recordId}")
+    public ResponseEntity<RecordModel> getReturnedBook(@PathVariable int recordId) {
+        RecordModel recordModel = recordService.getReturnedBook(recordId);
         return ResponseEntity.ok(recordModel);
     }
 

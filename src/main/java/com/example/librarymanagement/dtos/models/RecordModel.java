@@ -14,11 +14,15 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RecordModel {
 
+    int recordId;
     String fullName;
     int bookId;
     String title;
+    String author;
+    String imageUrl;
     LocalDate borrowDay;
     LocalDate dueDay;
+    LocalDate returnedDay;
     String status;
     int extendCount;
 }

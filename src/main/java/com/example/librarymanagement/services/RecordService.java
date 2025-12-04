@@ -65,11 +65,15 @@ public class RecordService {
 
     public RecordModel toModel(Record record) {
         return new RecordModel(
+                record.getBorrowRecordId(),
                 record.getUser().getFullName(),
                 record.getBook().getBookId(),
                 record.getBook().getTitle(),
+                record.getBook().getAuthor(),
+                record.getBook().getImageUrl(),
                 record.getBorrowDay(),
                 record.getDueDay(),
+                record.getReturnedDay(),
                 record.getStatus(),
                 record.getExtendCount()
         );
@@ -103,7 +107,7 @@ public class RecordService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<BookModel> getReturnedBookList() {
+    public List<RecordModel> getReturnedBookList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
@@ -112,7 +116,6 @@ public class RecordService {
 
             List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.RETURNED.name());
             return records.stream()
-                    .map(Record::getBook)
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
@@ -130,6 +133,22 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
             Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            return toModel(record);
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    public RecordModel getReturnedBook(int recordId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            Record record = recordRepository.findById(recordId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            if (record.getUser().getUserId() != userCurrent.getUserId())
+                throw new AppException(ErrorCode.UNAUTHORIZED);
             return toModel(record);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
@@ -162,6 +181,7 @@ public class RecordService {
                     .book(bookBorrow)
                     .borrowDay(borrowDay)
                     .dueDay(dueDay)
+                    .returnedDay(null)
                     .status(RecordStatus.ACTIVE.name())
                     .extendCount(0)
                     .build();
@@ -196,6 +216,7 @@ public class RecordService {
             Record record = recordRepository.findByBookAndStatus(bookReturn, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
+            record.setReturnedDay(LocalDate.now());
             record.setStatus(RecordStatus.RETURNED.name());
             recordRepository.save(record);
 

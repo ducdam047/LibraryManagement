@@ -34,6 +34,9 @@ public class Record {
     @Column(name = "due_day")
     LocalDate dueDay;
 
+    @Column(name = "returned_day")
+    LocalDate returnedDay;
+
     @Column(name = "status")
     String status;
 
