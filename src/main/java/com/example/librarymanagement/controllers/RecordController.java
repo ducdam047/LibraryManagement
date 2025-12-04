@@ -22,9 +22,15 @@ public class RecordController {
     @Autowired
     private RecordService recordService;
 
-    @GetMapping
+    @GetMapping("/active")
     public ResponseEntity<List<BookModel>> getBorrowedBookList() {
         List<BookModel> bookModels = recordService.getBorrowedBookList();
+        return ResponseEntity.ok(bookModels);
+    }
+
+    @GetMapping("/returned")
+    public ResponseEntity<List<BookModel>> getReturnedBookList() {
+        List<BookModel> bookModels = recordService.getReturnedBookList();
         return ResponseEntity.ok(bookModels);
     }
 

@@ -103,6 +103,23 @@ public class RecordService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public List<BookModel> getReturnedBookList() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+
+            List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.RETURNED.name());
+            return records.stream()
+                    .map(Record::getBook)
+                    .map(this::toModel)
+                    .collect(Collectors.toList());
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public RecordModel getBorrowedBook(int bookId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
