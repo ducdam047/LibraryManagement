@@ -23,10 +23,10 @@ public enum ErrorCode {
     BOOK_BORROWED(2001, "You are borrowing this book", HttpStatus.CONFLICT),
     ACCOUNT_LOCKED(3002, "Your account has been locked", HttpStatus.FORBIDDEN),
     BORROW_LIMIT_REACHED(3003, "You have reached the maximum borrowing limit", HttpStatus.BAD_REQUEST),
-    BORROW_DAYS_EXCEEDED(3005, "The borrowing period must not exceed 5 days", HttpStatus.BAD_REQUEST),
+    BORROW_DAYS_EXCEEDED(3005, "The borrowing period must not exceed 7 days", HttpStatus.BAD_REQUEST),
     EXTEND_DEADLINE_EXPIRED(3004, "The extension deadline has expired", HttpStatus.BAD_REQUEST),
     EXTEND_LIMIT_EXCEEDED(3006, "You have reached the maximum number of extensions", HttpStatus.BAD_REQUEST),
-    EXTEND_DAY_EXCEEDED(3007, "The extension deadline has expired", HttpStatus.BAD_REQUEST),
+    EXTEND_DAY_EXCEEDED(3007, "The extending period must not exceed 3 days", HttpStatus.BAD_REQUEST),
     NOT_BORROWED(3008, "You have not borrowed this book before", HttpStatus.BAD_REQUEST),
     NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST),
     INVALID_EXTEND_DAY(3010, "The number of extension days must be greater than 0", HttpStatus.BAD_REQUEST)

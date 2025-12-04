@@ -134,7 +134,7 @@ public class RecordService {
                 throw new AppException(ErrorCode.ACCOUNT_LOCKED);
             if(userCurrent.getBookBorrowing()==3)
                 throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
-            if(request.getBorrowDays()>5)
+            if(request.getBorrowDays()>7)
                 throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
             int borrowDays = request.getBorrowDays();
             LocalDate borrowDay = LocalDate.now();
