@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.models.BorrowRecordModel;
+import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
@@ -29,14 +29,14 @@ public class RecordController {
     }
 
     @GetMapping("/record/{bookId}")
-    public ResponseEntity<BorrowRecordModel> getBorrowedBook(@PathVariable int bookId) {
-        BorrowRecordModel recordModel = recordService.getBorrowedBook(bookId);
+    public ResponseEntity<RecordModel> getBorrowedBook(@PathVariable int bookId) {
+        RecordModel recordModel = recordService.getBorrowedBook(bookId);
         return ResponseEntity.ok(recordModel);
     }
 
     @PostMapping("/borrow-book")
-    public ApiResponse<BorrowRecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
-        return ApiResponse.<BorrowRecordModel>builder()
+    public ApiResponse<RecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
+        return ApiResponse.<RecordModel>builder()
                 .code(200)
                 .message("Borrowed successfully")
                 .data(recordService.borrowBook(request))

@@ -1,10 +1,10 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.models.BorrowRecordModel;
+import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.models.EvaluateModel;
-import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.entities.*;
+import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,12 +51,12 @@ public class ActionService {
         );
     }
 
-    public BorrowRecordModel toModel(BorrowRecord borrowRecord) {
-        return new BorrowRecordModel(
-                borrowRecord.getUser().getFullName(),
-                borrowRecord.getBook().getTitle(),
-                borrowRecord.getBorrowDay(),
-                borrowRecord.getDueDay()
+    public RecordModel toModel(Record record) {
+        return new RecordModel(
+                record.getUser().getFullName(),
+                record.getBook().getTitle(),
+                record.getBorrowDay(),
+                record.getDueDay()
         );
     }
 

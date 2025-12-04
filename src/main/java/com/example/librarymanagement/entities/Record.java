@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BorrowRecord {
+public class Record {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
