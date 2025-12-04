@@ -22,15 +22,6 @@ public class LibraryActionController {
     @Autowired
     private ActionService actionService;
 
-    @PostMapping("/extend-book")
-    public ApiResponse<String> extendBook(@RequestBody ExtendBookRequest request) {
-        return ApiResponse.<String>builder()
-                .code(200)
-                .message("Returned successfully")
-                .data(actionService.extendBook(request))
-                .build();
-    }
-
     @GetMapping("/searchTitle/{title}")
     public ResponseEntity<BookModel> searchTitle(@PathVariable String title) {
         BookModel book = actionService.searchTitle(title);

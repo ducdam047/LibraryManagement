@@ -3,25 +3,16 @@ package com.example.librarymanagement.services;
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.BorrowRecordModel;
 import com.example.librarymanagement.dtos.models.EvaluateModel;
-import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
-import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
-import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.*;
-import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
-import com.example.librarymanagement.enums.RecordStatus;
-import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.BorrowRepository;
+import com.example.librarymanagement.repositories.RecordRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -39,7 +30,7 @@ public class ActionService {
     private BookRepository bookRepository;
 
     @Autowired
-    private BorrowRepository borrowRepository;
+    private RecordRepository recordRepository;
 
     @Autowired
     private EvaluateRepository evaluateRepository;
@@ -90,23 +81,6 @@ public class ActionService {
     @PreAuthorize("hasRole('USER')")
     public List<BookModel> filterCategory(String category) {
         return findBooks(repo -> repo.findByCategory_CategoryName(category));
-    }
-
-    @PreAuthorize("hasRole('USER')")
-    public String extendBook(ExtendBookRequest request) {
-        Book bookExtend = bookRepository.findById(request.getBookId())
-                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-        BorrowRecord borrowRecord = borrowRepository.findByBook(bookExtend)
-                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        LocalDate extendDay = LocalDate.now();
-        if(extendDay.isAfter(borrowRecord.getDueDay()))
-            throw new RuntimeException("The extension deadline has expired");
-        if(request.getExtendDays()>3)
-            throw new RuntimeException("The extending period must not exceed 3 days");
-        int extendDays = request.getExtendDays();
-        borrowRecord.setDueDay(borrowRecord.getDueDay().plusDays(extendDays));
-        borrowRepository.save(borrowRecord);
-        return "Book with title: " + bookExtend.getTitle() + " has been extended";
     }
 
     public List<BookModel> getBooks() {

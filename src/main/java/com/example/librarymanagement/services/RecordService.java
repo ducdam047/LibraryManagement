@@ -17,7 +17,7 @@ import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.BorrowRepository;
+import com.example.librarymanagement.repositories.RecordRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BorrowService {
+public class RecordService {
 
     @Autowired
-    private BorrowRepository borrowRepository;
+    private RecordRepository recordRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -90,7 +90,7 @@ public class BorrowService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowRecord> records = borrowRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.BORROWED.name());
+            List<BorrowRecord> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.BORROWED.name());
             return records.stream()
                     .map(BorrowRecord::getBook)
                     .map(this::toModel)
@@ -108,7 +108,7 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord record = borrowRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.BORROWED.name())
+            BorrowRecord record = recordRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.BORROWED.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             return toModel(record);
         }
@@ -124,7 +124,7 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookBorrow = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = borrowRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.BORROWED.name());
+            boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.BORROWED.name());
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
             if(userCurrent.getStatus().equals("LOCKED"))
@@ -145,7 +145,7 @@ public class BorrowService {
                     .status(RecordStatus.BORROWED.name())
                     .extendCount(0)
                     .build();
-            borrowRepository.save(borrowRecord);
+            recordRepository.save(borrowRecord);
 
             List<Book> bookSameTitle = bookRepository.findAllByTitle(bookBorrow.getTitle());
             for(Book book : bookSameTitle) {
@@ -173,11 +173,11 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord borrowRecord = borrowRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
+            BorrowRecord borrowRecord = recordRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             borrowRecord.setStatus(RecordStatus.RETURNED.name());
-            borrowRepository.save(borrowRecord);
+            recordRepository.save(borrowRecord);
 
             List<Book> bookSameTitle = bookRepository.findAllByTitle(bookReturn.getTitle());
             for(Book book : bookSameTitle) {
@@ -206,7 +206,7 @@ public class BorrowService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookExtend = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowRecord borrowRecord = borrowRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.BORROWED.name())
+            BorrowRecord borrowRecord = recordRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.BORROWED.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             if(borrowRecord.getExtendCount()==2)
@@ -221,7 +221,7 @@ public class BorrowService {
             int extendDays = request.getExtendDays();
             borrowRecord.setDueDay(borrowRecord.getDueDay().plusDays(extendDays));
             borrowRecord.setExtendCount(borrowRecord.getExtendCount() + 1);
-            borrowRepository.save(borrowRecord);
+            recordRepository.save(borrowRecord);
             return "Book with title: " + bookExtend.getTitle() + " has been extended";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
@@ -241,7 +241,7 @@ public class BorrowService {
             boolean evaluated = evaluateRepository.existsByUserAndTitle(userCurrent, request.getTitle());
             if(evaluated) throw new AppException(ErrorCode.BOOK_EVALUATED);
 
-            BorrowRecord record = borrowRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
+            BorrowRecord record = recordRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
             if(!(record.getStatus().equals("BORROWED") || record.getStatus().equals("RETURNED")))
                 throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);

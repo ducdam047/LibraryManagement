@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface BorrowRepository extends JpaRepository<BorrowRecord, Integer> {
+public interface RecordRepository extends JpaRepository<BorrowRecord, Integer> {
 
     Optional<BorrowRecord> findByBook(Book book);
     Optional<BorrowRecord> findByUserAndBookAndStatus(User user, Book book, String status);
