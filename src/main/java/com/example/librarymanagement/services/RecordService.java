@@ -246,7 +246,7 @@ public class RecordService {
 
             Record record = recordRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
-            if(!(record.getStatus().equals("BORROWED") || record.getStatus().equals("RETURNED")))
+            if(!record.getStatus().equals("RETURNED"))
                 throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
 
             Evaluate evaluate = Evaluate.builder()
