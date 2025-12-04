@@ -51,17 +51,6 @@ public class ActionService {
         );
     }
 
-    public RecordModel toModel(Record record) {
-        return new RecordModel(
-                record.getUser().getFullName(),
-                record.getBook().getTitle(),
-                record.getBorrowDay(),
-                record.getDueDay(),
-                record.getStatus(),
-                record.getExtendCount()
-        );
-    }
-
     public EvaluateModel toModel(Evaluate evaluate) {
         return new EvaluateModel(
                 evaluate.getUser().getFullName(),

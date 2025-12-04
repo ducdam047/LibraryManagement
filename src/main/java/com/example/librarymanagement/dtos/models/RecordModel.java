@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class RecordModel {
 
     String fullName;
+    int bookId;
     String title;
     LocalDate borrowDay;
     LocalDate dueDay;

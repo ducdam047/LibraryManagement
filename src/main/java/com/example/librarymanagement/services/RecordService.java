@@ -66,6 +66,7 @@ public class RecordService {
     public RecordModel toModel(Record record) {
         return new RecordModel(
                 record.getUser().getFullName(),
+                record.getBook().getBookId(),
                 record.getBook().getTitle(),
                 record.getBorrowDay(),
                 record.getDueDay(),
