@@ -18,4 +18,6 @@ public class RecordModel {
     String title;
     LocalDate borrowDay;
     LocalDate dueDay;
+    String status;
+    int extendCount;
 }

@@ -56,7 +56,9 @@ public class ActionService {
                 record.getUser().getFullName(),
                 record.getBook().getTitle(),
                 record.getBorrowDay(),
-                record.getDueDay()
+                record.getDueDay(),
+                record.getStatus(),
+                record.getExtendCount()
         );
     }
 

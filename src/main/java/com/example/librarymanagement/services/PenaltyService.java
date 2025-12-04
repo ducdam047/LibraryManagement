@@ -31,7 +31,7 @@ public class PenaltyService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkOverdueBorrowBook() {
         LocalDate today = LocalDate.now();
-        List<Record> overDueRecords = recordRepository.findByStatusAndDueDayBefore(RecordStatus.BORROWED.name(), today);
+        List<Record> overDueRecords = recordRepository.findByStatusAndDueDayBefore(RecordStatus.ACTIVE.name(), today);
 
         System.out.println("Found " + overDueRecords.size() + " overdue records");
 

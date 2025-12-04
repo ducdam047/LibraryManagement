@@ -2,7 +2,7 @@ package com.example.librarymanagement.enums;
 
 public enum RecordStatus {
 
-    BORROWED,
+    ACTIVE,
     RETURNED,
     OVERDUE
 }

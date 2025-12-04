@@ -68,7 +68,9 @@ public class RecordService {
                 record.getUser().getFullName(),
                 record.getBook().getTitle(),
                 record.getBorrowDay(),
-                record.getDueDay()
+                record.getDueDay(),
+                record.getStatus(),
+                record.getExtendCount()
         );
     }
 
@@ -90,7 +92,7 @@ public class RecordService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.BORROWED.name());
+            List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.ACTIVE.name());
             return records.stream()
                     .map(Record::getBook)
                     .map(this::toModel)
@@ -108,7 +110,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.BORROWED.name())
+            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             return toModel(record);
         }
@@ -124,7 +126,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookBorrow = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.BORROWED.name());
+            boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
             if(userCurrent.getStatus().equals("LOCKED"))
@@ -142,7 +144,7 @@ public class RecordService {
                     .book(bookBorrow)
                     .borrowDay(borrowDay)
                     .dueDay(dueDay)
-                    .status(RecordStatus.BORROWED.name())
+                    .status(RecordStatus.ACTIVE.name())
                     .extendCount(0)
                     .build();
             recordRepository.save(record);
@@ -173,7 +175,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByBookAndStatus(bookReturn, RecordStatus.BORROWED.name())
+            Record record = recordRepository.findByBookAndStatus(bookReturn, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             record.setStatus(RecordStatus.RETURNED.name());
@@ -206,7 +208,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookExtend = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.BORROWED.name())
+            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             if(record.getExtendCount()==2)
