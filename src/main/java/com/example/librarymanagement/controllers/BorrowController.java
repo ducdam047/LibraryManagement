@@ -29,6 +29,12 @@ public class BorrowController {
         return ResponseEntity.ok(bookModels);
     }
 
+    @GetMapping("/record/{bookId}")
+    public ResponseEntity<BorrowRecordModel> getBorrowedBook(@PathVariable int bookId) {
+        BorrowRecordModel recordModel = borrowService.getBorrowedBook(bookId);
+        return ResponseEntity.ok(recordModel);
+    }
+
     @PostMapping("/borrow-book")
     public ApiResponse<BorrowRecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
         return ApiResponse.<BorrowRecordModel>builder()

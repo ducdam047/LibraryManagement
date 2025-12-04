@@ -100,6 +100,22 @@ public class BorrowService {
     }
 
     @PreAuthorize("hasRole('USER')")
+    public BorrowRecordModel getBorrowedBook(int bookId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            Book borrowedBook = bookRepository.findById(bookId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+            BorrowRecord record = borrowRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.BORROWED.name())
+                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            return toModel(record);
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @PreAuthorize("hasRole('USER')")
     public BorrowRecordModel borrowBook(BorrowBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
