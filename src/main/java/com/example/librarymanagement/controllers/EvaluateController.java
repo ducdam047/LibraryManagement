@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/evaluate")
 public class EvaluateController {
@@ -18,6 +20,15 @@ public class EvaluateController {
     @GetMapping("/exists")
     public ResponseEntity<?> checkEvaluated(@RequestParam String title) {
         return ResponseEntity.ok(evaluateService.checkEvaluated(title));
+    }
+
+    @GetMapping("/see-evaluated")
+    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam String title) {
+        return ApiResponse.<List<EvaluateModel>>builder()
+                .code(200)
+                .message("Show evaluated successfully")
+                .data(evaluateService.seeEvaluated(title))
+                .build();
     }
 
     @PostMapping("/evaluate-book")

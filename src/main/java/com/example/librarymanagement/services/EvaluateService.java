@@ -19,7 +19,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluateService {
@@ -58,6 +60,13 @@ public class EvaluateService {
             return Map.of("evaluated", evaluated);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    public List<EvaluateModel> seeEvaluated(String title) {
+        List<Evaluate> evaluates = evaluateRepository.findByTitle(title);
+        return evaluates.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('USER')")

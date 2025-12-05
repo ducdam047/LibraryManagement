@@ -9,5 +9,6 @@ import java.util.List;
 public interface EvaluateRepository extends JpaRepository<Evaluate, Integer> {
 
     List<Evaluate> findByUser_UserId(int userId);
+    List<Evaluate> findByTitle(String title);
     boolean existsByUserAndTitle(User user, String title);
 }
