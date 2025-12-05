@@ -25,9 +25,6 @@ public class Wishlist {
     @JoinColumn(name = "book")
     Book book;
 
-    @Column(name = "description")
-    String description;
-
     @Column(name = "createdAt")
     LocalDate createdAt;
 

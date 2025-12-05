@@ -37,7 +37,6 @@ public class WishlistService {
         return new WishlistModel(
                 wishlist.getWishlistId(),
                 wishlist.getBook().getTitle(),
-                wishlist.getDescription(),
                 wishlist.getCreatedAt(),
                 wishlist.getUser().getFullName(),
                 wishlist.getBook().getImageUrl(),
@@ -93,7 +92,6 @@ public class WishlistService {
 
             Wishlist wishlist = Wishlist.builder()
                     .book(bookWishlist)
-                    .description(request.getDescription())
                     .createdAt(LocalDate.now())
                     .user(userCurrent)
                     .build();

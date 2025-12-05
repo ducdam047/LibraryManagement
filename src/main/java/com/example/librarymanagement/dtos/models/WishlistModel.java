@@ -17,7 +17,6 @@ public class WishlistModel {
 
     int wishlistId;
     String bookName;
-    String description;
     LocalDate createdAt;
     String fullName;
     String imageUrl;

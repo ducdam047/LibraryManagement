@@ -9,5 +9,4 @@ import lombok.experimental.FieldDefaults;
 public class AddToWishlistRequest {
 
     String bookName;
-    String description;
 }
