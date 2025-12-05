@@ -85,7 +85,8 @@ public class RecordService {
                 evaluate.getTitle(),
                 evaluate.getRating(),
                 evaluate.getComment(),
-                evaluate.getEvaluateDay()
+                evaluate.getEvaluateDay(),
+                true
         );
     }
 

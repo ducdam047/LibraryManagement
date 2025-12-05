@@ -51,16 +51,6 @@ public class ActionService {
         );
     }
 
-    public EvaluateModel toModel(Evaluate evaluate) {
-        return new EvaluateModel(
-                evaluate.getUser().getFullName(),
-                evaluate.getTitle(),
-                evaluate.getRating(),
-                evaluate.getComment(),
-                evaluate.getEvaluateDay()
-        );
-    }
-
     private List<BookModel> findBooks(Function<BookRepository, List<Book>> finder) {
         List<Book> books = finder.apply(bookRepository);
         if(books.isEmpty())

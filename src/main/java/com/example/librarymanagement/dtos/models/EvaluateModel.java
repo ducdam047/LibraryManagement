@@ -19,4 +19,5 @@ public class EvaluateModel {
     String rating;
     String comment;
     LocalDate evaluateDay;
+    boolean evaluated;
 }
