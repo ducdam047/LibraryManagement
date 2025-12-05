@@ -268,36 +268,4 @@ public class RecordService {
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
-
-    @PreAuthorize("hasRole('USER')")
-    public EvaluateModel evaluateBook(EvaluateBookRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getPrincipal() instanceof Jwt jwt) {
-            String email = jwt.getClaimAsString("sub");
-            User userCurrent = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-            boolean bookExists = bookRepository.existsByTitle(request.getTitle());
-            if(!bookExists) throw new AppException(ErrorCode.BOOK_NOT_FOUND);
-
-            boolean evaluated = evaluateRepository.existsByUserAndTitle(userCurrent, request.getTitle());
-            if(evaluated) throw new AppException(ErrorCode.BOOK_EVALUATED);
-
-            Record record = recordRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
-                    .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
-            if(!record.getStatus().equals("RETURNED"))
-                throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
-
-            Evaluate evaluate = Evaluate.builder()
-                    .user(userCurrent)
-                    .title(request.getTitle())
-                    .rating(request.getRating())
-                    .comment(request.getComment())
-                    .evaluateDay(LocalDate.now())
-                    .build();
-            evaluateRepository.save(evaluate);
-            return toModel(evaluate);
-        }
-        throw new AppException(ErrorCode.UNAUTHORIZED);
-    }
 }

@@ -72,13 +72,4 @@ public class RecordController {
                 .data(recordService.extendBook(request))
                 .build();
     }
-
-    @PostMapping("/evaluate-book")
-    public ApiResponse<EvaluateModel> evaluateBook(@RequestBody EvaluateBookRequest request) {
-        return ApiResponse.<EvaluateModel>builder()
-                .code(200)
-                .message("Evaluated successfully")
-                .data(recordService.evaluateBook(request))
-                .build();
-    }
 }
