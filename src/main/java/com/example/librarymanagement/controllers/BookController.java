@@ -33,8 +33,14 @@ public class BookController {
 
     @GetMapping("/featured")
     public ResponseEntity<List<BookModel>> getFeaturedBooks() {
-        List<BookModel> bookModels = bookService.getFeaturedBooks();
-        return ResponseEntity.ok(bookModels);
+        List<BookModel> featuredBooks = bookService.getFeaturedBooks();
+        return ResponseEntity.ok(featuredBooks);
+    }
+
+    @GetMapping("/trending")
+    public ResponseEntity<List<BookModel>> getTrendingBooks() {
+        List<BookModel> trendingBooks = bookService.getTrendingBooks(20);
+        return ResponseEntity.ok(trendingBooks);
     }
 
     @GetMapping("/category/{categoryName}")

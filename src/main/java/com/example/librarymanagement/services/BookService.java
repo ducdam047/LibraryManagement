@@ -9,10 +9,7 @@ import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
-import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.CategoryRepository;
-import com.example.librarymanagement.repositories.PublisherRepository;
-import com.example.librarymanagement.repositories.UserRepository;
+import com.example.librarymanagement.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -22,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +49,9 @@ public class BookService {
 
     @Autowired
     private WishlistService wishlistService;
+
+    @Autowired
+    private RecordRepository recordRepository;
 
     public BookModel toModel(Book book) {
         return new BookModel(
@@ -90,23 +92,20 @@ public class BookService {
         return uniqueBooks.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if(authentication.getPrincipal() instanceof Jwt jwt) {
-//            String email = jwt.getClaimAsString("sub");
-//            User userCurrent = userRepository.findByEmail(email)
-//                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
-//            int userId = userCurrent.getUserId();
-//            List<Integer> readingIds = readingService.getReadingBookIds(userId);
-//            List<Integer> wishlistIds = wishlistService.getWishlistBookIds(userId);
-//
-//            return bookRepository.findByStatus(BookStatus.AVAILABLE.name())
-//                    .stream()
-//                    .filter(b -> !readingIds.contains(b.getBookId()))
-//                    .filter(b -> !wishlistIds.contains(b.getBookId()))
-//                    .map(this::toModel)
-//                    .toList();
-//        }
-//        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    public List<BookModel> getTrendingBooks(int limit) {
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        List<Object[]> data = recordRepository.findTrendingBooks(startDate);
+        return data.stream()
+                .limit(limit)
+                .map(row -> {
+                    Integer bookId = (Integer) row[0];
+                    Book book = bookRepository.findById(bookId).orElse(null);
+                    return book != null ? toModel(book) : null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
