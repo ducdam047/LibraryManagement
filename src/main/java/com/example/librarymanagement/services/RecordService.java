@@ -162,7 +162,7 @@ public class RecordService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookBorrow = bookRepository.findById(request.getBookId())
+            Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
             boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
             if(bookExists)
@@ -214,7 +214,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByBookAndStatus(bookReturn, RecordStatus.ACTIVE.name())
+            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, bookReturn, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             record.setReturnedDay(LocalDate.now());
