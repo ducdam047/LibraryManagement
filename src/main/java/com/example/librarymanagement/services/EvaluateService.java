@@ -83,7 +83,7 @@ public class EvaluateService {
             boolean evaluated = evaluateRepository.existsByUserAndTitle(userCurrent, request.getTitle());
             if(evaluated) throw new AppException(ErrorCode.BOOK_EVALUATED);
 
-            Record record = recordRepository.findByUserAndBook_Title(userCurrent, request.getTitle())
+            Record record = recordRepository.findFirstByUserAndBook_Title(userCurrent, request.getTitle())
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
             if(!record.getStatus().equals("RETURNED"))
                 throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
