@@ -79,17 +79,6 @@ public class RecordService {
         );
     }
 
-    public EvaluateModel toModel(Evaluate evaluate) {
-        return new EvaluateModel(
-                evaluate.getUser().getFullName(),
-                evaluate.getTitle(),
-                evaluate.getRating(),
-                evaluate.getComment(),
-                evaluate.getEvaluateDay(),
-                true
-        );
-    }
-
     @PreAuthorize("hasRole('USER')")
     public List<BookModel> getBorrowedBookList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -167,8 +156,8 @@ public class RecordService {
             boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
-            if(userCurrent.getStatus().equals("LOCKED"))
-                throw new AppException(ErrorCode.ACCOUNT_LOCKED);
+            if(userCurrent.getBanUtil()!=null && userCurrent.getBanUtil().isAfter(LocalDate.now()))
+                throw new AppException(ErrorCode.ACCOUNT_BANNED);
             if(userCurrent.getBookBorrowing()==3)
                 throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
             if(request.getBorrowDays()>7)
@@ -214,7 +203,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, bookReturn, RecordStatus.ACTIVE.name())
+            Record record = recordRepository.findByUserAndBookAndStatusIn(userCurrent, bookReturn, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             record.setReturnedDay(LocalDate.now());

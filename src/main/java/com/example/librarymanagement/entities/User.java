@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "user")
 @Data
@@ -41,6 +43,9 @@ public class User {
 
     @Column(name = "status")
     String status;
+
+    @Column(name = "ban_util")
+    LocalDate banUtil;
 
     @Column(name = "book_borrowing")
     Integer bookBorrowing;

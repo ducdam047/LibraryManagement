@@ -41,21 +41,24 @@ public class PenaltyService {
             record.setStatus(RecordStatus.OVERDUE.name());
             recordRepository.save(record);
 
-            if(!user.getStatus().equals(UserStatus.LOCKED.name())) {
-                user.setStatus(UserStatus.LOCKED.name());
-                userRepository.save(user);
+            applyPenalty(user);
 
-                applyPenalty(user, record);
-                System.out.println("User " + user.getFullName() + " has been locked");
-                System.out.println("-----------------------------------------------");
-            } else {
-                System.out.println("Processed");
-            }
+            System.out.println("User " + user.getFullName() + " is banned until" + user.getBanUtil());
+            System.out.println("-------------------------------------------------------------------");
         }
     }
 
-    private void applyPenalty(User user, Record record) {
-        // Penalty
-        System.out.println("Penalty!");
+    private void applyPenalty(User user) {
+        int banDays = 3;
+        LocalDate today = LocalDate.now();
+
+        if(user.getBanUtil()==null || user.getBanUtil().isBefore(today)) {
+            user.setBanUtil(today.plusDays(banDays));
+        } else {
+            user.setBanUtil(user.getBanUtil().plusDays(banDays));
+        }
+
+        userRepository.save(user);
+        System.out.println("Penalty applied. User banned util " + user.getBanUtil());
     }
 }
