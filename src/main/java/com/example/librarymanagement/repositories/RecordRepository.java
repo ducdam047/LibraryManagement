@@ -5,6 +5,7 @@ import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,4 +28,7 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
             "group by r.book.bookId " +
             "order by borrowCount desc")
     List<Object[]> findTrendingBooks(LocalDate startDate);
+    @Query("select count(distinct r.user.id) from Record r where r.status = :status")
+    long countDistinctUserByStatus(@Param("status") String status);
+    long countByStatusAndDueDayBefore(String status, LocalDate now);
 }
