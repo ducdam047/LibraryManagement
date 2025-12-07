@@ -1,6 +1,8 @@
 package com.example.librarymanagement.services;
 
+import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.DashboardModel;
+import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.repositories.BookRepository;
@@ -11,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DashboardService {
@@ -23,6 +26,23 @@ public class DashboardService {
 
     @Autowired
     private RecordRepository recordRepository;
+
+    public BookModel toModel(Book book) {
+        return new BookModel(
+                book.getBookId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getCategory().getCategoryName(),
+                book.getPublisher().getPublisherName(),
+                book.getIsbn(),
+                book.getImageUrl(),
+                book.getPdfUrl(),
+                book.getTotalCopies(),
+                book.getAvailableCopies(),
+                book.getBorrowedCopies(),
+                book.getStatus()
+        );
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     public DashboardModel getSummary() {
@@ -45,5 +65,17 @@ public class DashboardService {
                 .bannedUsers(bannedUsers)
                 .overdueRecords(overdueRecords)
                 .build();
+    }
+
+    public List<BookModel> getDashboardBooks(String status) {
+        List<Book> books;
+        if(status==null || status.isEmpty()) {
+            books = bookRepository.findAll();
+        } else {
+            books = bookRepository.findByStatus(status.toUpperCase());
+        }
+        return books.stream()
+                .map(this::toModel)
+                .toList();
     }
 }
