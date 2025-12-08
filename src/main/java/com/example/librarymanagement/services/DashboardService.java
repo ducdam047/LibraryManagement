@@ -2,7 +2,9 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.DashboardModel;
+import com.example.librarymanagement.dtos.models.UserModel;
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.RecordStatus;
 import com.example.librarymanagement.repositories.BookRepository;
@@ -44,6 +46,15 @@ public class DashboardService {
         );
     }
 
+    public UserModel toModel(User user) {
+        return new UserModel(
+                user.getFullName(),
+                user.getStatus(),
+                user.getBanUtil(),
+                user.getBookBorrowing()
+        );
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public DashboardModel getSummary() {
         long totalBooks = bookRepository.count();
@@ -75,6 +86,18 @@ public class DashboardService {
             books = bookRepository.findByStatus(status.toUpperCase());
         }
         return books.stream()
+                .map(this::toModel)
+                .toList();
+    }
+
+    public List<UserModel> getDashboardUsers(String status) {
+        List<User> users;
+        if(status==null || status.isEmpty()) {
+            users = userRepository.findAll();
+        } else {
+            users = userRepository.findByStatus(status);
+        }
+        return users.stream()
                 .map(this::toModel)
                 .toList();
     }
