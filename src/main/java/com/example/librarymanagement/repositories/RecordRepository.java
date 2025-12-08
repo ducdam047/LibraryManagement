@@ -19,6 +19,7 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     Optional<Record> findFirstByUserAndBookAndStatusOrderByReturnedDayDesc(User user, Book book, String status);
     Optional<Record> findFirstByUserAndBook_Title(User user, String title);
     boolean existsByUserAndBook_TitleAndStatus(User user, String title, String status);
+    boolean existsByUserAndStatus(User user, String status);
     Optional<Record> findByBookAndStatus(Book book, String status);
     List<Record> findByStatusAndDueDayBefore(String status, LocalDate currentDate);
     List<Record> findByUser_UserIdAndStatus(int userId, String status);

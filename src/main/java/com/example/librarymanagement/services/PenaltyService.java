@@ -17,6 +17,8 @@ import java.util.List;
 @Service
 public class PenaltyService {
 
+    private static final int BAN_DAYS = 3;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -37,28 +39,66 @@ public class PenaltyService {
 
         for(Record record : overDueRecords) {
             User user = record.getUser();
-            System.out.println("Processing overdue record for user: " + user.getFullName());
             record.setStatus(RecordStatus.OVERDUE.name());
             recordRepository.save(record);
-
             applyPenalty(user);
+        }
 
-            System.out.println("User " + user.getFullName() + " is banned until" + user.getBanUtil());
-            System.out.println("-------------------------------------------------------------------");
+        List<User> bannedUsers = userRepository.findByStatus(UserStatus.BANNED.name());
+        for(User user : bannedUsers) {
+            boolean hasOverdue = recordRepository.existsByUserAndStatus(user, RecordStatus.OVERDUE.name());
+            updatePenalty(user, hasOverdue);
         }
     }
 
     private void applyPenalty(User user) {
-        int banDays = 3;
         LocalDate today = LocalDate.now();
 
+        if(!UserStatus.BANNED.name().equals(user.getStatus()))
+            user.setStatus(UserStatus.BANNED.name());
+
         if(user.getBanUtil()==null || user.getBanUtil().isBefore(today)) {
-            user.setBanUtil(today.plusDays(banDays));
+            user.setBanUtil(today.plusDays(BAN_DAYS));
         } else {
-            user.setBanUtil(user.getBanUtil().plusDays(banDays));
+            user.setBanUtil(user.getBanUtil().plusDays(BAN_DAYS));
         }
 
         userRepository.save(user);
-        System.out.println("Penalty applied. User banned util " + user.getBanUtil());
+        System.out.println("Applied overdue penalty to user " + user.getFullName() + " until " + user.getBanUtil());
+    }
+
+    private void updatePenalty(User user, boolean hasOverdue) {
+        LocalDate today = LocalDate.now();
+
+        if(hasOverdue) {
+            if(!UserStatus.BANNED.name().equals(user.getStatus()))
+                user.setStatus(UserStatus.BANNED.name());
+            if(user.getBanUtil()==null || user.getBanUtil().isBefore(today))
+                user.setBanUtil(today.plusDays(BAN_DAYS));
+        } else {
+            if(user.getBanUtil()!=null) {
+                if(!user.getBanUtil().isAfter(today)) {
+                    user.setBanUtil(null);
+                    updateNormalStatus(user);
+                } else {
+                    if(!UserStatus.BANNED.name().equals(user.getStatus()))
+                        user.setStatus(UserStatus.BANNED.name());
+                }
+            } else {
+                updateNormalStatus(user);
+            }
+        }
+
+        userRepository.save(user);
+    }
+
+    private void updateNormalStatus(User user) {
+        boolean hasActiveRecord = recordRepository.existsByUserAndStatus(user, RecordStatus.ACTIVE.name());
+
+        if(hasActiveRecord) {
+            user.setStatus(UserStatus.BORROWING.name());
+        } else {
+            user.setStatus(UserStatus.ACTIVE.name());
+        }
     }
 }

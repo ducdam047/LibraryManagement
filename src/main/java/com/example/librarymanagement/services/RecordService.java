@@ -156,7 +156,7 @@ public class RecordService {
             boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
-            if(userCurrent.getBanUtil()!=null && userCurrent.getBanUtil().isAfter(LocalDate.now()))
+            if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
             if(userCurrent.getBookBorrowing()==3)
                 throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
