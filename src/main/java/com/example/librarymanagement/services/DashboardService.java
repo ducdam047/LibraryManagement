@@ -7,6 +7,7 @@ import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.RecordStatus;
+import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.RecordRepository;
 import com.example.librarymanagement.repositories.UserRepository;
@@ -63,9 +64,9 @@ public class DashboardService {
 
         long totalUser = userRepository.count();
         long borrowingUsers = recordRepository.countDistinctUserByStatus(RecordStatus.ACTIVE.name());
-        long bannedUsers = userRepository.countByBanUtilAfter(LocalDate.now());
+        long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
-        long overdueRecords = recordRepository.countByStatusAndDueDayBefore(RecordStatus.ACTIVE.name(), LocalDate.now());
+        long overdueRecords = recordRepository.countByStatus(RecordStatus.OVERDUE.name());
 
         return DashboardModel.builder()
                 .totalBooks(totalBooks)

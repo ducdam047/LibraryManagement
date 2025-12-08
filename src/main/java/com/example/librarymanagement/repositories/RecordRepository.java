@@ -31,5 +31,5 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     List<Object[]> findTrendingBooks(LocalDate startDate);
     @Query("select count(distinct r.user.id) from Record r where r.status = :status")
     long countDistinctUserByStatus(@Param("status") String status);
-    long countByStatusAndDueDayBefore(String status, LocalDate now);
+    long countByStatus(String status);
 }
