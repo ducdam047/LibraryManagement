@@ -3,6 +3,8 @@ package com.example.librarymanagement.dtos.models;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,5 +18,5 @@ public class DashboardModel {
     long totalUsers;
     long borrowingUsers;
     long bannedUsers;
-    long overdueRecords;
+    List overdueRecords;
 }

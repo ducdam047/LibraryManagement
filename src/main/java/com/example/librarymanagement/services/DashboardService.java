@@ -2,6 +2,7 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.DashboardModel;
+import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.models.UserModel;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
@@ -66,7 +68,23 @@ public class DashboardService {
         long borrowingUsers = recordRepository.countDistinctUserByStatus(RecordStatus.ACTIVE.name());
         long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
-        long overdueRecords = recordRepository.countByStatus(RecordStatus.OVERDUE.name());
+        long overdueRecord = recordRepository.countByStatus(RecordStatus.OVERDUE.name());
+        List<RecordModel> overdueRecords = recordRepository.getOverdueRecords()
+                .stream()
+                .map(record -> new RecordModel(
+                        record.getBorrowRecordId(),
+                        record.getUser().getFullName(),
+                        record.getBook().getBookId(),
+                        record.getBook().getTitle(),
+                        record.getBook().getAuthor(),
+                        record.getBook().getImageUrl(),
+                        record.getBorrowDay(),
+                        record.getDueDay(),
+                        record.getReturnedDay(),
+                        record.getStatus(),
+                        record.getExtendCount()
+                ))
+                .collect(Collectors.toList());
 
         return DashboardModel.builder()
                 .totalBooks(totalBooks)
