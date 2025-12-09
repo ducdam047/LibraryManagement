@@ -1,9 +1,6 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.models.DashboardModel;
-import com.example.librarymanagement.dtos.models.RecordModel;
-import com.example.librarymanagement.dtos.models.UserModel;
+import com.example.librarymanagement.dtos.models.*;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
@@ -17,7 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,5 +119,31 @@ public class DashboardService {
         return users.stream()
                 .map(this::toModel)
                 .toList();
+    }
+
+    public List<WeeklyStat> getColumnChart() {
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(6);
+
+        Map<LocalDate, Long> borrowedMap = new HashMap<>();
+        for(Object[] row : recordRepository.countBorrowedByDay(start))
+            borrowedMap.put(((java.sql.Date) row[0]).toLocalDate(), (Long) row[1]);
+
+        Map<LocalDate, Long> returnedMap = new HashMap<>();
+        for(Object[] row : recordRepository.countReturnedByDay(start))
+            returnedMap.put(((java.sql.Date) row[0]).toLocalDate(), (Long) row[1]);
+
+        List<WeeklyStat> result = new ArrayList<>();
+        for(int i=0; i<7; i++) {
+            LocalDate d = start.plusDays(i);
+            result.add(
+                    new WeeklyStat(d.getDayOfWeek().name().substring(0, 3),
+                            borrowedMap.getOrDefault(d, 0L),
+                            returnedMap.getOrDefault(d, 0L)
+                    )
+            );
+        }
+
+        return result;
     }
 }

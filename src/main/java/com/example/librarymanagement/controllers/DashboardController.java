@@ -3,6 +3,7 @@ package com.example.librarymanagement.controllers;
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.DashboardModel;
 import com.example.librarymanagement.dtos.models.UserModel;
+import com.example.librarymanagement.dtos.models.WeeklyStat;
 import com.example.librarymanagement.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +36,11 @@ public class DashboardController {
     public ResponseEntity<List<UserModel>> getDashboardUsers(@RequestParam(required = false) String status) {
         List<UserModel> users = dashboardService.getDashboardUsers(status);
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/column-chart")
+    public ResponseEntity<List<WeeklyStat>> getColumnChart() {
+        List<WeeklyStat> stats = dashboardService.getColumnChart();
+        return ResponseEntity.ok(stats);
     }
 }

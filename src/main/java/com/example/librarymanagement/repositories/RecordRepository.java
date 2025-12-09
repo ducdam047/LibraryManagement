@@ -34,4 +34,11 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     @Query("select count(distinct r.user.id) from Record r where r.status = :status")
     long countDistinctUserByStatus(@Param("status") String status);
     long countByStatus(String status);
+    @Query("select function('date', b.borrowDay), count(b) from Record b " +
+            "where b.borrowDay >= :startDate group by function('date', b.borrowDay)")
+    List<Object[]> countBorrowedByDay(@Param("startDate") LocalDate startDate);
+    @Query("select function('date', b.returnedDay), count(b) from Record b " +
+            "where b.returnedDay >= :startDate and b.returnedDay is not null " +
+            "group by function('date', b.returnedDay)")
+    List<Object[]> countReturnedByDay(@Param("startDate") LocalDate startDate);
 }
