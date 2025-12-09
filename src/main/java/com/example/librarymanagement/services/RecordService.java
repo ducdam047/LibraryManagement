@@ -80,16 +80,15 @@ public class RecordService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<BookModel> getBorrowedBookList() {
+    public List<RecordModel> getBorrowedBookList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.ACTIVE.name());
+            List<Record> records = recordRepository.findByUser_UserIdAndStatusIn(userCurrent.getUserId(), List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()));
             return records.stream()
-                    .map(Record::getBook)
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
@@ -121,7 +120,7 @@ public class RecordService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Record record = recordRepository.findByUserAndBookAndStatus(userCurrent, borrowedBook, RecordStatus.ACTIVE.name())
+            Record record = recordRepository.findByUserAndBookAndStatusIn(userCurrent, borrowedBook, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             return toModel(record);
         }
