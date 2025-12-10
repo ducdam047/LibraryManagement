@@ -1,5 +1,6 @@
 package com.example.librarymanagement.repositories;
 
+import com.example.librarymanagement.dtos.models.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
@@ -42,4 +43,14 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
             "where b.returnedDay >= :startDate and b.returnedDay is not null " +
             "group by function('date', b.returnedDay)")
     List<Object[]> countReturnedByDay(@Param("startDate") LocalDate startDate);
+    @Query("""
+            select new com.example.librarymanagement.dtos.models.CategoryBorrowStat(
+                r.book.category.categoryName,
+                count(r)
+            )
+            from Record r
+            where r.status in ('ACTIVE', 'RETURNED', 'OVERDUE')
+            group by r.book.category.categoryName
+            """)
+    List<CategoryBorrowStat> getBorrowStatsByCategory();
 }

@@ -1,9 +1,6 @@
 package com.example.librarymanagement.controllers;
 
-import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.models.DashboardModel;
-import com.example.librarymanagement.dtos.models.UserModel;
-import com.example.librarymanagement.dtos.models.WeeklyStat;
+import com.example.librarymanagement.dtos.models.*;
 import com.example.librarymanagement.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +38,12 @@ public class DashboardController {
     @GetMapping("/column-chart")
     public ResponseEntity<List<WeeklyStat>> getColumnChart() {
         List<WeeklyStat> stats = dashboardService.getColumnChart();
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/pie-chart")
+    public ResponseEntity<List<CategoryBorrowStat>> getPieChart() {
+        List<CategoryBorrowStat> stats = dashboardService.getPieChart();
         return ResponseEntity.ok(stats);
     }
 }

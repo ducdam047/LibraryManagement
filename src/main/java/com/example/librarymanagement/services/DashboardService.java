@@ -146,4 +146,8 @@ public class DashboardService {
 
         return result;
     }
+
+    public List<CategoryBorrowStat> getPieChart() {
+        return recordRepository.getBorrowStatsByCategory();
+    }
 }
