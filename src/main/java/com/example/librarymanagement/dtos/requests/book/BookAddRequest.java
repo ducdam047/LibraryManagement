@@ -12,6 +12,5 @@ public class BookAddRequest {
     String author;
     String categoryName;
     String publisherName;
-    String isbn;
     String imageUrl;
 }

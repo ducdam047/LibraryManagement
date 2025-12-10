@@ -138,7 +138,6 @@ public class BookService {
                 .author(request.getAuthor())
                 .category(category)
                 .publisher(publisher)
-                .isbn(request.getIsbn())
                 .imageUrl(imageUrl)
                 .pdfUrl(pdfUrl)
                 .totalCopies(updateTotalCopies)
