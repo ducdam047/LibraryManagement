@@ -33,72 +33,53 @@ public class PenaltyService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkOverdueBorrowBook() {
         LocalDate today = LocalDate.now();
-        List<Record> overDueRecords = recordRepository.findByStatusAndDueDayBefore(RecordStatus.ACTIVE.name(), today);
 
-        System.out.println("Found " + overDueRecords.size() + " overdue records");
-
-        for(Record record : overDueRecords) {
-            User user = record.getUser();
+        List<Record> needOverdue = recordRepository.findByStatusAndDueDayBefore(RecordStatus.ACTIVE.name(), today);
+        for(Record record : needOverdue) {
             record.setStatus(RecordStatus.OVERDUE.name());
             recordRepository.save(record);
-            applyPenalty(user);
         }
 
-        List<User> bannedUsers = userRepository.findByStatus(UserStatus.BANNED.name());
-        for(User user : bannedUsers) {
-            boolean hasOverdue = recordRepository.existsByUserAndStatus(user, RecordStatus.OVERDUE.name());
-            updatePenalty(user, hasOverdue);
-        }
+        List<User> allUsers = userRepository.findAll();
+        for(User user : allUsers)
+            applyPenalty(user);
     }
 
     private void applyPenalty(User user) {
         LocalDate today = LocalDate.now();
+        int overdueCount = countOverdueOfUser(user);
 
-        if(!UserStatus.BANNED.name().equals(user.getStatus()))
+        if(overdueCount>0) {
             user.setStatus(UserStatus.BANNED.name());
-
-        if(user.getBanUtil()==null || user.getBanUtil().isBefore(today)) {
-            user.setBanUtil(today.plusDays(BAN_DAYS));
-        } else {
-            user.setBanUtil(user.getBanUtil().plusDays(BAN_DAYS));
+            LocalDate newBanUtil = today.plusDays(overdueCount*BAN_DAYS);
+            user.setBanUtil(newBanUtil);
+            userRepository.save(user);
+            return;
         }
 
-        userRepository.save(user);
-        System.out.println("Applied overdue penalty to user " + user.getFullName() + " until " + user.getBanUtil());
-    }
+        if(user.getBanUtil()!=null && !today.isBefore(user.getBanUtil())) {
+            user.setBanUtil(null);
 
-    private void updatePenalty(User user, boolean hasOverdue) {
-        LocalDate today = LocalDate.now();
-
-        if(hasOverdue) {
-            if(!UserStatus.BANNED.name().equals(user.getStatus()))
-                user.setStatus(UserStatus.BANNED.name());
-            if(user.getBanUtil()==null || user.getBanUtil().isBefore(today))
-                user.setBanUtil(today.plusDays(BAN_DAYS));
-        } else {
-            if(user.getBanUtil()!=null) {
-                if(!user.getBanUtil().isAfter(today)) {
-                    user.setBanUtil(null);
-                    updateNormalStatus(user);
-                } else {
-                    if(!UserStatus.BANNED.name().equals(user.getStatus()))
-                        user.setStatus(UserStatus.BANNED.name());
-                }
+            boolean hasActive = recordRepository.existsByUserAndStatus(user, RecordStatus.ACTIVE.name());
+            if(hasActive) {
+                user.setStatus(UserStatus.BORROWING.name());
             } else {
-                updateNormalStatus(user);
+                user.setStatus(UserStatus.ACTIVE.name());
             }
+
+            userRepository.save(user);
+            return;
         }
 
-        userRepository.save(user);
+        if(user.getBanUtil()!=null && today.isBefore(user.getBanUtil())) {
+            user.setStatus(UserStatus.BANNED.name());
+            userRepository.save(user);
+            return;
+        }
     }
 
-    private void updateNormalStatus(User user) {
-        boolean hasActiveRecord = recordRepository.existsByUserAndStatus(user, RecordStatus.ACTIVE.name());
-
-        if(hasActiveRecord) {
-            user.setStatus(UserStatus.BORROWING.name());
-        } else {
-            user.setStatus(UserStatus.ACTIVE.name());
-        }
+    private int countOverdueOfUser(User user) {
+        List<Record> overdueRecords = recordRepository.findByUser_UserIdAndStatus(user.getUserId(), RecordStatus.OVERDUE.name());
+        return overdueRecords.size();
     }
 }
