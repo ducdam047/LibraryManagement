@@ -25,9 +25,9 @@ public class BookController {
     @Autowired
     private ActionService actionService;
 
-    @GetMapping("/{bookId}")
-    public ResponseEntity<BookModel> getBook(@PathVariable int bookId) {
-        BookModel bookModel = bookService.getBook(bookId);
+    @GetMapping("/{title}")
+    public ResponseEntity<BookModel> getBook(@PathVariable String title) {
+        BookModel bookModel = bookService.getBook(title);
         return ResponseEntity.ok(bookModel);
     }
 

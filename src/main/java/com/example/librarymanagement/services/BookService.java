@@ -70,8 +70,8 @@ public class BookService {
         );
     }
 
-    public BookModel getBook(int bookId) {
-        Book book = bookRepository.findById(bookId)
+    public BookModel getBook(String title) {
+        Book book = bookRepository.findFirstByTitle(title)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         return toModel(book);
     }
