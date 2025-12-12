@@ -1,7 +1,7 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.WishlistModel;
-import com.example.librarymanagement.dtos.requests.wishlist.AddToWishlistRequest;
+import com.example.librarymanagement.dtos.requests.wishlist.WishlistAddRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.entities.Wishlist;
@@ -78,7 +78,7 @@ public class WishlistService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public WishlistModel addToWishlist(AddToWishlistRequest request) {
+    public WishlistModel addToWishlist(WishlistAddRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");

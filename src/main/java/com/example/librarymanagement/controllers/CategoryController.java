@@ -1,12 +1,11 @@
 package com.example.librarymanagement.controllers;
 
+import com.example.librarymanagement.dtos.requests.category.CategoryAddRequest;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,5 +20,11 @@ public class CategoryController {
     public ResponseEntity<List<Category>> getAllCategory() {
         List<Category> categories = categoryService.getAllCategory();
         return ResponseEntity.ok(categories);
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addCategory(@RequestBody CategoryAddRequest request) {
+        Category category = categoryService.addCategory(request);
+        return ResponseEntity.ok(category);
     }
 }
