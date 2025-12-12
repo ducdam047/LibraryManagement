@@ -1,10 +1,7 @@
 package com.example.librarymanagement.controllers;
 
-import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.RecordModel;
-import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
-import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.dtos.responses.ApiResponse;
@@ -22,16 +19,22 @@ public class RecordController {
     @Autowired
     private RecordService recordService;
 
+    @GetMapping("/list-record/{userId}")
+    public ResponseEntity<List<RecordModel>> getRecordList(@PathVariable int userId) {
+        List<RecordModel> recordModels = recordService.getRecordList(userId);
+        return ResponseEntity.ok(recordModels);
+    }
+
     @GetMapping("/list-record-borrowed")
-    public ResponseEntity<List<RecordModel>> getBorrowedBookList() {
-        List<RecordModel> bookModels = recordService.getBorrowedBookList();
-        return ResponseEntity.ok(bookModels);
+    public ResponseEntity<List<RecordModel>> getActiveOverdueRecordList() {
+        List<RecordModel> recordModels = recordService.getActiveOverdueRecordList();
+        return ResponseEntity.ok(recordModels);
     }
 
     @GetMapping("/list-record-returned")
-    public ResponseEntity<List<RecordModel>> getReturnedBookList() {
-        List<RecordModel> bookModels = recordService.getReturnedBookList();
-        return ResponseEntity.ok(bookModels);
+    public ResponseEntity<List<RecordModel>> getReturnedRecordList() {
+        List<RecordModel> recordModels = recordService.getReturnedRecordList();
+        return ResponseEntity.ok(recordModels);
     }
 
     @GetMapping("/record-active/{bookId}")

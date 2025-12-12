@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface RecordRepository extends JpaRepository<Record, Integer> {
 
     Optional<Record> findByBook(Book book);
+    List<Record> findByUser_UserId(int userId);
     Optional<Record> findByUserAndBookAndStatus(User user, Book book, String status);
     Optional<Record> findByUserAndBookAndStatusIn(User user, Book book, List<String> statusList);
     Optional<Record> findFirstByUserAndBookAndStatusOrderByReturnedDayDesc(User user, Book book, String status);

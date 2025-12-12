@@ -79,8 +79,16 @@ public class RecordService {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<RecordModel> getRecordList(int userId) {
+        List<Record> records = recordRepository.findByUser_UserId(userId);
+        return records.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+    }
+
     @PreAuthorize("hasRole('USER')")
-    public List<RecordModel> getBorrowedBookList() {
+    public List<RecordModel> getActiveOverdueRecordList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
@@ -96,7 +104,7 @@ public class RecordService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<RecordModel> getReturnedBookList() {
+    public List<RecordModel> getReturnedRecordList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
