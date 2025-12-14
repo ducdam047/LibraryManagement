@@ -2,6 +2,8 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
+import com.example.librarymanagement.dtos.responses.rating.RatingCountResponse;
+import com.example.librarymanagement.dtos.responses.rating.RatingSummaryResponse;
 import com.example.librarymanagement.entities.Evaluate;
 import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,5 +102,29 @@ public class EvaluateService {
             return toModel(evaluate);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    public List<RatingCountResponse> countRating(String title) {
+        return evaluateRepository.countRatingByTitle(title)
+                .stream()
+                .map(row -> new RatingCountResponse(
+                        ((Number) row[0]).intValue(),
+                        ((Number) row[1]).longValue()
+                ))
+                .toList();
+    }
+
+    public double averageRating(String title) {
+        return Optional.ofNullable(evaluateRepository.averageRatingByTitle(title)).orElse(0.0);
+    }
+
+    public RatingSummaryResponse getRatingSummary(String title) {
+        Object[] result = evaluateRepository.averageAndTotalRatingByTitle(title);
+        if(result==null || result.length<2)
+            return new RatingSummaryResponse(0.0, 0);
+        double average = result[0] == null ? 0.0 : ((Number) result[0]).doubleValue();
+        long total = result[1] == null ? 0L : ((Number) result[1]).longValue();
+
+        return new RatingSummaryResponse(average, total);
     }
 }

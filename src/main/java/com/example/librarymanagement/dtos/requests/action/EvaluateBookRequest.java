@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 public class EvaluateBookRequest {
 
     String title;
-    String rating;
+    int rating;
     String comment;
 }

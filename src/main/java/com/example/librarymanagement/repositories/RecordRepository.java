@@ -45,7 +45,7 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
             "group by function('date', b.returnedDay)")
     List<Object[]> countReturnedByDay(@Param("startDate") LocalDate startDate);
     @Query("""
-            select new com.example.librarymanagement.dtos.models.CategoryBorrowStat(
+            select new com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat(
                 r.book.category.categoryName,
                 count(r)
             )

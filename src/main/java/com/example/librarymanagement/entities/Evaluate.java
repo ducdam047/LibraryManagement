@@ -28,7 +28,7 @@ public class Evaluate {
     String title;
 
     @Column(name = "rating")
-    String rating;
+    int rating;
 
     @Column(name = "comment")
     String comment;
