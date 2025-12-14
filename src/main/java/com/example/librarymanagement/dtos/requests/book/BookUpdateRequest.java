@@ -8,5 +8,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookUpdateRequest {
 
-
+    String title;
+    String author;
+    String categoryName;
+    String publisherName;
 }

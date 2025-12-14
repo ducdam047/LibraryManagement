@@ -2,6 +2,7 @@ package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
+import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.entities.Publisher;
@@ -147,6 +148,30 @@ public class BookService {
 
         bookRepository.save(book);
         return toModel(book);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Book updateBook(int bookId, BookUpdateRequest request, MultipartFile imageFile, MultipartFile pdfFile) throws IOException {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+
+        String imageUrl = cloudinaryService.uploadImage(imageFile);
+        String pdfUrl = null;
+        if(pdfFile!=null && !pdfFile.isEmpty())
+            pdfUrl = cloudinaryService.uploadPdf(pdfFile);
+
+        Category category = categoryRepository.findByCategoryName(request.getCategoryName())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        Publisher publisher = publisherRepository.findByPublisherName(request.getPublisherName())
+                .orElseThrow(() -> new AppException(ErrorCode.PUBLISHER_NOT_FOUND));
+
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setCategory(category);
+        book.setPublisher(publisher);
+        book.setImageUrl(imageUrl);
+        book.setPdfUrl(pdfUrl);
+        return bookRepository.save(book);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
