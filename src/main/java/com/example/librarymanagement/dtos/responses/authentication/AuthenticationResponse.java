@@ -1,4 +1,4 @@
-package com.example.librarymanagement.dtos.responses;
+package com.example.librarymanagement.dtos.responses.authentication;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -10,9 +10,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
+public class AuthenticationResponse {
 
-    int code;
-    String message;
-    T data;
+    String token;
+    boolean authenticated;
 }

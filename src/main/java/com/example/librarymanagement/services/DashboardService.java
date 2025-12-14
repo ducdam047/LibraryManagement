@@ -1,6 +1,9 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.*;
+import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
+import com.example.librarymanagement.dtos.responses.chart.WeeklyStat;
+import com.example.librarymanagement.dtos.responses.dashboard.DashboardCardResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
@@ -59,7 +62,7 @@ public class DashboardService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public DashboardModel getSummary() {
+    public DashboardCardResponse getSummary() {
         long totalBooks = bookRepository.count();
         long availableBooks = bookRepository.countByStatus(BookStatus.AVAILABLE.name());
         long borrowedBooks =bookRepository.countByStatus(BookStatus.BORROWED.name());
@@ -86,7 +89,7 @@ public class DashboardService {
                 ))
                 .collect(Collectors.toList());
 
-        return DashboardModel.builder()
+        return DashboardCardResponse.builder()
                 .totalBooks(totalBooks)
                 .availableBooks(availableBooks)
                 .borrowedBooks(borrowedBooks)

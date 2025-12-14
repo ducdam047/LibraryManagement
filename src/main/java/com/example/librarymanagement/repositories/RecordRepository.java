@@ -1,6 +1,6 @@
 package com.example.librarymanagement.repositories;
 
-import com.example.librarymanagement.dtos.models.CategoryBorrowStat;
+import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;

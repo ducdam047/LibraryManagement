@@ -1,6 +1,9 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.*;
+import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
+import com.example.librarymanagement.dtos.responses.chart.WeeklyStat;
+import com.example.librarymanagement.dtos.responses.dashboard.DashboardCardResponse;
 import com.example.librarymanagement.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +22,7 @@ public class DashboardController {
     private DashboardService dashboardService;
 
     @GetMapping("/summary")
-    public ResponseEntity<DashboardModel> getSummary() {
+    public ResponseEntity<DashboardCardResponse> getSummary() {
         return ResponseEntity.ok(dashboardService.getSummary());
     }
 

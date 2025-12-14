@@ -4,7 +4,7 @@ import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
-import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

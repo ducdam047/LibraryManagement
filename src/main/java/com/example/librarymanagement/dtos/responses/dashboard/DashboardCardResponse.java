@@ -1,4 +1,4 @@
-package com.example.librarymanagement.dtos.models;
+package com.example.librarymanagement.dtos.responses.dashboard;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DashboardModel {
+public class DashboardCardResponse {
 
     long totalBooks;
     long availableBooks;

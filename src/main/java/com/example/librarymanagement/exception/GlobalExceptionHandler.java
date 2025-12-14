@@ -1,6 +1,6 @@
 package com.example.librarymanagement.exception;
 
-import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.enums.ErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

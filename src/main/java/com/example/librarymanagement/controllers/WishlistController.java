@@ -2,7 +2,7 @@ package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.WishlistModel;
 import com.example.librarymanagement.dtos.requests.wishlist.WishlistAddRequest;
-import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

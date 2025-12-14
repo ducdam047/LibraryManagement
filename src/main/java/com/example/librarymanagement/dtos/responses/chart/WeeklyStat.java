@@ -1,4 +1,4 @@
-package com.example.librarymanagement.dtos.models;
+package com.example.librarymanagement.dtos.responses.chart;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryBorrowStat {
+public class WeeklyStat {
 
-    String category;
-    long quantityBorrowed;
+    String label;
+    long borrowed;
+    long returned;
 }

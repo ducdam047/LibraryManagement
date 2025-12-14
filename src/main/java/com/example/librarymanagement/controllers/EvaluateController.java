@@ -2,7 +2,7 @@ package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
-import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.EvaluateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

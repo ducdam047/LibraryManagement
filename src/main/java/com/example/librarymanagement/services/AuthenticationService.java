@@ -1,7 +1,7 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.requests.user.LoginRequest;
-import com.example.librarymanagement.dtos.responses.AuthenticationResponse;
+import com.example.librarymanagement.dtos.responses.authentication.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;

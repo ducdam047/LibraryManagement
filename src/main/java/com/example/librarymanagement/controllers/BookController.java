@@ -3,7 +3,7 @@ package com.example.librarymanagement.controllers;
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
-import com.example.librarymanagement.dtos.responses.ApiResponse;
+import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.services.ActionService;
 import com.example.librarymanagement.services.BookService;
