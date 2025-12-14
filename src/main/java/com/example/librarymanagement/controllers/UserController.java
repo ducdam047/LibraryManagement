@@ -9,6 +9,7 @@ import com.example.librarymanagement.dtos.responses.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.AuthenticationService;
 import com.example.librarymanagement.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class UserController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ApiResponse<User> signupUser(@RequestBody SignupRequest request) {
+    public ApiResponse<User> signupUser(@Valid @RequestBody SignupRequest request) {
         return ApiResponse.<User>builder()
                 .code(201)
                 .message("Registered successfully")
