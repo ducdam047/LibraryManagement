@@ -226,7 +226,7 @@ public class RecordService {
             bookRepository.save(bookReturn);
 
             userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
-            if(userCurrent.getBookBorrowing()==0)
+            if(userCurrent.getBookBorrowing()==0 && userCurrent.getBanUtil()==null)
                 userCurrent.setStatus(UserStatus.ACTIVE.name());
             userRepository.save(userCurrent);
 
