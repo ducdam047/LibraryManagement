@@ -3,8 +3,9 @@ package com.example.librarymanagement.services;
 import com.example.librarymanagement.dtos.models.*;
 import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.dtos.responses.chart.WeeklyStat;
-import com.example.librarymanagement.dtos.responses.dashboard.DashboardCardResponse;
+import com.example.librarymanagement.dtos.responses.dashboard.DashboardResponse;
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.RecordStatus;
@@ -61,8 +62,25 @@ public class DashboardService {
         );
     }
 
+    public RecordModel toModel(Record record) {
+        return new RecordModel(
+                record.getBorrowRecordId(),
+                record.getUser().getFullName(),
+                record.getBook().getBookId(),
+                record.getBook().getTitle(),
+                record.getBook().getAuthor(),
+                record.getBook().getImageUrl(),
+                record.getBorrowDay(),
+                record.getBorrowDays(),
+                record.getDueDay(),
+                record.getReturnedDay(),
+                record.getStatus(),
+                record.getExtendCount()
+        );
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
-    public DashboardCardResponse getSummary() {
+    public DashboardResponse getSummary() {
         long totalBooks = bookRepository.count();
         long availableBooks = bookRepository.countByStatus(BookStatus.AVAILABLE.name());
         long borrowedBooks =bookRepository.countByStatus(BookStatus.BORROWED.name());
@@ -71,7 +89,24 @@ public class DashboardService {
         long borrowingUsers = recordRepository.countDistinctUserByStatus(RecordStatus.ACTIVE.name());
         long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
-        long overdueRecord = recordRepository.countByStatus(RecordStatus.OVERDUE.name());
+        List<RecordModel> pendingRecords = recordRepository.getPendingRecords()
+                .stream()
+                .map(record -> new RecordModel(
+                        record.getBorrowRecordId(),
+                        record.getUser().getFullName(),
+                        record.getBook().getBookId(),
+                        record.getBook().getTitle(),
+                        record.getBook().getAuthor(),
+                        record.getBook().getImageUrl(),
+                        record.getBorrowDay(),
+                        record.getBorrowDays(),
+                        record.getDueDay(),
+                        record.getReturnedDay(),
+                        record.getStatus(),
+                        record.getExtendCount()
+                ))
+                .collect(Collectors.toList());
+
         List<RecordModel> overdueRecords = recordRepository.getOverdueRecords()
                 .stream()
                 .map(record -> new RecordModel(
@@ -82,6 +117,7 @@ public class DashboardService {
                         record.getBook().getAuthor(),
                         record.getBook().getImageUrl(),
                         record.getBorrowDay(),
+                        record.getBorrowDays(),
                         record.getDueDay(),
                         record.getReturnedDay(),
                         record.getStatus(),
@@ -89,13 +125,14 @@ public class DashboardService {
                 ))
                 .collect(Collectors.toList());
 
-        return DashboardCardResponse.builder()
+        return DashboardResponse.builder()
                 .totalBooks(totalBooks)
                 .availableBooks(availableBooks)
                 .borrowedBooks(borrowedBooks)
                 .totalUsers(totalUser)
                 .borrowingUsers(borrowingUsers)
                 .bannedUsers(bannedUsers)
+                .pendingRecords(pendingRecords)
                 .overdueRecords(overdueRecords)
                 .build();
     }

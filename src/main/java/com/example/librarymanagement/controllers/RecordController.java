@@ -58,6 +58,15 @@ public class RecordController {
                 .build();
     }
 
+    @PutMapping("/approve/{recordId}")
+    public ApiResponse<RecordModel> approveRecord(@PathVariable int recordId) {
+        return ApiResponse.<RecordModel>builder()
+                .code(200)
+                .message("Approved successfully")
+                .data(recordService.approveBorrow(recordId))
+                .build();
+    }
+
     @PostMapping("/return-book")
     public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
         return ApiResponse.<String>builder()

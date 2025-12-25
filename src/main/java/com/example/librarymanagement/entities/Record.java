@@ -31,6 +31,9 @@ public class Record {
     @Column(name = "borrow_day")
     LocalDate borrowDay;
 
+    @Column(name = "borrow_days")
+    Integer borrowDays;
+
     @Column(name = "due_day")
     LocalDate dueDay;
 

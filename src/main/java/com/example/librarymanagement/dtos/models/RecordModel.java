@@ -21,6 +21,7 @@ public class RecordModel {
     String author;
     String imageUrl;
     LocalDate borrowDay;
+    int borrowDays;
     LocalDate dueDay;
     LocalDate returnedDay;
     String status;

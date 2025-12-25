@@ -16,6 +16,7 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
 
     Optional<Record> findByBook(Book book);
     List<Record> findByUser_UserId(int userId);
+    List<Record> findByStatus(String status);
     Optional<Record> findByUserAndBookAndStatus(User user, Book book, String status);
     Optional<Record> findByUserAndBookAndStatusIn(User user, Book book, List<String> statusList);
     Optional<Record> findFirstByUserAndBookAndStatusOrderByReturnedDayDesc(User user, Book book, String status);
@@ -26,6 +27,8 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     List<Record> findByStatusAndDueDayBefore(String status, LocalDate currentDate);
     List<Record> findByUser_UserIdAndStatus(int userId, String status);
     List<Record> findByUser_UserIdAndStatusIn(int userId, List<String> status);
+    @Query("select r from Record r where r.status = 'PENDING'")
+    List<Record> getPendingRecords();
     @Query("select r from Record r where r.status = 'OVERDUE'")
     List<Record> getOverdueRecords();
     @Query("select r.book.bookId as bookId, count(r) as borrowCount " +

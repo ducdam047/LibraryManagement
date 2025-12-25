@@ -20,6 +20,7 @@ import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.RecordRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -72,6 +73,7 @@ public class RecordService {
                 record.getBook().getAuthor(),
                 record.getBook().getImageUrl(),
                 record.getBorrowDay(),
+                record.getBorrowDays(),
                 record.getDueDay(),
                 record.getReturnedDay(),
                 record.getStatus(),
@@ -170,35 +172,72 @@ public class RecordService {
             if(request.getBorrowDays()>7)
                 throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
             int borrowDays = request.getBorrowDays();
-            LocalDate borrowDay = LocalDate.now();
-            LocalDate dueDay = borrowDay.plusDays(borrowDays);
 
             Record record = Record.builder()
                     .user(userCurrent)
                     .book(bookBorrow)
-                    .borrowDay(borrowDay)
-                    .dueDay(dueDay)
+                    .borrowDay(null)
+                    .borrowDays(borrowDays)
+                    .dueDay(null)
                     .returnedDay(null)
-                    .status(RecordStatus.ACTIVE.name())
+                    .status(RecordStatus.PENDING.name())
                     .extendCount(0)
                     .build();
             recordRepository.save(record);
 
-            List<Book> bookSameTitle = bookRepository.findAllByTitle(bookBorrow.getTitle());
-            for(Book book : bookSameTitle) {
-                book.setAvailableCopies(book.getAvailableCopies() - 1);
-                book.setBorrowedCopies(book.getBorrowedCopies() + 1);
-            }
-            bookBorrow.setStatus(BookStatus.BORROWED.name());
-            bookRepository.save(bookBorrow);
-
-            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() + 1);
-            userCurrent.setStatus(UserStatus.BORROWING.name());
-            userRepository.save(userCurrent);
+//            List<Book> bookSameTitle = bookRepository.findAllByTitle(bookBorrow.getTitle());
+//            for(Book book : bookSameTitle) {
+//                book.setAvailableCopies(book.getAvailableCopies() - 1);
+//                book.setBorrowedCopies(book.getBorrowedCopies() + 1);
+//            }
+//            bookBorrow.setStatus(BookStatus.BORROWED.name());
+//            bookRepository.save(bookBorrow);
+//
+//            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() + 1);
+//            userCurrent.setStatus(UserStatus.BORROWING.name());
+//            userRepository.save(userCurrent);
 
             return toModel(record);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public RecordModel approveBorrow(int recordId) {
+
+        Record record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+
+        if (!RecordStatus.PENDING.name().equals(record.getStatus())) {
+            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+        }
+
+        Book book = record.getBook();
+        User user = record.getUser();
+
+        if (book.getAvailableCopies() <= 0)
+            throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+
+        LocalDate borrowDay = LocalDate.now();
+        LocalDate dueDay = borrowDay.plusDays(record.getBorrowDays());
+
+        record.setBorrowDay(borrowDay);
+        record.setDueDay(dueDay);
+        record.setStatus(RecordStatus.ACTIVE.name());
+
+        List<Book> sameTitleBooks = bookRepository.findAllByTitle(book.getTitle());
+        for (Book b : sameTitleBooks) {
+            b.setAvailableCopies(b.getAvailableCopies() - 1);
+            b.setBorrowedCopies(b.getBorrowedCopies() + 1);
+        }
+
+        book.setStatus(BookStatus.BORROWED.name());
+
+        user.setBookBorrowing(user.getBookBorrowing() + 1);
+        user.setStatus(UserStatus.BORROWING.name());
+
+        return toModel(record);
     }
 
     @PreAuthorize("hasRole('USER')")

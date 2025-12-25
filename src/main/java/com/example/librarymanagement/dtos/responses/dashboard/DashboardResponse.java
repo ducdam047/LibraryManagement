@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DashboardCardResponse {
+public class DashboardResponse {
 
     long totalBooks;
     long availableBooks;
@@ -18,5 +18,6 @@ public class DashboardCardResponse {
     long totalUsers;
     long borrowingUsers;
     long bannedUsers;
+    List pendingRecords;
     List overdueRecords;
 }

@@ -4,5 +4,6 @@ public enum RecordStatus {
 
     ACTIVE,
     RETURNED,
+    PENDING,
     OVERDUE
 }
