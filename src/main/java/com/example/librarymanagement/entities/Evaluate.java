@@ -20,12 +20,13 @@ public class Evaluate {
     @Column(name = "evaluate_id")
     int evaluateId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     User user;
 
-    @Column(name = "title")
-    String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book")
+    Book book;
 
     @Column(name = "rating")
     int rating;

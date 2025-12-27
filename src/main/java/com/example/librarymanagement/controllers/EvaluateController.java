@@ -20,16 +20,16 @@ public class EvaluateController {
     private EvaluateService evaluateService;
 
     @GetMapping("/exists")
-    public ResponseEntity<?> checkEvaluated(@RequestParam String title) {
-        return ResponseEntity.ok(evaluateService.checkEvaluated(title));
+    public ResponseEntity<?> checkEvaluated(@RequestParam int bookId) {
+        return ResponseEntity.ok(evaluateService.checkEvaluated(bookId));
     }
 
-    @GetMapping("/see-evaluated")
-    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam String title) {
+    @GetMapping("/review-evaluated")
+    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam int bookId) {
         return ApiResponse.<List<EvaluateModel>>builder()
                 .code(200)
                 .message("Show evaluated successfully")
-                .data(evaluateService.seeEvaluated(title))
+                .data(evaluateService.seeEvaluated(bookId))
                 .build();
     }
 
@@ -43,29 +43,29 @@ public class EvaluateController {
     }
 
     @GetMapping("/rating-count")
-    public ApiResponse<List<RatingCountResponse>> countRating(@RequestParam String title) {
+    public ApiResponse<List<RatingCountResponse>> countRating(@RequestParam int bookId) {
         return ApiResponse.<List<RatingCountResponse>>builder()
                 .code(200)
                 .message("Get rating count successfully")
-                .data(evaluateService.countRating(title))
+                .data(evaluateService.countRating(bookId))
                 .build();
     }
 
     @GetMapping("/average")
-    public ApiResponse<Double> averageRating(@RequestParam String title) {
+    public ApiResponse<Double> averageRating(@RequestParam int bookId) {
         return ApiResponse.<Double>builder()
                 .code(200)
                 .message("Get average rating successfully")
-                .data(evaluateService.averageRating(title))
+                .data(evaluateService.averageRating(bookId))
                 .build();
     }
 
-    @GetMapping("/average-test")
-    public ApiResponse<RatingSummaryResponse> getRatingSummary(@RequestParam String title) {
-        return ApiResponse.<RatingSummaryResponse>builder()
-                .code(200)
-                .message("Get average and total rating successfully")
-                .data(evaluateService.getRatingSummary(title))
-                .build();
-    }
+//    @GetMapping("/average-test")
+//    public ApiResponse<RatingSummaryResponse> getRatingSummary(@RequestParam String title) {
+//        return ApiResponse.<RatingSummaryResponse>builder()
+//                .code(200)
+//                .message("Get average and total rating successfully")
+//                .data(evaluateService.getRatingSummary(title))
+//                .build();
+//    }
 }

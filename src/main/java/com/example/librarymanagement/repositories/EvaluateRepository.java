@@ -1,5 +1,6 @@
 package com.example.librarymanagement.repositories;
 
+import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Evaluate;
 import com.example.librarymanagement.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,26 +12,26 @@ import java.util.List;
 public interface EvaluateRepository extends JpaRepository<Evaluate, Integer> {
 
     List<Evaluate> findByUser_UserId(int userId);
-    List<Evaluate> findByTitle(String title);
-    boolean existsByUserAndTitle(User user, String title);
+    List<Evaluate> findByBook_BookId(int bookId);
+    boolean existsByUserAndBook(User user, Book book);
     @Query("""
             select e.rating, count(e)
             from Evaluate e
-            where e.title = :title
+            where e.book.bookId = :bookId
             group by e.rating
             order by e.rating desc
             """)
-    List<Object[]> countRatingByTitle(@Param("title") String title);
+    List<Object[]> countRatingByBookId(@Param("bookId") int bookId);
     @Query("""
-            select AVG(cast(e.rating as double))
+            select AVG(e.rating)
             from Evaluate e
-            where e.title = :title
+            where e.book.bookId = :bookId
             """)
-    Double averageRatingByTitle(@Param("title") String title);
-    @Query("""
-            select AVG(e.rating), count(e)
-            from Evaluate e
-            where e.title = :title
-            """)
-    Object[] averageAndTotalRatingByTitle(@Param("title") String title);
+    Double averageRatingByBookId(@Param("bookId") int bookId);
+//    @Query("""
+//            select AVG(e.rating), count(e)
+//            from Evaluate e
+//            where e.title = :title
+//            """)
+//    Object[] averageAndTotalRatingByTitle(@Param("title") String title);
 }
