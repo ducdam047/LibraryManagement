@@ -62,23 +62,6 @@ public class DashboardService {
         );
     }
 
-    public RecordModel toModel(Record record) {
-        return new RecordModel(
-                record.getBorrowRecordId(),
-                record.getUser().getFullName(),
-                record.getBook().getBookId(),
-                record.getBook().getTitle(),
-                record.getBook().getAuthor(),
-                record.getBook().getImageUrl(),
-                record.getBorrowDay(),
-                record.getBorrowDays(),
-                record.getDueDay(),
-                record.getReturnedDay(),
-                record.getStatus(),
-                record.getExtendCount()
-        );
-    }
-
     @PreAuthorize("hasRole('ADMIN')")
     public DashboardResponse getSummary() {
         long totalBooks = bookRepository.count();

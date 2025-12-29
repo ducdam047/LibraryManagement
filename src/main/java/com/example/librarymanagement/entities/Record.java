@@ -20,13 +20,16 @@ public class Record {
     @Column(name = "borrow_record_id")
     int borrowRecordId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user")
     User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "book", nullable = true)
     Book book;
+
+    @Column(name = "title", nullable = true)
+    String title;
 
     @Column(name = "borrow_day")
     LocalDate borrowDay;

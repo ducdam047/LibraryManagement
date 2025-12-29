@@ -17,11 +17,12 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     Optional<Record> findByBook(Book book);
     List<Record> findByUser_UserId(int userId);
     List<Record> findByStatus(String status);
+    int countByUserAndStatus(User user, String status);
     Optional<Record> findByUserAndBookAndStatus(User user, Book book, String status);
     Optional<Record> findByUserAndBookAndStatusIn(User user, Book book, List<String> statusList);
     Optional<Record> findFirstByUserAndBookAndStatusOrderByReturnedDayDesc(User user, Book book, String status);
     Optional<Record> findFirstByUserAndBook(User user, Book book);
-    boolean existsByUserAndBook_TitleAndStatus(User user, String title, String status);
+    boolean existsByUserAndTitleAndStatus(User user, String title, String status);
     boolean existsByUserAndStatus(User user, String status);
     Optional<Record> findByBookAndStatus(Book book, String status);
     List<Record> findByStatusAndDueDayBefore(String status, LocalDate currentDate);

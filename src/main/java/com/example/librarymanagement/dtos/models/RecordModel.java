@@ -16,7 +16,7 @@ public class RecordModel {
 
     int recordId;
     String fullName;
-    int bookId;
+    Integer bookId;
     String title;
     String author;
     String imageUrl;

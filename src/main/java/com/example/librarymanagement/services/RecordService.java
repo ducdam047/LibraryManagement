@@ -65,13 +65,14 @@ public class RecordService {
     }
 
     public RecordModel toModel(Record record) {
+        Book book = record.getBook();
         return new RecordModel(
                 record.getBorrowRecordId(),
                 record.getUser().getFullName(),
-                record.getBook().getBookId(),
-                record.getBook().getTitle(),
-                record.getBook().getAuthor(),
-                record.getBook().getImageUrl(),
+                book!=null ? book.getBookId():null,
+                record.getTitle(),
+                book!=null ? book.getAuthor():null,
+                book!=null ? book.getImageUrl():null,
                 record.getBorrowDay(),
                 record.getBorrowDays(),
                 record.getDueDay(),
@@ -160,14 +161,17 @@ public class RecordService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookBorrow = bookRepository.findFirstByTitleAndStatus(request.getTitle(), BookStatus.AVAILABLE.name())
-                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean bookExists = recordRepository.existsByUserAndBook_TitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
-            if(bookExists)
-                throw new AppException(ErrorCode.BOOK_BORROWED);
+            boolean bookExists = recordRepository.existsByUserAndTitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
+
             if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
-            if(userCurrent.getBookBorrowing()==3)
+
+            int activeCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.ACTIVE.name());
+            int pendingCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.PENDING.name());
+
+            if(bookExists)
+                throw new AppException(ErrorCode.BOOK_BORROWED);
+            if(activeCount+pendingCount>=3)
                 throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
             if(request.getBorrowDays()>7)
                 throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
@@ -175,7 +179,8 @@ public class RecordService {
 
             Record record = Record.builder()
                     .user(userCurrent)
-                    .book(bookBorrow)
+                    .book(null)
+                    .title(request.getTitle())
                     .borrowDay(null)
                     .borrowDays(borrowDays)
                     .dueDay(null)
@@ -213,20 +218,24 @@ public class RecordService {
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
         }
 
-        Book book = record.getBook();
-        User user = record.getUser();
+        String title = record.getTitle();
+        if(title==null && record.getBook()!=null)
+            title = record.getBook().getTitle();
 
-        if (book.getAvailableCopies() <= 0)
-            throw new AppException(ErrorCode.BOOK_OUT_OF_STOCK);
+        Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
+
+        User user = record.getUser();
 
         LocalDate borrowDay = LocalDate.now();
         LocalDate dueDay = borrowDay.plusDays(record.getBorrowDays());
 
+        record.setBook(book);
         record.setBorrowDay(borrowDay);
         record.setDueDay(dueDay);
         record.setStatus(RecordStatus.ACTIVE.name());
 
-        List<Book> sameTitleBooks = bookRepository.findAllByTitle(book.getTitle());
+        List<Book> sameTitleBooks = bookRepository.findAllByTitle(title);
         for (Book b : sameTitleBooks) {
             b.setAvailableCopies(b.getAvailableCopies() - 1);
             b.setBorrowedCopies(b.getBorrowedCopies() + 1);
