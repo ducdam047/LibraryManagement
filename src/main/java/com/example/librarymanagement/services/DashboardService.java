@@ -74,20 +74,23 @@ public class DashboardService {
 
         List<RecordModel> pendingRecords = recordRepository.getPendingRecords()
                 .stream()
-                .map(record -> new RecordModel(
-                        record.getBorrowRecordId(),
-                        record.getUser().getFullName(),
-                        record.getBook().getBookId(),
-                        record.getBook().getTitle(),
-                        record.getBook().getAuthor(),
-                        record.getBook().getImageUrl(),
-                        record.getBorrowDay(),
-                        record.getBorrowDays(),
-                        record.getDueDay(),
-                        record.getReturnedDay(),
-                        record.getStatus(),
-                        record.getExtendCount()
-                ))
+                .map(record -> {
+                    Book book = record.getBook();
+                    return new RecordModel(
+                            record.getBorrowRecordId(),
+                            record.getUser().getFullName(),
+                            book != null ? book.getBookId():null,
+                            record.getTitle(),
+                            book != null ? book.getAuthor():null,
+                            book != null ? book.getImageUrl():null,
+                            record.getBorrowDay(),
+                            record.getBorrowDays(),
+                            record.getDueDay(),
+                            record.getReturnedDay(),
+                            record.getStatus(),
+                            record.getExtendCount()
+                    );
+                })
                 .collect(Collectors.toList());
 
         List<RecordModel> overdueRecords = recordRepository.getOverdueRecords()
