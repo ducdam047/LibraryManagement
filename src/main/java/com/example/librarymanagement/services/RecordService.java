@@ -1,15 +1,11 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.dtos.models.RecordModel;
-import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
-import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
-import com.example.librarymanagement.entities.Evaluate;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
@@ -46,23 +42,6 @@ public class RecordService {
 
     @Autowired
     private EvaluateRepository evaluateRepository;
-
-    public BookModel toModel(Book book) {
-        return new BookModel(
-                book.getBookId(),
-                book.getTitle(),
-                book.getAuthor(),
-                book.getCategory().getCategoryName(),
-                book.getPublisher().getPublisherName(),
-                book.getIsbn(),
-                book.getImageUrl(),
-                book.getPdfUrl(),
-                book.getTotalCopies(),
-                book.getAvailableCopies(),
-                book.getBorrowedCopies(),
-                book.getStatus()
-        );
-    }
 
     public RecordModel toModel(Record record) {
         Book book = record.getBook();
@@ -210,13 +189,10 @@ public class RecordService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public RecordModel approveBorrow(int recordId) {
-
         Record record = recordRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-
-        if (!RecordStatus.PENDING.name().equals(record.getStatus())) {
+        if(!RecordStatus.PENDING.name().equals(record.getStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
-        }
 
         String title = record.getTitle();
         if(title==null && record.getBook()!=null)
@@ -224,7 +200,6 @@ public class RecordService {
 
         Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
-
         User user = record.getUser();
 
         LocalDate borrowDay = LocalDate.now();
@@ -242,10 +217,21 @@ public class RecordService {
         }
 
         book.setStatus(BookStatus.BORROWED.name());
-
         user.setBookBorrowing(user.getBookBorrowing() + 1);
         user.setStatus(UserStatus.BORROWING.name());
 
+        return toModel(record);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public RecordModel rejectBorrow(int recordId) {
+        Record record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+        if(!RecordStatus.PENDING.name().equals(record.getStatus()))
+            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+
+        record.setStatus(RecordStatus.REJECTED.name());
         return toModel(record);
     }
 

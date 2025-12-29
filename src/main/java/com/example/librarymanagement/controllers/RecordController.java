@@ -67,6 +67,15 @@ public class RecordController {
                 .build();
     }
 
+    @PutMapping("/reject/{recordId}")
+    public ApiResponse<RecordModel> rejectRecord(@PathVariable int recordId) {
+        return ApiResponse.<RecordModel>builder()
+                .code(200)
+                .message("Rejected successfully")
+                .data(recordService.rejectBorrow(recordId))
+                .build();
+    }
+
     @PostMapping("/return-book")
     public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
         return ApiResponse.<String>builder()
