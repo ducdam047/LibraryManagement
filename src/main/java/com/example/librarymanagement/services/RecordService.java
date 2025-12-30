@@ -49,7 +49,7 @@ public class RecordService {
                 record.getBorrowRecordId(),
                 record.getUser().getFullName(),
                 book!=null ? book.getBookId():null,
-                record.getTitle(),
+                record.getTitle()!=null ? record.getTitle():record.getBook().getTitle(),
                 book!=null ? book.getAuthor():null,
                 book!=null ? book.getImageUrl():null,
                 record.getBorrowDay(),
