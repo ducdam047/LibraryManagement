@@ -63,7 +63,7 @@ public class BookService {
                 book.getPublisher().getPublisherName(),
                 book.getIsbn(),
                 book.getImageUrl(),
-                book.getPdfUrl(),
+                book.getPdfPath(),
                 book.getTotalCopies(),
                 book.getAvailableCopies(),
                 book.getBorrowedCopies(),
@@ -140,7 +140,7 @@ public class BookService {
                 .category(category)
                 .publisher(publisher)
                 .imageUrl(imageUrl)
-                .pdfUrl(pdfUrl)
+                .pdfPath(pdfUrl)
                 .totalCopies(updateTotalCopies)
                 .availableCopies(updateAvailableCopies)
                 .status(BookStatus.AVAILABLE.name())
@@ -170,7 +170,7 @@ public class BookService {
         book.setCategory(category);
         book.setPublisher(publisher);
         book.setImageUrl(imageUrl);
-        book.setPdfUrl(pdfUrl);
+        book.setPdfPath(pdfUrl);
         return bookRepository.save(book);
     }
 

@@ -45,7 +45,7 @@ public class DashboardService {
                 book.getPublisher().getPublisherName(),
                 book.getIsbn(),
                 book.getImageUrl(),
-                book.getPdfUrl(),
+                book.getPdfPath(),
                 book.getTotalCopies(),
                 book.getAvailableCopies(),
                 book.getBorrowedCopies(),

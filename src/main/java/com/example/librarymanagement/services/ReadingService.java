@@ -38,7 +38,7 @@ public class ReadingService {
                 reading.getBook().getBookId(),
                 reading.getBook().getTitle(),
                 reading.getBook().getImageUrl(),
-                reading.getBook().getPdfUrl(),
+                reading.getBook().getPdfPath(),
                 reading.getPage(),
                 reading.getLastDay()
         );

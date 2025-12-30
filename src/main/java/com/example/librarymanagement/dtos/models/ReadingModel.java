@@ -18,7 +18,7 @@ public class ReadingModel {
     int bookId;
     String bookName;
     String imageUrl;
-    String pdfUrl;
+    String pdfPath;
     int page;
     LocalDate lastDay;
 }

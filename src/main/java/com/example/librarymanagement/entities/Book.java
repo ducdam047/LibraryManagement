@@ -40,8 +40,11 @@ public class Book {
     @Column(name = "image")
     String imageUrl;
 
-    @Column(name = "pdf_url")
-    String pdfUrl;
+    @Column(name = "pdf_path")
+    String pdfPath;
+
+    @Column(name = "preview_pages")
+    int previewPages = 10;
 
     @Column(name = "total_copies")
     int totalCopies;

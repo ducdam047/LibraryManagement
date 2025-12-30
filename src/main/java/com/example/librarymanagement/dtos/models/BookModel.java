@@ -16,7 +16,7 @@ public class BookModel {
     String publisherName;
     String isbn;
     String imageUrl;
-    String pdfUrl;
+    String pdfPath;
     int totalCopies;
     int availableCopies;
     int borrowedCopies;
