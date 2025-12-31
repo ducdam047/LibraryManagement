@@ -164,10 +164,15 @@ public class BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
-        String imageUrl = cloudinaryService.uploadImage(imageFile);
-        String pdfUrl = null;
-        if(pdfFile!=null && !pdfFile.isEmpty())
-            pdfUrl = cloudinaryService.uploadPdf(pdfFile);
+        if(imageFile!=null && !imageFile.isEmpty()) {
+            String imageUrl = cloudinaryService.uploadImage(imageFile);
+            book.setImageUrl(imageUrl);
+        }
+
+        if(pdfFile!=null && !pdfFile.isEmpty()) {
+            String pdfPath = pdfStorageService.savePdf(pdfFile);
+            book.setPdfPath(pdfPath);
+        }
 
         Category category = categoryRepository.findByCategoryName(request.getCategoryName())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -178,8 +183,7 @@ public class BookService {
         book.setAuthor(request.getAuthor());
         book.setCategory(category);
         book.setPublisher(publisher);
-        book.setImageUrl(imageUrl);
-        book.setPdfPath(pdfUrl);
+
         return bookRepository.save(book);
     }
 
