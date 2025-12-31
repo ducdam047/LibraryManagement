@@ -34,6 +34,9 @@ public class BookService {
     private BookRepository bookRepository;
 
     @Autowired
+    private PdfStorageService pdfStorageService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -53,6 +56,11 @@ public class BookService {
 
     @Autowired
     private RecordRepository recordRepository;
+
+    public Book getById(int bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
+    }
 
     public BookModel toModel(Book book) {
         return new BookModel(
@@ -112,9 +120,9 @@ public class BookService {
     @PreAuthorize("hasRole('ADMIN')")
     public BookModel addBook(BookAddRequest request, MultipartFile imageFile, MultipartFile pdfFile) throws IOException {
         String imageUrl = cloudinaryService.uploadImage(imageFile);
-        String pdfUrl = null;
+        String pdfPath = null;
         if(pdfFile!=null && !pdfFile.isEmpty())
-            pdfUrl = cloudinaryService.uploadPdf(pdfFile);
+            pdfPath = pdfStorageService.savePdf(pdfFile);
 
         Category category = categoryRepository.findByCategoryName(request.getCategoryName())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -140,7 +148,8 @@ public class BookService {
                 .category(category)
                 .publisher(publisher)
                 .imageUrl(imageUrl)
-                .pdfPath(pdfUrl)
+                .pdfPath(pdfPath)
+                .previewPages(10)
                 .totalCopies(updateTotalCopies)
                 .availableCopies(updateAvailableCopies)
                 .status(BookStatus.AVAILABLE.name())
