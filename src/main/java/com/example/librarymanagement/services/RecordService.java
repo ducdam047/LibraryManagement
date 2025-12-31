@@ -150,9 +150,9 @@ public class RecordService {
 
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
-            if(activeCount+pendingCount>=3)
+            if(activeCount+pendingCount>=5)
                 throw new AppException(ErrorCode.BORROW_LIMIT_REACHED);
-            if(request.getBorrowDays()>7)
+            if(request.getBorrowDays()>14)
                 throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
             int borrowDays = request.getBorrowDays();
 
@@ -168,18 +168,6 @@ public class RecordService {
                     .extendCount(0)
                     .build();
             recordRepository.save(record);
-
-//            List<Book> bookSameTitle = bookRepository.findAllByTitle(bookBorrow.getTitle());
-//            for(Book book : bookSameTitle) {
-//                book.setAvailableCopies(book.getAvailableCopies() - 1);
-//                book.setBorrowedCopies(book.getBorrowedCopies() + 1);
-//            }
-//            bookBorrow.setStatus(BookStatus.BORROWED.name());
-//            bookRepository.save(bookBorrow);
-//
-//            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() + 1);
-//            userCurrent.setStatus(UserStatus.BORROWING.name());
-//            userRepository.save(userCurrent);
 
             return toModel(record);
         }
