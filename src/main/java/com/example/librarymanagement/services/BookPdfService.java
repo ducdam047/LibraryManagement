@@ -1,6 +1,8 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.enums.ErrorCode;
+import com.example.librarymanagement.exception.AppException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +30,12 @@ public class BookPdfService {
         int previewPages = book.getPreviewPages();
 
         if(pdfPath==null)
-            throw new RuntimeException("Book has no PDF");
+            throw new AppException(ErrorCode.BOOK_HAS_NO_PDF);
 
         Path path = Paths.get(pdfPath);
 
         if(!Files.exists(path))
-            throw new RuntimeException("PDF file not found: " + pdfPath);
+            throw new AppException(ErrorCode.PDF_FILE_NOT_FOUND);
 
         try (InputStream is = Files.newInputStream(path);
              PDDocument fullDoc = PDDocument.load(is);
@@ -44,7 +46,7 @@ public class BookPdfService {
                 previewDoc.addPage(fullDoc.getPage(i));
             previewDoc.save(outputStream);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot preview PDF", e);
+            throw new AppException(ErrorCode.PDF_PREVIEW_FAILED);
         }
     }
 }
