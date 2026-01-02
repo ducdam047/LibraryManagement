@@ -85,6 +85,15 @@ public class RecordController {
                 .build();
     }
 
+    @PutMapping("/confirm/{recordId}")
+    public ApiResponse<String> confirmReturn(@PathVariable int recordId) {
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("Confirm return successfully")
+                .data(recordService.confirmReturn(recordId))
+                .build();
+    }
+
     @PostMapping("/extend-book")
     public ApiResponse<String> extendBook(@RequestBody ExtendBookRequest request) {
         return ApiResponse.<String>builder()

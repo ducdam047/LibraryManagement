@@ -133,6 +133,7 @@ public class RecordService {
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
+    @Transactional
     @PreAuthorize("hasRole('USER')")
     public RecordModel borrowBook(BorrowBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -146,7 +147,7 @@ public class RecordService {
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
 
             int activeCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.ACTIVE.name());
-            int pendingCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.PENDING.name());
+            int pendingCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.PENDING_APPROVE.name());
 
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
@@ -164,7 +165,7 @@ public class RecordService {
                     .borrowDays(borrowDays)
                     .dueDay(null)
                     .returnedDay(null)
-                    .status(RecordStatus.PENDING.name())
+                    .status(RecordStatus.PENDING_APPROVE.name())
                     .extendCount(0)
                     .build();
             recordRepository.save(record);
@@ -179,7 +180,7 @@ public class RecordService {
     public RecordModel approveBorrow(int recordId) {
         Record record = recordRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING.name().equals(record.getStatus()))
+        if(!RecordStatus.PENDING_APPROVE.name().equals(record.getStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
 
         String title = record.getTitle();
@@ -216,13 +217,14 @@ public class RecordService {
     public RecordModel rejectBorrow(int recordId) {
         Record record = recordRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING.name().equals(record.getStatus()))
+        if(!RecordStatus.PENDING_APPROVE.name().equals(record.getStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
 
         record.setStatus(RecordStatus.REJECTED.name());
         return toModel(record);
     }
 
+    @Transactional
     @PreAuthorize("hasRole('USER')")
     public String returnBook(ReturnBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -235,26 +237,39 @@ public class RecordService {
             Record record = recordRepository.findByUserAndBookAndStatusIn(userCurrent, bookReturn, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
-            record.setReturnedDay(LocalDate.now());
-            record.setStatus(RecordStatus.RETURNED.name());
-            recordRepository.save(record);
-
-            List<Book> bookSameTitle = bookRepository.findAllByTitle(bookReturn.getTitle());
-            for(Book book : bookSameTitle) {
-                book.setAvailableCopies(book.getAvailableCopies() + 1);
-                book.setBorrowedCopies(book.getBorrowedCopies() - 1);
-            }
-            bookReturn.setStatus(BookStatus.AVAILABLE.name());
-            bookRepository.save(bookReturn);
-
-            userCurrent.setBookBorrowing(userCurrent.getBookBorrowing() - 1);
-            if(userCurrent.getBookBorrowing()==0 && userCurrent.getBanUtil()==null)
-                userCurrent.setStatus(UserStatus.ACTIVE.name());
-            userRepository.save(userCurrent);
+            record.setStatus(RecordStatus.PENDING_RETURN.name());
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public String confirmReturn(int recordId) {
+        Record record = recordRepository.findById(recordId)
+                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+        if(!RecordStatus.PENDING_RETURN.name().equals(record.getStatus()))
+            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+
+        Book book = record.getBook();
+        User user = record.getUser();
+
+        record.setReturnedDay(LocalDate.now());
+        record.setStatus(RecordStatus.RETURNED.name());
+
+        List<Book> bookSameTitles = bookRepository.findAllByTitle(book.getTitle());
+        for(Book b : bookSameTitles) {
+            b.setAvailableCopies(b.getAvailableCopies() + 1);
+            b.setBorrowedCopies(b.getBorrowedCopies() - 1);
+        }
+        book.setStatus(BookStatus.AVAILABLE.name());
+
+        user.setBookBorrowing(user.getBookBorrowing() - 1);
+        if(user.getBookBorrowing()==0 && user.getBanUtil()==null)
+            user.setStatus(UserStatus.ACTIVE.name());
+
+        return "Confirmation of successful book receipt";
     }
 
     @PreAuthorize("hasRole('USER')")

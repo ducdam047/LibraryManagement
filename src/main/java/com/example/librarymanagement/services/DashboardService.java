@@ -72,7 +72,28 @@ public class DashboardService {
         long borrowingUsers = recordRepository.countDistinctUserByStatus(RecordStatus.ACTIVE.name());
         long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
-        List<RecordModel> pendingRecords = recordRepository.getPendingRecords()
+        List<RecordModel> pendingApproveRecords = recordRepository.getPendingApproveRecords()
+                .stream()
+                .map(record -> {
+                    Book book = record.getBook();
+                    return new RecordModel(
+                            record.getBorrowRecordId(),
+                            record.getUser().getFullName(),
+                            book != null ? book.getBookId():null,
+                            record.getTitle(),
+                            book != null ? book.getAuthor():null,
+                            book != null ? book.getImageUrl():null,
+                            record.getBorrowDay(),
+                            record.getBorrowDays(),
+                            record.getDueDay(),
+                            record.getReturnedDay(),
+                            record.getStatus(),
+                            record.getExtendCount()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        List<RecordModel> pendingReturnRecords = recordRepository.getPendingReturnRecords()
                 .stream()
                 .map(record -> {
                     Book book = record.getBook();
@@ -118,7 +139,8 @@ public class DashboardService {
                 .totalUsers(totalUser)
                 .borrowingUsers(borrowingUsers)
                 .bannedUsers(bannedUsers)
-                .pendingRecords(pendingRecords)
+                .pendingApproveRecords(pendingApproveRecords)
+                .pendingReturnRecords(pendingReturnRecords)
                 .overdueRecords(overdueRecords)
                 .build();
     }

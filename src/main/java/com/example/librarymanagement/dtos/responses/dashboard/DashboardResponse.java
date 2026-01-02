@@ -18,6 +18,7 @@ public class DashboardResponse {
     long totalUsers;
     long borrowingUsers;
     long bannedUsers;
-    List pendingRecords;
+    List pendingApproveRecords;
+    List pendingReturnRecords;
     List overdueRecords;
 }

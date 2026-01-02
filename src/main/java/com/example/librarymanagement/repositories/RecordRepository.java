@@ -28,8 +28,10 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     List<Record> findByStatusAndDueDayBefore(String status, LocalDate currentDate);
     List<Record> findByUser_UserIdAndStatus(int userId, String status);
     List<Record> findByUser_UserIdAndStatusIn(int userId, List<String> status);
-    @Query("select r from Record r where r.status = 'PENDING'")
-    List<Record> getPendingRecords();
+    @Query("select r from Record r where r.status = 'PENDING_APPROVE'")
+    List<Record> getPendingApproveRecords();
+    @Query("select r from Record r where r.status = 'PENDING_RETURN'")
+    List<Record> getPendingReturnRecords();
     @Query("select r from Record r where r.status = 'OVERDUE'")
     List<Record> getOverdueRecords();
     @Query("select r.book.bookId as bookId, count(r) as borrowCount " +
