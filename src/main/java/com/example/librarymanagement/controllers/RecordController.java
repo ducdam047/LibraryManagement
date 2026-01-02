@@ -53,7 +53,7 @@ public class RecordController {
     public ApiResponse<RecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
         return ApiResponse.<RecordModel>builder()
                 .code(200)
-                .message("Borrowed successfully")
+                .message("Borrow request sent")
                 .data(recordService.borrowBook(request))
                 .build();
     }
@@ -80,7 +80,7 @@ public class RecordController {
     public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
         return ApiResponse.<String>builder()
                 .code(200)
-                .message("Returned successfully")
+                .message("return request sent")
                 .data(recordService.returnBook(request))
                 .build();
     }

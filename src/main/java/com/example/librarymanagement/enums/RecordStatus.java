@@ -7,5 +7,6 @@ public enum RecordStatus {
     PENDING_APPROVE,
     PENDING_RETURN,
     REJECTED,
+    CANCELLED,
     OVERDUE
 }

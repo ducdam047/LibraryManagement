@@ -4,9 +4,7 @@ import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +30,15 @@ public class PendingController {
                 .code(200)
                 .message("Show book pending return successfully")
                 .data(pendingService.getRecordPendingReturn())
+                .build();
+    }
+
+    @PutMapping("/cancel/{recordId}")
+    public ApiResponse<String> cancelPendingBorrow(@PathVariable int recordId) {
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("Record application cancelled successfully")
+                .data(pendingService.cancelPendingBorrow(recordId))
                 .build();
     }
 }

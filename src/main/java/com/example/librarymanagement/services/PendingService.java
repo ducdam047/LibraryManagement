@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,27 @@ public class PendingService {
             return records.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    public String cancelPendingBorrow(int recordId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+            Record record = recordRepository.findById(recordId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            if(!RecordStatus.PENDING_APPROVE.name().equals(record.getStatus()))
+                throw new IllegalStateException("The order cannot be canceled in its current state");
+            if(!record.getUser().equals(userCurrent))
+                throw new AppException(ErrorCode.UNAUTHORIZED);
+
+            record.setStatus(RecordStatus.CANCELLED.name());
+            recordRepository.save(record);
+
+            return "Record application cancelled successfully";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
