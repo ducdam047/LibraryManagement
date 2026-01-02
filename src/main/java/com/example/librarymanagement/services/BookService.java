@@ -21,10 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,6 +84,7 @@ public class BookService {
 
     public List<BookModel> getFeaturedBooks() {
         List<Book> books = bookRepository.findAll();
+        Collections.shuffle(books);
 
         List<Book> uniqueBooks = books.stream()
                 .collect(Collectors.toMap(
@@ -99,6 +97,7 @@ public class BookService {
                 .stream()
                 .toList();
         return uniqueBooks.stream()
+                .limit(15)
                 .map(this::toModel)
                 .collect(Collectors.toList());
     }
