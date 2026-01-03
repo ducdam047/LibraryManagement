@@ -93,7 +93,7 @@ public class RecordService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Record> records = recordRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.RETURNED.name());
+            List<Record> records = recordRepository.findByUser_UserIdAndStatusOrderByReturnedDayAsc(userCurrent.getUserId(), RecordStatus.RETURNED.name());
             return records.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
