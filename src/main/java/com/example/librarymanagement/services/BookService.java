@@ -1,6 +1,7 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
+import com.example.librarymanagement.dtos.models.BookTrending;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.entities.Book;
@@ -103,14 +104,9 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookModel> getTrendingBooks(int limit) {
+    public List<BookTrending> getTrendingBooks(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
-
-        return recordRepository
-                .findTrendingBooks(startDate, PageRequest.of(0, limit))
-                .stream()
-                .map(this::toModel)
-                .toList();
+        return recordRepository.findTrendingBooks(startDate, PageRequest.of(0, limit));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

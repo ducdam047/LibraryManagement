@@ -1,6 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.BookModel;
+import com.example.librarymanagement.dtos.models.BookTrending;
 import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
@@ -39,8 +40,8 @@ public class BookController {
     }
 
     @GetMapping("/trending")
-    public ResponseEntity<List<BookModel>> getTrendingBooks() {
-        List<BookModel> trendingBooks = bookService.getTrendingBooks(20);
+    public ResponseEntity<List<BookTrending>> getTrendingBooks() {
+        List<BookTrending> trendingBooks = bookService.getTrendingBooks(20);
         return ResponseEntity.ok(trendingBooks);
     }
 

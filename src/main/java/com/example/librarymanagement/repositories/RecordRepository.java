@@ -1,5 +1,6 @@
 package com.example.librarymanagement.repositories;
 
+import com.example.librarymanagement.dtos.models.BookTrending;
 import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
@@ -36,13 +37,24 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     @Query("select r from Record r where r.status = 'OVERDUE'")
     List<Record> getOverdueRecords();
     @Query("""
-            select r.book
+            select new com.example.librarymanagement.dtos.models.BookTrending(
+                b,
+                count(r)
+            )
             from Record r
+            join r.book b
             where r.borrowDay >= :startDate
-            group by r.book
-            order by count(r) desc
+                and b.bookId = (
+                    select min(b2.bookId)
+                    from Book b2
+                    where b2.title = b.title
+                )
+            group by b
+            order by
+                count(r) desc,
+                max(r.borrowDay) desc
             """)
-    List<Book> findTrendingBooks(@Param("startDate") LocalDate startDate, Pageable pageable);
+    List<BookTrending> findTrendingBooks(@Param("startDate") LocalDate startDate, Pageable pageable);
     @Query("select count(distinct r.user.id) from Record r where r.status = :status")
     long countDistinctUserByStatus(@Param("status") String status);
     long countByStatus(String status);
