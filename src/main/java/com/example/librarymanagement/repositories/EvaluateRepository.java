@@ -12,22 +12,22 @@ import java.util.List;
 public interface EvaluateRepository extends JpaRepository<Evaluate, Integer> {
 
     List<Evaluate> findByUser_UserId(int userId);
-    List<Evaluate> findByBook_BookId(int bookId);
-    boolean existsByUserAndBook(User user, Book book);
+    List<Evaluate> findByBook_Title(String title);
+    boolean existsByUserAndBook_Title(User user, String title);
     @Query("""
             select e.rating, count(e)
             from Evaluate e
-            where e.book.bookId = :bookId
+            where e.book.title = :title
             group by e.rating
             order by e.rating desc
             """)
-    List<Object[]> countRatingByBookId(@Param("bookId") int bookId);
+    List<Object[]> countRatingByBookTitle(@Param("title") String title);
     @Query("""
             select AVG(e.rating)
             from Evaluate e
-            where e.book.bookId = :bookId
+            where e.book.title = :title
             """)
-    Double averageRatingByBookId(@Param("bookId") int bookId);
+    Double averageRatingByBookId(@Param("title") String title);
 //    @Query("""
 //            select AVG(e.rating), count(e)
 //            from Evaluate e

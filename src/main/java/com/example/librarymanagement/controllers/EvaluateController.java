@@ -20,16 +20,16 @@ public class EvaluateController {
     private EvaluateService evaluateService;
 
     @GetMapping("/exists")
-    public ResponseEntity<?> checkEvaluated(@RequestParam int bookId) {
-        return ResponseEntity.ok(evaluateService.checkEvaluated(bookId));
+    public ResponseEntity<?> checkEvaluated(@RequestParam String title) {
+        return ResponseEntity.ok(evaluateService.checkEvaluated(title));
     }
 
     @GetMapping("/review-evaluated")
-    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam int bookId) {
+    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam String title) {
         return ApiResponse.<List<EvaluateModel>>builder()
                 .code(200)
                 .message("Show evaluated successfully")
-                .data(evaluateService.seeEvaluated(bookId))
+                .data(evaluateService.seeEvaluated(title))
                 .build();
     }
 
@@ -43,20 +43,20 @@ public class EvaluateController {
     }
 
     @GetMapping("/rating-count")
-    public ApiResponse<List<RatingCountResponse>> countRating(@RequestParam int bookId) {
+    public ApiResponse<List<RatingCountResponse>> countRating(@RequestParam String title) {
         return ApiResponse.<List<RatingCountResponse>>builder()
                 .code(200)
                 .message("Get rating count successfully")
-                .data(evaluateService.countRating(bookId))
+                .data(evaluateService.countRating(title))
                 .build();
     }
 
     @GetMapping("/average")
-    public ApiResponse<Double> averageRating(@RequestParam int bookId) {
+    public ApiResponse<Double> averageRating(@RequestParam String title) {
         return ApiResponse.<Double>builder()
                 .code(200)
                 .message("Get average rating successfully")
-                .data(evaluateService.averageRating(bookId))
+                .data(evaluateService.averageRating(title))
                 .build();
     }
 

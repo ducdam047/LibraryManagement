@@ -54,22 +54,20 @@ public class EvaluateService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public Map<String, Boolean> checkEvaluated(int bookId) {
+    public Map<String, Boolean> checkEvaluated(String title) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Book bookCheck = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            boolean evaluated = evaluateRepository.existsByUserAndBook(userCurrent, bookCheck);
+            boolean evaluated = evaluateRepository.existsByUserAndBook_Title(userCurrent, title);
             return Map.of("evaluated", evaluated);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
-    public List<EvaluateModel> seeEvaluated(int bookId) {
-        List<Evaluate> evaluates = evaluateRepository.findByBook_BookId(bookId);
+    public List<EvaluateModel> seeEvaluated(String title) {
+        List<Evaluate> evaluates = evaluateRepository.findByBook_Title(title);
         return evaluates.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
@@ -85,7 +83,7 @@ public class EvaluateService {
             Book bookEvaluate = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
 
-            if(evaluateRepository.existsByUserAndBook(userCurrent, bookEvaluate))
+            if(evaluateRepository.existsByUserAndBook_Title(userCurrent, bookEvaluate.getTitle()))
                 throw new AppException(ErrorCode.BOOK_EVALUATED);
 
             Record record = recordRepository.findFirstByUserAndBook(userCurrent, bookEvaluate)
@@ -107,8 +105,8 @@ public class EvaluateService {
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
-    public List<RatingCountResponse> countRating(int bookId) {
-        return evaluateRepository.countRatingByBookId(bookId)
+    public List<RatingCountResponse> countRating(String title) {
+        return evaluateRepository.countRatingByBookTitle(title)
                 .stream()
                 .map(row -> new RatingCountResponse(
                         ((Number) row[0]).intValue(),
@@ -117,8 +115,8 @@ public class EvaluateService {
                 .toList();
     }
 
-    public double averageRating(int bookId) {
-        return Optional.ofNullable(evaluateRepository.averageRatingByBookId(bookId)).orElse(0.0);
+    public double averageRating(String title) {
+        return Optional.ofNullable(evaluateRepository.averageRatingByBookId(title)).orElse(0.0);
     }
 
 //    public RatingSummaryResponse getRatingSummary(String title) {
