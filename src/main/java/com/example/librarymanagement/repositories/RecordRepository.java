@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,12 +35,14 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
     List<Record> getPendingReturnRecords();
     @Query("select r from Record r where r.status = 'OVERDUE'")
     List<Record> getOverdueRecords();
-    @Query("select r.book.bookId as bookId, count(r) as borrowCount " +
-            "from Record r " +
-            "where r.borrowDay >= :startDate " +
-            "group by r.book.bookId " +
-            "order by borrowCount desc")
-    List<Object[]> findTrendingBooks(LocalDate startDate);
+    @Query("""
+            select r.book
+            from Record r
+            where r.borrowDay >= :startDate
+            group by r.book
+            order by count(r) desc
+            """)
+    List<Book> findTrendingBooks(@Param("startDate") LocalDate startDate, Pageable pageable);
     @Query("select count(distinct r.user.id) from Record r where r.status = :status")
     long countDistinctUserByStatus(@Param("status") String status);
     long countByStatus(String status);

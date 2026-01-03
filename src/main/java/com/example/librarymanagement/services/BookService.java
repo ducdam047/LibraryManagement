@@ -12,6 +12,7 @@ import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -104,15 +105,11 @@ public class BookService {
 
     public List<BookModel> getTrendingBooks(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
-        List<Object[]> data = recordRepository.findTrendingBooks(startDate);
-        return data.stream()
-                .limit(limit)
-                .map(row -> {
-                    Integer bookId = (Integer) row[0];
-                    Book book = bookRepository.findById(bookId).orElse(null);
-                    return book != null ? toModel(book) : null;
-                })
-                .filter(Objects::nonNull)
+
+        return recordRepository
+                .findTrendingBooks(startDate, PageRequest.of(0, limit))
+                .stream()
+                .map(this::toModel)
                 .toList();
     }
 
