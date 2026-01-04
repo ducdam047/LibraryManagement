@@ -29,6 +29,7 @@ public enum ErrorCode {
     BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT),
     READING_NOT_FOUND(1012, "Reading not found", HttpStatus.NOT_FOUND),
     BOOK_BORROWED(2001, "You are borrowing this book", HttpStatus.CONFLICT),
+    BOOK_REQUESTED(2002, "You are requesting this book", HttpStatus.CONFLICT),
     ACCOUNT_BANNED(3002, "You are forbidden to borrow book", HttpStatus.FORBIDDEN),
     BORROW_LIMIT_REACHED(3003, "You have reached the maximum borrowing limit", HttpStatus.BAD_REQUEST),
     BORROW_DAYS_EXCEEDED(3005, "The borrowing period must not exceed 7 days", HttpStatus.BAD_REQUEST),

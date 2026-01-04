@@ -141,6 +141,7 @@ public class RecordService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            boolean bookRequest = recordRepository.existsByUserAndTitleAndStatus(userCurrent, request.getTitle(), RecordStatus.PENDING_APPROVE.name());
             boolean bookExists = recordRepository.existsByUserAndTitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
 
             if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
@@ -149,6 +150,8 @@ public class RecordService {
             int activeCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.ACTIVE.name());
             int pendingCount = recordRepository.countByUserAndStatus(userCurrent, RecordStatus.PENDING_APPROVE.name());
 
+            if(bookRequest)
+                throw new AppException(ErrorCode.BOOK_REQUESTED);
             if(bookExists)
                 throw new AppException(ErrorCode.BOOK_BORROWED);
             if(activeCount+pendingCount>=5)
@@ -187,9 +190,9 @@ public class RecordService {
         if(title==null && record.getBook()!=null)
             title = record.getBook().getTitle();
 
+        User user = record.getUser();
         Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
-        User user = record.getUser();
 
         LocalDate borrowDay = LocalDate.now();
         LocalDate dueDay = borrowDay.plusDays(record.getBorrowDays());
