@@ -1,5 +1,6 @@
 package com.example.librarymanagement.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -58,9 +59,11 @@ public class Book {
     @Column(name = "status")
     String status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Wishlist> wishlists;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<Reading> readings;
 }

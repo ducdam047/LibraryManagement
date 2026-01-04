@@ -45,17 +45,12 @@ public interface RecordRepository extends JpaRepository<Record, Integer> {
             from Record r
             join r.book b
             where r.borrowDay >= :startDate
-                and b.bookId = (
-                    select min(b2.bookId)
-                    from Book b2
-                    where b2.title = b.title
-                )
             group by b
             order by
                 count(r) desc,
                 max(r.borrowDay) desc
             """)
-    List<BookTrending> findTrendingBooks(@Param("startDate") LocalDate startDate, Pageable pageable);
+    List<BookTrending> findTrendingBooks(@Param("startDate") LocalDate startDate);
     @Query("select count(distinct r.user.id) from Record r where r.status = :status")
     long countDistinctUserByStatus(@Param("status") String status);
     long countByStatus(String status);

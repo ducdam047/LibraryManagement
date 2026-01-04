@@ -106,7 +106,31 @@ public class BookService {
 
     public List<BookTrending> getTrendingBooks(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
-        return recordRepository.findTrendingBooks(startDate, PageRequest.of(0, limit));
+        List<BookTrending> rawList = recordRepository.findTrendingBooks(startDate);
+
+        Map<String, BookTrending> grouped = new LinkedHashMap<>();
+
+        for(BookTrending book : rawList) {
+            String title = book.getBook().getTitle();
+            if(!grouped.containsKey(title)) {
+                grouped.put(title, new BookTrending(
+                        book.getBook(),
+                        book.getBorrowCount()
+                ));
+            } else {
+                BookTrending existing = grouped.get(title);
+                existing.setBorrowCount(existing.getBorrowCount() + book.getBorrowCount());
+            }
+        }
+
+        return grouped.values()
+                .stream()
+                .sorted(Comparator
+                        .comparingLong(BookTrending::getBorrowCount)
+                        .reversed()
+                )
+                .limit(limit)
+                .toList();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
