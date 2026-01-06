@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface RecordRepository extends JpaRepository<Record, Integer> {
 
     Optional<Record> findByBook(Book book);
+    List<Record> findByUser_UserIdOrderByBorrowDayDesc(int userId);
     List<Record> findByUser_UserId(int userId);
     List<Record> findByStatus(String status);
     int countByUserAndStatus(User user, String status);

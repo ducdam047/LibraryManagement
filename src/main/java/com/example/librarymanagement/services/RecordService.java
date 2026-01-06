@@ -61,6 +61,22 @@ public class RecordService {
         );
     }
 
+    @PreAuthorize("hasRole('USER')")
+    public List<RecordModel> getRecordHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication.getPrincipal() instanceof Jwt jwt) {
+            String email = jwt.getClaimAsString("sub");
+            User userCurrent = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+
+            List<Record> records = recordRepository.findByUser_UserIdOrderByBorrowDayDesc(userCurrent.getUserId());
+            return records.stream()
+                    .map(this::toModel)
+                    .collect(Collectors.toList());
+        }
+        throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public List<RecordModel> getRecordList(int userId) {
         List<Record> records = recordRepository.findByUser_UserId(userId);

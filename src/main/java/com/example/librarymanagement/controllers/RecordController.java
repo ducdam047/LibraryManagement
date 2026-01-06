@@ -19,6 +19,12 @@ public class RecordController {
     @Autowired
     private RecordService recordService;
 
+    @GetMapping("/history")
+    public ResponseEntity<List<RecordModel>> getRecordHistory() {
+        List<RecordModel> recordModels = recordService.getRecordHistory();
+        return ResponseEntity.ok(recordModels);
+    }
+
     @GetMapping("/list-record/{userId}")
     public ResponseEntity<List<RecordModel>> getRecordList(@PathVariable int userId) {
         List<RecordModel> recordModels = recordService.getRecordList(userId);
