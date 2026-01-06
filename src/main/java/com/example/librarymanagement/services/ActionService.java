@@ -58,13 +58,8 @@ public class ActionService {
         return books.stream().map(this::toModel).collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasRole('USER')")
     public List<BookModel> filterCategory(String category) {
         return findBooks(repo -> repo.findByCategory_CategoryName(category));
-    }
-
-    public List<BookModel> getBooks() {
-        return findBooks(BookRepository::findAll);
     }
 
     public BookModel searchTitle(String title) {

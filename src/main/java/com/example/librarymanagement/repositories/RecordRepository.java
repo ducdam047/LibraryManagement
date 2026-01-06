@@ -5,7 +5,6 @@ import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.entities.User;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
