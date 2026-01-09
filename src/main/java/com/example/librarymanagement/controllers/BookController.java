@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/api/books")
 public class BookController {
 
     @Autowired
@@ -27,31 +27,47 @@ public class BookController {
     @Autowired
     private ActionService actionService;
 
-    @GetMapping("/{title}")
-    public ResponseEntity<BookModel> getBook(@PathVariable String title) {
-        BookModel bookModel = bookService.getBook(title);
-        return ResponseEntity.ok(bookModel);
+    @GetMapping("/detail")
+    public ApiResponse<BookModel> getBook(@RequestParam String title) {
+        BookModel bookDetail = bookService.getBook(title);
+        return ApiResponse.<BookModel>builder()
+                .code(200)
+                .message("Detail book")
+                .data(bookDetail)
+                .build();
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<BookModel>> getFeaturedBooks() {
+    public ApiResponse<List<BookModel>> getFeaturedBooks() {
         List<BookModel> featuredBooks = bookService.getFeaturedBooks();
-        return ResponseEntity.ok(featuredBooks);
+        return ApiResponse.<List<BookModel>>builder()
+                .code(200)
+                .message("Featured books")
+                .data(featuredBooks)
+                .build();
     }
 
     @GetMapping("/trending")
-    public ResponseEntity<List<BookTrending>> getTrendingBooks() {
+    public ApiResponse<List<BookTrending>> getTrendingBooks() {
         List<BookTrending> trendingBooks = bookService.getTrendingBooks(20);
-        return ResponseEntity.ok(trendingBooks);
+        return ApiResponse.<List<BookTrending>>builder()
+                .code(200)
+                .message("Trending books")
+                .data(trendingBooks)
+                .build();
     }
 
-    @GetMapping("/category/{categoryName}")
-    public ResponseEntity<List<BookModel>> filterCategory(@PathVariable String categoryName) {
-        List<BookModel> books = actionService.filterCategory(categoryName);
-        return ResponseEntity.ok(books);
+    @GetMapping()
+    public ApiResponse<List<BookModel>> filterCategory(@RequestParam(required = false) String categoryName) {
+        List<BookModel> books = bookService.filterCategory(categoryName);
+        return ApiResponse.<List<BookModel>>builder()
+                .code(200)
+                .message("filtered category")
+                .data(books)
+                .build();
     }
 
-    @PostMapping("/add-book")
+    @PostMapping()
     public ApiResponse<BookModel> addBook(
             @RequestParam("bookData") String bookData,
             @RequestParam("imageFile") MultipartFile imageFile,
@@ -64,7 +80,7 @@ public class BookController {
                 .build();
     }
 
-    @PutMapping("/update-book/{bookId}")
+    @PutMapping("/{bookId}")
     public ApiResponse<Book> updateBook(
             @PathVariable int bookId,
             @RequestParam("bookData") String bookData,
@@ -78,7 +94,7 @@ public class BookController {
                 .build();
     }
 
-    @DeleteMapping("/delete-book/{bookId}")
+    @DeleteMapping("/{bookId}")
     public ApiResponse<String> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
         return ApiResponse.<String>builder()

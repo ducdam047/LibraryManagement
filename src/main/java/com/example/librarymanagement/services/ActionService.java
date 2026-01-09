@@ -58,10 +58,6 @@ public class ActionService {
         return books.stream().map(this::toModel).collect(Collectors.toList());
     }
 
-    public List<BookModel> filterCategory(String category) {
-        return findBooks(repo -> repo.findByCategory_CategoryName(category));
-    }
-
     public BookModel searchTitle(String title) {
         Book book = bookRepository.findFirstByTitle(title)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));

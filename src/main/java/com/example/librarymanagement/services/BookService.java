@@ -133,6 +133,13 @@ public class BookService {
                 .toList();
     }
 
+    public List<BookModel> filterCategory(String categoryName) {
+        List<Book> books = bookRepository.findByCategory_CategoryName(categoryName);
+        return books.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public BookModel addBook(BookAddRequest request, MultipartFile imageFile, MultipartFile pdfFile) throws IOException {
         String imageUrl = cloudinaryService.uploadImage(imageFile);
