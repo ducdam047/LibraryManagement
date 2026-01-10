@@ -36,7 +36,7 @@ public class ReadingController {
         return ResponseEntity.ok(readingModel);
     }
 
-    @PostMapping("/add/{bookId}")
+    @PostMapping("/{bookId}")
     public ApiResponse<Reading> addToReading(@PathVariable int bookId) {
         Reading reading = readingService.addToReading(bookId);
         return ApiResponse.<Reading>builder()
@@ -46,7 +46,7 @@ public class ReadingController {
                 .build();
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ApiResponse<ReadingModel> saveReading(@RequestBody ReadingAddRequest request) {
         return ApiResponse.<ReadingModel>builder()
                 .code(201)
