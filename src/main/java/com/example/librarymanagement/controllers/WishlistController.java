@@ -18,18 +18,26 @@ public class WishlistController {
     private WishlistService wishlistService;
 
     @GetMapping
-    public ResponseEntity<List<WishlistModel>> getWishlist() {
+    public ApiResponse<List<WishlistModel>> getWishlist() {
         List<WishlistModel> wishlistModels = wishlistService.getWishlist();
-        return ResponseEntity.ok(wishlistModels);
+        return ApiResponse.<List<WishlistModel>>builder()
+                .code(200)
+                .message("List book wishlist")
+                .data(wishlistModels)
+                .build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WishlistModel> getWishlistBook(@PathVariable int id) {
-        WishlistModel wishlistModel = wishlistService.getWishlistBook(id);
-        return ResponseEntity.ok(wishlistModel);
+    @GetMapping("/{wishlistId}")
+    public ApiResponse<WishlistModel> getWishlistBook(@PathVariable int wishlistId) {
+        WishlistModel wishlistModel = wishlistService.getWishlistBook(wishlistId);
+        return ApiResponse.<WishlistModel>builder()
+                .code(200)
+                .message("Book wishlist")
+                .data(wishlistModel)
+                .build();
     }
 
-    @PostMapping("/save")
+    @PostMapping()
     public ApiResponse<WishlistModel> addToWishlist(@RequestBody WishlistAddRequest request) {
         return ApiResponse.<WishlistModel>builder()
                 .code(201)
@@ -38,7 +46,7 @@ public class WishlistController {
                 .build();
     }
 
-    @DeleteMapping("/remove/{wishlistId}")
+    @DeleteMapping("/{wishlistId}")
     public ApiResponse<String> deleteFromWishlist(@PathVariable int wishlistId) {
         wishlistService.deleteFromWishlist(wishlistId);
         return ApiResponse.<String>builder()

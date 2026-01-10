@@ -71,8 +71,8 @@ public class WishlistService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public WishlistModel getWishlistBook(int id) {
-        Wishlist wishlist = wishlistRepository.findById(id).orElse(null);
+    public WishlistModel getWishlistBook(int wishlistId) {
+        Wishlist wishlist = wishlistRepository.findById(wishlistId).orElse(null);
         if(wishlist==null) return null;
         return toModel(wishlist);
     }
