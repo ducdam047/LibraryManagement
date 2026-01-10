@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.entities.Publisher;
 import com.example.librarymanagement.services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,14 @@ public class PublisherController {
     }
 
     @PostMapping()
-    public ApiResponse<Publisher> addPublisher(@RequestBody PublisherAddRequest request) {
+    public ResponseEntity<ApiResponse<Publisher>> addPublisher(@RequestBody PublisherAddRequest request) {
         Publisher publisher = publisherService.addPublisher(request);
-        return ApiResponse.<Publisher>builder()
-                .code(200)
+        ApiResponse<Publisher> apiResponse = ApiResponse.<Publisher>builder()
+                .code(201)
                 .message("Add publisher successfully")
                 .data(publisher)
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }

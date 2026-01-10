@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,14 @@ public class CategoryController {
     }
 
     @PostMapping()
-    public ApiResponse<Category> addCategory(@RequestBody CategoryAddRequest request) {
+    public ResponseEntity<ApiResponse<Category>> addCategory(@RequestBody CategoryAddRequest request) {
         Category category = categoryService.addCategory(request);
-        return ApiResponse.<Category>builder()
-                .code(200)
+        ApiResponse<Category> apiResponse = ApiResponse.<Category>builder()
+                .code(201)
                 .message("Add category successfully")
                 .data(category)
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }
