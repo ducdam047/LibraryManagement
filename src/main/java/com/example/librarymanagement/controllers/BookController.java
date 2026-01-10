@@ -6,10 +6,10 @@ import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.entities.Book;
-import com.example.librarymanagement.services.ActionService;
 import com.example.librarymanagement.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,9 +23,6 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
-
-    @Autowired
-    private ActionService actionService;
 
     @GetMapping("/detail")
     public ApiResponse<BookModel> getBook(@RequestParam String title) {
@@ -62,45 +59,50 @@ public class BookController {
         List<BookModel> books = bookService.filterCategory(categoryName);
         return ApiResponse.<List<BookModel>>builder()
                 .code(200)
-                .message("filtered category")
+                .message("Filtered category")
                 .data(books)
                 .build();
     }
 
     @PostMapping()
-    public ApiResponse<BookModel> addBook(
+    public ResponseEntity<ApiResponse<BookModel>> addBook(
             @RequestParam("bookData") String bookData,
             @RequestParam("imageFile") MultipartFile imageFile,
             @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
         BookAddRequest request = new ObjectMapper().readValue(bookData, BookAddRequest.class);
-        return ApiResponse.<BookModel>builder()
-                .code(200)
+        ApiResponse<BookModel> apiResponse = ApiResponse.<BookModel>builder()
+                .code(201)
                 .message("The book was added successfully")
                 .data(bookService.addBook(request, imageFile, pdfFile))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PutMapping("/{bookId}")
-    public ApiResponse<Book> updateBook(
+    public ResponseEntity<ApiResponse<Book>> updateBook(
             @PathVariable int bookId,
             @RequestParam("bookData") String bookData,
             @RequestParam("imageFile") MultipartFile imageFile,
             @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
         BookUpdateRequest request = new ObjectMapper().readValue(bookData, BookUpdateRequest.class);
-        return ApiResponse.<Book>builder()
+        ApiResponse<Book> apiResponse = ApiResponse.<Book>builder()
                 .code(200)
                 .message("Book update successfully")
                 .data(bookService.updateBook(bookId, request, imageFile, pdfFile))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @DeleteMapping("/{bookId}")
-    public ApiResponse<String> deleteBook(@PathVariable int bookId) {
+    public ResponseEntity<ApiResponse<Void>> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
-        return ApiResponse.<String>builder()
-                .code(200)
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
+                .code(204)
                 .message("The book was deleted successfully")
-                .data("Book with ID " + bookId + " has been deleted")
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
