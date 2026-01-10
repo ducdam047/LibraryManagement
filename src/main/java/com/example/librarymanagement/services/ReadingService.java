@@ -70,8 +70,8 @@ public class ReadingService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public ReadingModel getReadingBook(int id) {
-        Reading reading = readingRepository.findById(id).orElse(null);
+    public ReadingModel getReadingBook(int readingId) {
+        Reading reading = readingRepository.findById(readingId).orElse(null);
         if(reading==null) return null;
         return toModel(reading);
     }

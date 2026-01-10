@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.requests.wishlist.WishlistAddRequest;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,21 +39,24 @@ public class WishlistController {
     }
 
     @PostMapping()
-    public ApiResponse<WishlistModel> addToWishlist(@RequestBody WishlistAddRequest request) {
-        return ApiResponse.<WishlistModel>builder()
+    public ResponseEntity<ApiResponse<WishlistModel>> addToWishlist(@RequestBody WishlistAddRequest request) {
+        ApiResponse<WishlistModel> apiResponse = ApiResponse.<WishlistModel>builder()
                 .code(201)
                 .message("The book was added to wish list")
                 .data(wishlistService.addToWishlist(request))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @DeleteMapping("/{wishlistId}")
-    public ApiResponse<String> deleteFromWishlist(@PathVariable int wishlistId) {
+    public ResponseEntity<ApiResponse<Void>> deleteFromWishlist(@PathVariable int wishlistId) {
         wishlistService.deleteFromWishlist(wishlistId);
-        return ApiResponse.<String>builder()
+        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
                 .code(204)
                 .message("The book was deleted from wish list successfully")
-                .data("Book removed")
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }

@@ -6,6 +6,7 @@ import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.entities.Reading;
 import com.example.librarymanagement.services.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,39 +20,55 @@ public class ReadingController {
     private ReadingService readingService;
 
     @GetMapping
-    public ResponseEntity<List<ReadingModel>> getReadingList() {
+    public ApiResponse<List<ReadingModel>> getReadingList() {
         List<ReadingModel> readingModels = readingService.getReadingList();
-        return ResponseEntity.ok(readingModels);
+        return ApiResponse.<List<ReadingModel>>builder()
+                .code(200)
+                .message("List book reading")
+                .data(readingModels)
+                .build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ReadingModel> getReadingBook(@PathVariable int id) {
-        ReadingModel readingModel = readingService.getReadingBook(id);
-        return ResponseEntity.ok(readingModel);
+    @GetMapping("/{readingId}")
+    public ApiResponse<ReadingModel> getReadingBook(@PathVariable int readingId) {
+        ReadingModel readingModel = readingService.getReadingBook(readingId);
+        return ApiResponse.<ReadingModel>builder()
+                .code(200)
+                .message("Book Reading")
+                .data(readingModel)
+                .build();
     }
 
     @GetMapping("/book/{bookId}")
-    public ResponseEntity<ReadingModel> getReadingBookId(@PathVariable int bookId) {
+    public ApiResponse<ReadingModel> getReadingBookId(@PathVariable int bookId) {
         ReadingModel readingModel = readingService.getReadingBookId(bookId);
-        return ResponseEntity.ok(readingModel);
+        return ApiResponse.<ReadingModel>builder()
+                .code(200)
+                .message("Book Reading")
+                .data(readingModel)
+                .build();
     }
 
     @PostMapping("/{bookId}")
-    public ApiResponse<Reading> addToReading(@PathVariable int bookId) {
+    public ResponseEntity<ApiResponse<Reading>> addToReading(@PathVariable int bookId) {
         Reading reading = readingService.addToReading(bookId);
-        return ApiResponse.<Reading>builder()
+        ApiResponse<Reading> apiResponse = ApiResponse.<Reading>builder()
                 .code(201)
                 .message("Book added to Reading successfully")
                 .data(reading)
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @PostMapping()
-    public ApiResponse<ReadingModel> saveReading(@RequestBody ReadingAddRequest request) {
-        return ApiResponse.<ReadingModel>builder()
+    @PostMapping("/progress")
+    public ResponseEntity<ApiResponse<ReadingModel>> saveReading(@RequestBody ReadingAddRequest request) {
+        ApiResponse<ReadingModel> apiResponse = ApiResponse.<ReadingModel>builder()
                 .code(201)
                 .message("Reading progress saved successfully")
                 .data(readingService.saveReading(request))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }
