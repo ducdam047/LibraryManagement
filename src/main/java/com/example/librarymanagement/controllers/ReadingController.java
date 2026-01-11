@@ -2,7 +2,7 @@ package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.ReadingModel;
 import com.example.librarymanagement.dtos.requests.reading.ReadingAddRequest;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Reading;
 import com.example.librarymanagement.services.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.requests.category.CategoryAddRequest;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;

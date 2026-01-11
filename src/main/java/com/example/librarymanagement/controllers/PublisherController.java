@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.requests.publisher.PublisherAddRequest;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Publisher;
 import com.example.librarymanagement.services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;

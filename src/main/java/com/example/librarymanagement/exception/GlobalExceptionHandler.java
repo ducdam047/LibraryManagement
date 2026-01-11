@@ -1,6 +1,6 @@
 package com.example.librarymanagement.exception;
 
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

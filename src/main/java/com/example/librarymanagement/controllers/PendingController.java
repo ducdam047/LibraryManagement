@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.RecordModel;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

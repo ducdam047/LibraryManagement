@@ -4,7 +4,7 @@ import com.example.librarymanagement.dtos.requests.user.ChangePasswordRequest;
 import com.example.librarymanagement.dtos.requests.user.LoginRequest;
 import com.example.librarymanagement.dtos.requests.user.SignupRequest;
 import com.example.librarymanagement.dtos.requests.user.UpdateRequest;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.dtos.responses.authentication.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.AuthenticationService;

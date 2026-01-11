@@ -1,7 +1,7 @@
 package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.responses.api.ApiResponse;
+import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.StatisticalService;
 import org.springframework.beans.factory.annotation.Autowired;
