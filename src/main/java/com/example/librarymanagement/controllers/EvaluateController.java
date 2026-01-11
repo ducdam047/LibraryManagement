@@ -7,24 +7,29 @@ import com.example.librarymanagement.dtos.responses.rating.RatingCountResponse;
 import com.example.librarymanagement.dtos.responses.rating.RatingSummaryResponse;
 import com.example.librarymanagement.services.EvaluateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/evaluate")
+@RequestMapping("/evaluations")
 public class EvaluateController {
 
     @Autowired
     private EvaluateService evaluateService;
 
-    @GetMapping("/exists")
-    public ResponseEntity<?> checkEvaluated(@RequestParam String title) {
-        return ResponseEntity.ok(evaluateService.checkEvaluated(title));
+    @GetMapping("/status")
+    public ApiResponse<?> checkEvaluated(@RequestParam String title) {
+        return ApiResponse.builder()
+                .code(200)
+                .message("")
+                .data(evaluateService.checkEvaluated(title))
+                .build();
     }
 
-    @GetMapping("/review-evaluated")
+    @GetMapping()
     public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam String title) {
         return ApiResponse.<List<EvaluateModel>>builder()
                 .code(200)
@@ -33,16 +38,18 @@ public class EvaluateController {
                 .build();
     }
 
-    @PostMapping("/evaluate-book")
-    public ApiResponse<EvaluateModel> evaluateBook(@RequestBody EvaluateBookRequest request) {
-        return ApiResponse.<EvaluateModel>builder()
+    @PostMapping()
+    public ResponseEntity<ApiResponse<EvaluateModel>> evaluateBook(@RequestBody EvaluateBookRequest request) {
+        ApiResponse<EvaluateModel> apiResponse = ApiResponse.<EvaluateModel>builder()
                 .code(200)
                 .message("Evaluated successfully")
                 .data(evaluateService.evaluateBook(request))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @GetMapping("/rating-count")
+    @GetMapping("/ratings")
     public ApiResponse<List<RatingCountResponse>> countRating(@RequestParam String title) {
         return ApiResponse.<List<RatingCountResponse>>builder()
                 .code(200)
@@ -51,7 +58,7 @@ public class EvaluateController {
                 .build();
     }
 
-    @GetMapping("/average")
+    @GetMapping("/ratings/average")
     public ApiResponse<Double> averageRating(@RequestParam String title) {
         return ApiResponse.<Double>builder()
                 .code(200)
