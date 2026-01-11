@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.models.RecordModel;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,11 +35,13 @@ public class PendingController {
     }
 
     @PutMapping("/cancel/{recordId}")
-    public ApiResponse<String> cancelPendingBorrow(@PathVariable int recordId) {
-        return ApiResponse.<String>builder()
+    public ResponseEntity<ApiResponse<String>> cancelPendingBorrow(@PathVariable int recordId) {
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Record application cancelled successfully")
                 .data(pendingService.cancelPendingBorrow(recordId))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
