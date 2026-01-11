@@ -11,12 +11,14 @@ import com.example.librarymanagement.services.AuthenticationService;
 import com.example.librarymanagement.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
@@ -26,21 +28,34 @@ public class UserController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ApiResponse<User> signupUser(@Valid @RequestBody SignupRequest request) {
-        return ApiResponse.<User>builder()
+    public ResponseEntity<ApiResponse<User>> signupUser(@Valid @RequestBody SignupRequest request) {
+        ApiResponse<User> apiResponse = ApiResponse.<User>builder()
                 .code(201)
                 .message("Registered successfully")
                 .data(userService.signupUser(request))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthenticationResponse> loginUser(@RequestBody LoginRequest request) {
-        var data = authenticationService.authenticate(request);
-        return ApiResponse.<AuthenticationResponse>builder()
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> loginUser(@RequestBody LoginRequest request) {
+        AuthenticationResponse data = authenticationService.authenticate(request);
+        ApiResponse<AuthenticationResponse> apiResponse = ApiResponse.<AuthenticationResponse>builder()
                 .code(200)
                 .message("Login successfully")
                 .data(data)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping()
+    public ApiResponse<List<User>> getUsers() {
+        return ApiResponse.<List<User>>builder()
+                .code(200)
+                .message("List users")
+                .data(userService.getUsers())
                 .build();
     }
 
@@ -54,24 +69,28 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/update/{userId}")
-    public ApiResponse<User> updateUser(@PathVariable int userId, @RequestBody UpdateRequest request) {
-        User user = userService.updateUser(userId, request);
-        return ApiResponse.<User>builder()
+    @PutMapping("/profile")
+    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody UpdateRequest request) {
+        User user = userService.updateUser(request);
+        ApiResponse<User> apiResponse = ApiResponse.<User>builder()
                 .code(200)
                 .message("User updated successfully")
                 .data(user)
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
-    @PutMapping("/changePassword/{userId}")
-    public ApiResponse<User> changePassword(@PathVariable int userId, @RequestBody ChangePasswordRequest request) {
-        User user = userService.changePassword(userId, request);
-        return ApiResponse.<User>builder()
+    @PutMapping("/password")
+    public ResponseEntity<ApiResponse<User>> changePassword(@RequestBody ChangePasswordRequest request) {
+        User user = userService.changePassword(request);
+        ApiResponse<User> apiResponse = ApiResponse.<User>builder()
                 .code(200)
                 .message("User change password successfully")
                 .data(user)
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/reloadUser")
@@ -82,10 +101,5 @@ public class UserController {
                 .message("Reload user successfully")
                 .data(user)
                 .build();
-    }
-
-    @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.getUsers();
     }
 }

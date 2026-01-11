@@ -51,7 +51,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @PostAuthorize("returnObject.email == authentication.name")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
     public User getProfile() {
         var context = SecurityContextHolder.getContext();
         String email = context.getAuthentication().getName();
@@ -59,9 +63,11 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
     }
 
-    @PostAuthorize("returnObject.email == authentication.name")
-    public User updateUser(int userId, UpdateRequest request) {
-        User user = userRepository.findById(userId)
+    public User updateUser(UpdateRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         user.setFullName(request.getFullName());
@@ -72,9 +78,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @PostAuthorize("returnObject.email == authentication.name")
-    public User changePassword(int userId, ChangePasswordRequest request) {
-        User user = userRepository.findById(userId)
+    public User changePassword(ChangePasswordRequest request) {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         if(!request.getPassword().equals(request.getConfirmPassword()))
             throw new AppException(ErrorCode.PASSWORD_NOT_CONFIRM);
@@ -92,10 +100,5 @@ public class UserService {
                 return user.get();
         }
         throw new AppException(ErrorCode.USER_NOT_FOUND);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getUsers() {
-        return userRepository.findAll();
     }
 }
