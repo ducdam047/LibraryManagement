@@ -7,6 +7,7 @@ import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.dtos.responses.api.ApiResponse;
 import com.example.librarymanagement.services.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,56 +57,68 @@ public class RecordController {
     }
 
     @PostMapping("/borrow-book")
-    public ApiResponse<RecordModel> borrowBook(@RequestBody BorrowBookRequest request) {
-        return ApiResponse.<RecordModel>builder()
-                .code(200)
+    public ResponseEntity<ApiResponse<RecordModel>> borrowBook(@RequestBody BorrowBookRequest request) {
+        ApiResponse<RecordModel> apiResponse = ApiResponse.<RecordModel>builder()
+                .code(201)
                 .message("Borrow request sent")
                 .data(recordService.borrowBook(request))
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
     @PutMapping("/approve/{recordId}")
-    public ApiResponse<RecordModel> approveRecord(@PathVariable int recordId) {
-        return ApiResponse.<RecordModel>builder()
+    public ResponseEntity<ApiResponse<RecordModel>> approveRecord(@PathVariable int recordId) {
+        ApiResponse<RecordModel> apiResponse = ApiResponse.<RecordModel>builder()
                 .code(200)
                 .message("Approved successfully")
                 .data(recordService.approveBorrow(recordId))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PutMapping("/reject/{recordId}")
-    public ApiResponse<RecordModel> rejectRecord(@PathVariable int recordId) {
-        return ApiResponse.<RecordModel>builder()
+    public ResponseEntity<ApiResponse<RecordModel>> rejectRecord(@PathVariable int recordId) {
+        ApiResponse<RecordModel> apiResponse = ApiResponse.<RecordModel>builder()
                 .code(200)
                 .message("Rejected successfully")
                 .data(recordService.rejectBorrow(recordId))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
-    @PostMapping("/return-book")
-    public ApiResponse<String> returnBook(@RequestBody ReturnBookRequest request) {
-        return ApiResponse.<String>builder()
+    @PutMapping("/return-book")
+    public ResponseEntity<ApiResponse<String>> returnBook(@RequestBody ReturnBookRequest request) {
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("return request sent")
                 .data(recordService.returnBook(request))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PutMapping("/confirm/{recordId}")
-    public ApiResponse<String> confirmReturn(@PathVariable int recordId) {
-        return ApiResponse.<String>builder()
+    public ResponseEntity<ApiResponse<String>> confirmReturn(@PathVariable int recordId) {
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Confirm return successfully")
                 .data(recordService.confirmReturn(recordId))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
-    @PostMapping("/extend-book")
-    public ApiResponse<String> extendBook(@RequestBody ExtendBookRequest request) {
-        return ApiResponse.<String>builder()
+    @PutMapping("/extend-book")
+    public ResponseEntity<ApiResponse<String>> extendBook(@RequestBody ExtendBookRequest request) {
+        ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Extended successfully")
                 .data(recordService.extendBook(request))
                 .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
