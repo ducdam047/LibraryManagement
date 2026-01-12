@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class RecordService {
+public class BorrowOrderService {
 
     @Autowired
     private BorrowOrderRepository borrowOrderRepository;

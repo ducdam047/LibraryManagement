@@ -5,7 +5,7 @@ import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
-import com.example.librarymanagement.services.RecordService;
+import com.example.librarymanagement.services.BorrowOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,44 +15,44 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/borrowed")
-public class RecordController {
+public class BorrowOrderController {
 
     @Autowired
-    private RecordService recordService;
+    private BorrowOrderService borrowOrderService;
 
     @GetMapping("/history")
     public ResponseEntity<List<BorrowOrderModel>> getRecordHistory() {
-        List<BorrowOrderModel> borrowOrderModels = recordService.getRecordHistory();
+        List<BorrowOrderModel> borrowOrderModels = borrowOrderService.getRecordHistory();
         return ResponseEntity.ok(borrowOrderModels);
     }
 
     @GetMapping("/list-record/{userId}")
     public ResponseEntity<List<BorrowOrderModel>> getRecordList(@PathVariable int userId) {
-        List<BorrowOrderModel> borrowOrderModels = recordService.getRecordList(userId);
+        List<BorrowOrderModel> borrowOrderModels = borrowOrderService.getRecordList(userId);
         return ResponseEntity.ok(borrowOrderModels);
     }
 
     @GetMapping("/list-record-borrowed")
     public ResponseEntity<List<BorrowOrderModel>> getActiveOverdueRecordList() {
-        List<BorrowOrderModel> borrowOrderModels = recordService.getActiveOverdueRecordList();
+        List<BorrowOrderModel> borrowOrderModels = borrowOrderService.getActiveOverdueRecordList();
         return ResponseEntity.ok(borrowOrderModels);
     }
 
     @GetMapping("/list-record-returned")
     public ResponseEntity<List<BorrowOrderModel>> getReturnedRecordList() {
-        List<BorrowOrderModel> borrowOrderModels = recordService.getReturnedRecordList();
+        List<BorrowOrderModel> borrowOrderModels = borrowOrderService.getReturnedRecordList();
         return ResponseEntity.ok(borrowOrderModels);
     }
 
     @GetMapping("/record-active/{bookId}")
     public ResponseEntity<BorrowOrderModel> getBorrowedBook(@PathVariable int bookId) {
-        BorrowOrderModel borrowOrderModel = recordService.getBorrowedBook(bookId);
+        BorrowOrderModel borrowOrderModel = borrowOrderService.getBorrowedBook(bookId);
         return ResponseEntity.ok(borrowOrderModel);
     }
 
     @GetMapping("/record-returned/{recordId}")
     public ResponseEntity<BorrowOrderModel> getReturnedBook(@PathVariable int recordId) {
-        BorrowOrderModel borrowOrderModel = recordService.getReturnedBook(recordId);
+        BorrowOrderModel borrowOrderModel = borrowOrderService.getReturnedBook(recordId);
         return ResponseEntity.ok(borrowOrderModel);
     }
 
@@ -61,7 +61,7 @@ public class RecordController {
         ApiResponse<BorrowOrderModel> apiResponse = ApiResponse.<BorrowOrderModel>builder()
                 .code(201)
                 .message("Borrow request sent")
-                .data(recordService.borrowBook(request))
+                .data(borrowOrderService.borrowBook(request))
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
@@ -72,7 +72,7 @@ public class RecordController {
         ApiResponse<BorrowOrderModel> apiResponse = ApiResponse.<BorrowOrderModel>builder()
                 .code(200)
                 .message("Approved successfully")
-                .data(recordService.approveBorrow(recordId))
+                .data(borrowOrderService.approveBorrow(recordId))
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -83,7 +83,7 @@ public class RecordController {
         ApiResponse<BorrowOrderModel> apiResponse = ApiResponse.<BorrowOrderModel>builder()
                 .code(200)
                 .message("Rejected successfully")
-                .data(recordService.rejectBorrow(recordId))
+                .data(borrowOrderService.rejectBorrow(recordId))
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -94,7 +94,7 @@ public class RecordController {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("return request sent")
-                .data(recordService.returnBook(request))
+                .data(borrowOrderService.returnBook(request))
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -105,7 +105,7 @@ public class RecordController {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Confirm return successfully")
-                .data(recordService.confirmReturn(recordId))
+                .data(borrowOrderService.confirmReturn(recordId))
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -116,7 +116,7 @@ public class RecordController {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Extended successfully")
-                .data(recordService.extendBook(request))
+                .data(borrowOrderService.extendBook(request))
                 .build();
 
         return ResponseEntity.ok(apiResponse);
