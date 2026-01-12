@@ -7,17 +7,12 @@ import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.entities.Publisher;
-import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,7 +49,7 @@ public class BookService {
     private WishlistService wishlistService;
 
     @Autowired
-    private RecordRepository recordRepository;
+    private BorrowOrderRepository borrowOrderRepository;
 
     public Book getById(int bookId) {
         return bookRepository.findById(bookId)
@@ -106,7 +101,7 @@ public class BookService {
 
     public List<BookTrending> getTrendingBooks(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
-        List<BookTrending> rawList = recordRepository.findTrendingBooks(startDate);
+        List<BookTrending> rawList = borrowOrderRepository.findTrendingBooks(startDate);
 
         Map<String, BookTrending> grouped = new LinkedHashMap<>();
 

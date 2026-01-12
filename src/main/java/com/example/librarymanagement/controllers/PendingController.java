@@ -1,6 +1,6 @@
 package com.example.librarymanagement.controllers;
 
-import com.example.librarymanagement.dtos.models.RecordModel;
+import com.example.librarymanagement.dtos.models.BorrowOrderModel;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ public class PendingController {
     private PendingService pendingService;
 
     @GetMapping("/borrow")
-    public ApiResponse<List<RecordModel>> getRecordPendingBorrow() {
-        return ApiResponse.<List<RecordModel>>builder()
+    public ApiResponse<List<BorrowOrderModel>> getRecordPendingBorrow() {
+        return ApiResponse.<List<BorrowOrderModel>>builder()
                 .code(200)
                 .message("Show book pending borrow successfully")
                 .data(pendingService.getRecordPendingBorrow())
@@ -26,8 +26,8 @@ public class PendingController {
     }
 
     @GetMapping("/return")
-    public ApiResponse<List<RecordModel>> getRecordPendingReturn() {
-        return ApiResponse.<List<RecordModel>>builder()
+    public ApiResponse<List<BorrowOrderModel>> getRecordPendingReturn() {
+        return ApiResponse.<List<BorrowOrderModel>>builder()
                 .code(200)
                 .message("Show book pending return successfully")
                 .data(pendingService.getRecordPendingReturn())

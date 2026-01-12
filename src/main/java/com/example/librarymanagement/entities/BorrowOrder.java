@@ -7,13 +7,13 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "borrow_record")
+@Table(name = "borrow_order")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Record {
+public class BorrowOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

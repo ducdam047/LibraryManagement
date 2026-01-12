@@ -1,18 +1,14 @@
 package com.example.librarymanagement.services;
 
 import com.example.librarymanagement.dtos.models.BookModel;
-import com.example.librarymanagement.dtos.models.RecordModel;
-import com.example.librarymanagement.dtos.models.EvaluateModel;
 import com.example.librarymanagement.entities.*;
-import com.example.librarymanagement.entities.Record;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.RecordRepository;
+import com.example.librarymanagement.repositories.BorrowOrderRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +25,7 @@ public class ActionService {
     private BookRepository bookRepository;
 
     @Autowired
-    private RecordRepository recordRepository;
+    private BorrowOrderRepository borrowOrderRepository;
 
     @Autowired
     private EvaluateRepository evaluateRepository;
