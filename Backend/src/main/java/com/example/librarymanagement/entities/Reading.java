@@ -21,11 +21,11 @@ public class Reading {
     int readingId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user_id")
     User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book")
+    @JoinColumn(name = "book_id")
     Book book;
 
     @Column(name = "page")

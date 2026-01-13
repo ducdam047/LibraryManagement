@@ -24,6 +24,6 @@ public class BorrowOrderModel {
     int borrowDays;
     LocalDate dueDay;
     LocalDate returnedDay;
-    String status;
+    String borrowStatus;
     int extendCount;
 }

@@ -27,12 +27,12 @@ public class Book {
     @Column(name = "author")
     String author;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
     Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "publisher")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id")
     Publisher publisher;
 
     @Column(name = "isbn")

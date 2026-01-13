@@ -88,7 +88,7 @@ public class EvaluateService {
             BorrowOrder borrowOrder = borrowOrderRepository.findFirstByUserAndBook(userCurrent, bookEvaluate)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
 
-            if(!borrowOrder.getStatus().equals("RETURNED"))
+            if(!borrowOrder.getBorrowStatus().equals("RETURNED"))
                 throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
 
             Evaluate evaluate = Evaluate.builder()

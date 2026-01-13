@@ -68,7 +68,7 @@ public class DashboardService {
         long borrowedBooks =bookRepository.countByStatus(BookStatus.BORROWED.name());
 
         long totalUser = userRepository.count();
-        long borrowingUsers = borrowOrderRepository.countDistinctUserByStatus(RecordStatus.ACTIVE.name());
+        long borrowingUsers = borrowOrderRepository.countDistinctUserByBorrowStatus(RecordStatus.ACTIVE.name());
         long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
         List<BorrowOrderModel> pendingApproveRecords = borrowOrderRepository.getPendingApproveRecords()
@@ -86,7 +86,7 @@ public class DashboardService {
                             record.getBorrowDays(),
                             record.getDueDay(),
                             record.getReturnedDay(),
-                            record.getStatus(),
+                            record.getBorrowStatus(),
                             record.getExtendCount()
                     );
                 })
@@ -107,7 +107,7 @@ public class DashboardService {
                             record.getBorrowDays(),
                             record.getDueDay(),
                             record.getReturnedDay(),
-                            record.getStatus(),
+                            record.getBorrowStatus(),
                             record.getExtendCount()
                     );
                 })
@@ -126,7 +126,7 @@ public class DashboardService {
                         record.getBorrowDays(),
                         record.getDueDay(),
                         record.getReturnedDay(),
-                        record.getStatus(),
+                        record.getBorrowStatus(),
                         record.getExtendCount()
                 ))
                 .collect(Collectors.toList());

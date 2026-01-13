@@ -56,7 +56,7 @@ public class BorrowOrderService {
                 borrowOrder.getBorrowDays(),
                 borrowOrder.getDueDay(),
                 borrowOrder.getReturnedDay(),
-                borrowOrder.getStatus(),
+                borrowOrder.getBorrowStatus(),
                 borrowOrder.getExtendCount()
         );
     }
@@ -93,7 +93,7 @@ public class BorrowOrderService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndStatusIn(userCurrent.getUserId(), List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()));
+            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()));
             return borrowOrders.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class BorrowOrderService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndStatusOrderByReturnedDayAsc(userCurrent.getUserId(), RecordStatus.RETURNED.name());
+            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(userCurrent.getUserId(), RecordStatus.RETURNED.name());
             return borrowOrders.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndStatusIn(userCurrent, borrowedBook, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
+            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, borrowedBook, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
             return toModel(borrowOrder);
         }
@@ -157,14 +157,14 @@ public class BorrowOrderService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            boolean bookRequest = borrowOrderRepository.existsByUserAndTitleAndStatus(userCurrent, request.getTitle(), RecordStatus.PENDING_APPROVE.name());
-            boolean bookExists = borrowOrderRepository.existsByUserAndTitleAndStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
+            boolean bookRequest = borrowOrderRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), RecordStatus.PENDING_APPROVE.name());
+            boolean bookExists = borrowOrderRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
 
             if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
 
-            int activeCount = borrowOrderRepository.countByUserAndStatus(userCurrent, RecordStatus.ACTIVE.name());
-            int pendingCount = borrowOrderRepository.countByUserAndStatus(userCurrent, RecordStatus.PENDING_APPROVE.name());
+            int activeCount = borrowOrderRepository.countByUserAndBorrowStatus(userCurrent, RecordStatus.ACTIVE.name());
+            int pendingCount = borrowOrderRepository.countByUserAndBorrowStatus(userCurrent, RecordStatus.PENDING_APPROVE.name());
 
             if(bookRequest)
                 throw new AppException(ErrorCode.BOOK_REQUESTED);
@@ -184,7 +184,7 @@ public class BorrowOrderService {
                     .borrowDays(borrowDays)
                     .dueDay(null)
                     .returnedDay(null)
-                    .status(RecordStatus.PENDING_APPROVE.name())
+                    .borrowStatus(RecordStatus.PENDING_APPROVE.name())
                     .extendCount(0)
                     .build();
             borrowOrderRepository.save(borrowOrder);
@@ -199,7 +199,7 @@ public class BorrowOrderService {
     public BorrowOrderModel approveBorrow(int recordId) {
         BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getStatus()))
+        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
 
         String title = borrowOrder.getTitle();
@@ -216,7 +216,7 @@ public class BorrowOrderService {
         borrowOrder.setBook(book);
         borrowOrder.setBorrowDay(borrowDay);
         borrowOrder.setDueDay(dueDay);
-        borrowOrder.setStatus(RecordStatus.ACTIVE.name());
+        borrowOrder.setBorrowStatus(RecordStatus.ACTIVE.name());
 
         List<Book> sameTitleBooks = bookRepository.findAllByTitle(title);
         for (Book b : sameTitleBooks) {
@@ -236,10 +236,10 @@ public class BorrowOrderService {
     public BorrowOrderModel rejectBorrow(int recordId) {
         BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getStatus()))
+        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
 
-        borrowOrder.setStatus(RecordStatus.REJECTED.name());
+        borrowOrder.setBorrowStatus(RecordStatus.REJECTED.name());
         return toModel(borrowOrder);
     }
 
@@ -253,10 +253,10 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndStatusIn(userCurrent, bookReturn, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
+            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
-            borrowOrder.setStatus(RecordStatus.PENDING_RETURN.name());
+            borrowOrder.setBorrowStatus(RecordStatus.PENDING_RETURN.name());
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
@@ -268,14 +268,14 @@ public class BorrowOrderService {
     public String confirmReturn(int recordId) {
         BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
                 .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_RETURN.name().equals(borrowOrder.getStatus()))
+        if(!RecordStatus.PENDING_RETURN.name().equals(borrowOrder.getBorrowStatus()))
             throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
 
         Book book = borrowOrder.getBook();
         User user = borrowOrder.getUser();
 
         borrowOrder.setReturnedDay(LocalDate.now());
-        borrowOrder.setStatus(RecordStatus.RETURNED.name());
+        borrowOrder.setBorrowStatus(RecordStatus.RETURNED.name());
 
         List<Book> bookSameTitles = bookRepository.findAllByTitle(book.getTitle());
         for(Book b : bookSameTitles) {
@@ -300,7 +300,7 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookExtend = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndStatus(userCurrent, bookExtend, RecordStatus.ACTIVE.name())
+            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatus(userCurrent, bookExtend, RecordStatus.ACTIVE.name())
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
 
             if(borrowOrder.getExtendCount()==2)

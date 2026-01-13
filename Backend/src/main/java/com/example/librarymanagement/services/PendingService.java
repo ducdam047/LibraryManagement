@@ -40,7 +40,7 @@ public class PendingService {
                 borrowOrder.getBorrowDays(),
                 borrowOrder.getDueDay(),
                 borrowOrder.getReturnedDay(),
-                borrowOrder.getStatus(),
+                borrowOrder.getBorrowStatus(),
                 borrowOrder.getExtendCount()
         );
     }
@@ -52,7 +52,7 @@ public class PendingService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.PENDING_APPROVE.name());
+            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), RecordStatus.PENDING_APPROVE.name());
             return borrowOrders.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class PendingService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndStatus(userCurrent.getUserId(), RecordStatus.PENDING_RETURN.name());
+            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), RecordStatus.PENDING_RETURN.name());
             return borrowOrders.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -83,12 +83,12 @@ public class PendingService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
                     .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-            if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getStatus()))
+            if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
                 throw new IllegalStateException("The order cannot be canceled in its current state");
             if(!borrowOrder.getUser().equals(userCurrent))
                 throw new AppException(ErrorCode.UNAUTHORIZED);
 
-            borrowOrder.setStatus(RecordStatus.CANCELLED.name());
+            borrowOrder.setBorrowStatus(RecordStatus.CANCELLED.name());
             borrowOrderRepository.save(borrowOrder);
 
             return "Record application cancelled successfully";

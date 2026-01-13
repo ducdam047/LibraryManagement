@@ -21,11 +21,11 @@ public class BorrowOrder {
     int borrowRecordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user_id")
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "book", nullable = true)
+    @JoinColumn(name = "book_id", nullable = true)
     Book book;
 
     @Column(name = "title", nullable = true)
@@ -43,8 +43,8 @@ public class BorrowOrder {
     @Column(name = "returned_day")
     LocalDate returnedDay;
 
-    @Column(name = "status")
-    String status;
+    @Column(name = "borrow_status")
+    String borrowStatus;
 
     @Column(name = "extend_count")
     int extendCount;

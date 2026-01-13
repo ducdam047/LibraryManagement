@@ -22,13 +22,13 @@ public class Wishlist {
     int wishlistId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book")
+    @JoinColumn(name = "book_id")
     Book book;
 
     @Column(name = "createdAt")
     LocalDate createdAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user_id")
     User user;
 }

@@ -21,11 +21,11 @@ public class Evaluate {
     int evaluateId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "user_id")
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book")
+    @JoinColumn(name = "book_id")
     Book book;
 
     @Column(name = "rating")
