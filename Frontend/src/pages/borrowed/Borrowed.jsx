@@ -31,11 +31,11 @@ export default function Borrowed() {
     setLoading(true);
     try {
       // 🔥 NEW: lấy danh sách bản ghi đang mượn (ACTIVE + OVERDUE)
-      const activeRecords = await getBorrowedBooks();
+      const activeorders = await getBorrowedBooks();
 
-      // chuyển record → dữ liệu card để không phải sửa BorrowedCard
-      const mappedActive = (activeRecords || []).map(r => ({
-        recordId: r.recordId,
+      // chuyển order → dữ liệu card để không phải sửa BorrowedCard
+      const mappedActive = (activeorders || []).map(r => ({
+        loanId: r.loanId,
         bookId: r.bookId,
         title: r.title,
         author: r.author,
@@ -45,7 +45,7 @@ export default function Borrowed() {
         dueDay: r.dueDay,
         returnedDay: r.returnedDay,
 
-        status: r.status,        // ACTIVE | OVERDUE
+        borrowStatus: r.borrowStatus,        // ACTIVE | OVERDUE
         extendCount: r.extendCount,
       }));
 
@@ -146,7 +146,7 @@ export default function Borrowed() {
             >
               {borrowed.map((rec) => (
                 <BorrowedCard
-                  key={rec.recordId}
+                  key={rec.loanId}
                   book={rec}
                   onReturn={() => setConfirmData(rec)}
                 />
@@ -191,10 +191,10 @@ export default function Borrowed() {
               onScroll={() => checkScroll(returnedRef, setReturnedScroll)}
               className="flex gap-8 overflow-x-auto no-scrollbar pb-4 scroll-smooth"
             >
-              {returned.map((record) => (
+              {returned.map((order) => (
                 <ReturnedCard
-                  key={record.recordId}
-                  record={record}
+                  key={order.loanId}
+                  order={order}
                 />
               ))}
             </div>

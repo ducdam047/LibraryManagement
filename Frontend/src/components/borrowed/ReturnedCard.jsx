@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { checkEvaluateExists } from "../../api/userApi/evaluateApi";
 
-export default function ReturnedCard({ record }) {
+export default function ReturnedCard({ order }) {
   const navigate = useNavigate();
 
   // --- hooks (luôn ở trên cùng) ---
   const [evaluated, setEvaluated] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  const bookId = record?.bookId;
-  const title = record?.title || "";
+  const bookId = order?.bookId;
+  const title = order?.title || "";
 
   useEffect(() => {
     if (!bookId) {
@@ -36,8 +36,8 @@ export default function ReturnedCard({ record }) {
     return () => { mounted = false };
   }, [bookId]);
 
-  // Nếu chưa load record (ví dụ parent đang fetch), trả skeleton chỗ card (không làm vỡ layout)
-  if (!record) {
+  // Nếu chưa load order (ví dụ parent đang fetch), trả skeleton chỗ card (không làm vỡ layout)
+  if (!order) {
     return (
       <div
         className="
@@ -56,7 +56,7 @@ export default function ReturnedCard({ record }) {
   // --- Render chính ---
   return (
     <div
-      onClick={() => navigate(`/borrowed/record-returned/${record.recordId}`)}
+      onClick={() => navigate(`/borrowed/order-returned/${order.loanId}`)}
       className="
     bg-white/10 backdrop-blur-lg 
     rounded-2xl overflow-hidden 
@@ -70,8 +70,8 @@ export default function ReturnedCard({ record }) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={record.imageUrl}
-          alt={record.title}
+          src={order.imageUrl}
+          alt={order.title}
           className="w-full h-80 object-cover object-top hover:scale-110 transition duration-500"
         />
 
@@ -84,13 +84,13 @@ export default function ReturnedCard({ record }) {
       <div className="p-5 text-white flex flex-col flex-1">
         {/* phần thông tin */}
         <div className="flex-1">
-          <h4 className="text-lg font-bold truncate">{record.title}</h4>
+          <h4 className="text-lg font-bold truncate">{order.title}</h4>
           <p className="text-sm text-gray-300 mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
-            {record.author}
+            {order.author}
           </p>
 
           <p className="mt-3 text-sm text-green-400">
-            Đã trả ngày: {record.returnedDay}
+            Đã trả ngày: {order.returnedDay}
           </p>
         </div>
 

@@ -1,6 +1,6 @@
 package com.example.librarymanagement.enums;
 
-public enum RecordStatus {
+public enum LoanStatus {
 
     ACTIVE,
     RETURNED,

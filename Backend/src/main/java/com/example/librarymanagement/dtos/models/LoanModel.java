@@ -12,9 +12,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BorrowOrderModel {
+public class LoanModel {
 
-    int recordId;
+    int loanId;
     String fullName;
     Integer bookId;
     String title;

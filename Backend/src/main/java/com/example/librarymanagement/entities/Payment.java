@@ -23,8 +23,8 @@ public class Payment {
     Long paymentId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "borrow_record_id")
-//    BorrowOrder borrowOrder;
+//    @JoinColumn(name = "loan_id")
+//    Loan loan;
 //
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_id")

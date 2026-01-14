@@ -1,6 +1,6 @@
 package com.example.librarymanagement.controllers;
 
-import com.example.librarymanagement.dtos.models.BorrowOrderModel;
+import com.example.librarymanagement.dtos.models.LoanModel;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +17,29 @@ public class PendingController {
     private PendingService pendingService;
 
     @GetMapping("/borrow")
-    public ApiResponse<List<BorrowOrderModel>> getRecordPendingBorrow() {
-        return ApiResponse.<List<BorrowOrderModel>>builder()
+    public ApiResponse<List<LoanModel>> getLoanPendingBorrow() {
+        return ApiResponse.<List<LoanModel>>builder()
                 .code(200)
                 .message("Show book pending borrow successfully")
-                .data(pendingService.getRecordPendingBorrow())
+                .data(pendingService.getLoanPendingBorrow())
                 .build();
     }
 
     @GetMapping("/return")
-    public ApiResponse<List<BorrowOrderModel>> getRecordPendingReturn() {
-        return ApiResponse.<List<BorrowOrderModel>>builder()
+    public ApiResponse<List<LoanModel>> getLoanPendingReturn() {
+        return ApiResponse.<List<LoanModel>>builder()
                 .code(200)
                 .message("Show book pending return successfully")
-                .data(pendingService.getRecordPendingReturn())
+                .data(pendingService.getLoanPendingReturn())
                 .build();
     }
 
-    @PutMapping("/cancel/{recordId}")
-    public ResponseEntity<ApiResponse<String>> cancelPendingBorrow(@PathVariable int recordId) {
+    @PutMapping("/cancel/{loanId}")
+    public ResponseEntity<ApiResponse<String>> cancelPendingBorrow(@PathVariable int loanId) {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
-                .message("Record application cancelled successfully")
-                .data(pendingService.cancelPendingBorrow(recordId))
+                .message("Loan application cancelled successfully")
+                .data(pendingService.cancelPendingBorrow(loanId))
                 .build();
 
         return ResponseEntity.ok(apiResponse);

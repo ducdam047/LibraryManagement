@@ -10,7 +10,7 @@ export const getPendingReturn = async () => {
   return res.data?.data;
 };
 
-export const cancelPendingBorrow = async (recordId) => {
-  const res = await axios.put(`/pending/cancel/${recordId}`);
+export const cancelPendingBorrow = async (loanId) => {
+  const res = await axios.put(`/pending/cancel/${loanId}`);
   return res.data;
 };

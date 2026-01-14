@@ -7,10 +7,10 @@ import com.example.librarymanagement.dtos.responses.dashboard.DashboardResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
-import com.example.librarymanagement.enums.RecordStatus;
+import com.example.librarymanagement.enums.LoanStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.BorrowOrderRepository;
+import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,7 +33,7 @@ public class DashboardService {
     private UserRepository userRepository;
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
     public BookModel toModel(Book book) {
         return new BookModel(
@@ -68,66 +68,66 @@ public class DashboardService {
         long borrowedBooks =bookRepository.countByStatus(BookStatus.BORROWED.name());
 
         long totalUser = userRepository.count();
-        long borrowingUsers = borrowOrderRepository.countDistinctUserByBorrowStatus(RecordStatus.ACTIVE.name());
+        long borrowingUsers = loanRepository.countDistinctUserByBorrowStatus(LoanStatus.ACTIVE.name());
         long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
 
-        List<BorrowOrderModel> pendingApproveRecords = borrowOrderRepository.getPendingApproveRecords()
+        List<LoanModel> pendingApproveLoans = loanRepository.getPendingApproveLoans()
                 .stream()
-                .map(record -> {
-                    Book book = record.getBook();
-                    return new BorrowOrderModel(
-                            record.getBorrowRecordId(),
-                            record.getUser().getFullName(),
+                .map(loan -> {
+                    Book book = loan.getBook();
+                    return new LoanModel(
+                            loan.getLoanId(),
+                            loan.getUser().getFullName(),
                             book != null ? book.getBookId():null,
-                            record.getTitle(),
+                            loan.getTitle(),
                             book != null ? book.getAuthor():null,
                             book != null ? book.getImageUrl():null,
-                            record.getBorrowDay(),
-                            record.getBorrowDays(),
-                            record.getDueDay(),
-                            record.getReturnedDay(),
-                            record.getBorrowStatus(),
-                            record.getExtendCount()
+                            loan.getBorrowDay(),
+                            loan.getBorrowDays(),
+                            loan.getDueDay(),
+                            loan.getReturnedDay(),
+                            loan.getBorrowStatus(),
+                            loan.getExtendCount()
                     );
                 })
                 .collect(Collectors.toList());
 
-        List<BorrowOrderModel> pendingReturnRecords = borrowOrderRepository.getPendingReturnRecords()
+        List<LoanModel> pendingReturnLoans = loanRepository.getPendingReturnLoans()
                 .stream()
-                .map(record -> {
-                    Book book = record.getBook();
-                    return new BorrowOrderModel(
-                            record.getBorrowRecordId(),
-                            record.getUser().getFullName(),
+                .map(loan -> {
+                    Book book = loan.getBook();
+                    return new LoanModel(
+                            loan.getLoanId(),
+                            loan.getUser().getFullName(),
                             book != null ? book.getBookId():null,
-                            record.getTitle(),
+                            loan.getTitle(),
                             book != null ? book.getAuthor():null,
                             book != null ? book.getImageUrl():null,
-                            record.getBorrowDay(),
-                            record.getBorrowDays(),
-                            record.getDueDay(),
-                            record.getReturnedDay(),
-                            record.getBorrowStatus(),
-                            record.getExtendCount()
+                            loan.getBorrowDay(),
+                            loan.getBorrowDays(),
+                            loan.getDueDay(),
+                            loan.getReturnedDay(),
+                            loan.getBorrowStatus(),
+                            loan.getExtendCount()
                     );
                 })
                 .collect(Collectors.toList());
 
-        List<BorrowOrderModel> overdueRecords = borrowOrderRepository.getOverdueRecords()
+        List<LoanModel> overdueLoans = loanRepository.getOverdueLoans()
                 .stream()
-                .map(record -> new BorrowOrderModel(
-                        record.getBorrowRecordId(),
-                        record.getUser().getFullName(),
-                        record.getBook().getBookId(),
-                        record.getBook().getTitle(),
-                        record.getBook().getAuthor(),
-                        record.getBook().getImageUrl(),
-                        record.getBorrowDay(),
-                        record.getBorrowDays(),
-                        record.getDueDay(),
-                        record.getReturnedDay(),
-                        record.getBorrowStatus(),
-                        record.getExtendCount()
+                .map(loan -> new LoanModel(
+                        loan.getLoanId(),
+                        loan.getUser().getFullName(),
+                        loan.getBook().getBookId(),
+                        loan.getBook().getTitle(),
+                        loan.getBook().getAuthor(),
+                        loan.getBook().getImageUrl(),
+                        loan.getBorrowDay(),
+                        loan.getBorrowDays(),
+                        loan.getDueDay(),
+                        loan.getReturnedDay(),
+                        loan.getBorrowStatus(),
+                        loan.getExtendCount()
                 ))
                 .collect(Collectors.toList());
 
@@ -138,9 +138,9 @@ public class DashboardService {
                 .totalUsers(totalUser)
                 .borrowingUsers(borrowingUsers)
                 .bannedUsers(bannedUsers)
-                .pendingApproveRecords(pendingApproveRecords)
-                .pendingReturnRecords(pendingReturnRecords)
-                .overdueRecords(overdueRecords)
+                .pendingApproveLoans(pendingApproveLoans)
+                .pendingReturnLoans(pendingReturnLoans)
+                .overdueLoans(overdueLoans)
                 .build();
     }
 
@@ -173,11 +173,11 @@ public class DashboardService {
         LocalDate start = today.minusDays(6);
 
         Map<LocalDate, Long> borrowedMap = new HashMap<>();
-        for(Object[] row : borrowOrderRepository.countBorrowedByDay(start))
+        for(Object[] row : loanRepository.countBorrowedByDay(start))
             borrowedMap.put(((java.sql.Date) row[0]).toLocalDate(), (Long) row[1]);
 
         Map<LocalDate, Long> returnedMap = new HashMap<>();
-        for(Object[] row : borrowOrderRepository.countReturnedByDay(start))
+        for(Object[] row : loanRepository.countReturnedByDay(start))
             returnedMap.put(((java.sql.Date) row[0]).toLocalDate(), (Long) row[1]);
 
         List<WeeklyStat> result = new ArrayList<>();
@@ -195,6 +195,6 @@ public class DashboardService {
     }
 
     public List<CategoryBorrowStat> getPieChart() {
-        return borrowOrderRepository.getBorrowStatsByCategory();
+        return loanRepository.getBorrowStatsByCategory();
     }
 }

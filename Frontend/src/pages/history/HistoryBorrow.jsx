@@ -3,7 +3,7 @@ import { getHistory } from "../../api/userApi/borrowApi";
 import toast from "react-hot-toast";
 
 export default function HistoryBorrow() {
-  const [records, setRecords] = useState([]);
+  const [orders, setorders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function HistoryBorrow() {
   const fetchHistory = async () => {
     try {
       const data = await getHistory();
-      setRecords(data); // ✅ BE đã sort rồi
+      setorders(data); // ✅ BE đã sort rồi
     } catch (err) {
       toast.error("Không tải được lịch sử mượn sách");
     } finally {
@@ -24,8 +24,8 @@ export default function HistoryBorrow() {
   const formatDate = (dateStr) =>
     dateStr ? new Date(dateStr).toLocaleDateString("vi-VN") : "--";
 
-  const getStatusBadge = (status) => {
-    switch (status) {
+  const getStatusBadge = (borrowStatus) => {
+    switch (borrowStatus) {
       case "ACTIVE":
         return "bg-blue-500/20 text-blue-300";
       case "RETURNED":
@@ -41,8 +41,8 @@ export default function HistoryBorrow() {
     }
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
+  const getStatusText = (borrowStatus) => {
+    switch (borrowStatus) {
       case "ACTIVE":
         return "Đang mượn";
       case "RETURNED":
@@ -54,7 +54,7 @@ export default function HistoryBorrow() {
       case "CANCELED":
         return "Đã hủy";
       default:
-        return status;
+        return borrowStatus;
     }
   };
 
@@ -77,22 +77,22 @@ export default function HistoryBorrow() {
         </p>
       </div>
 
-      {records.length === 0 ? (
+      {orders.length === 0 ? (
         <p className="text-gray-400 text-center">
           Chưa có lịch sử mượn sách
         </p>
       ) : (
         <div className="space-y-4">
-          {records.map((item, index) => (
+          {orders.map((item, index) => (
             <div
-              key={item.recordId}
+              key={item.loanId}
               className="flex gap-6 bg-white/10 backdrop-blur-md
               border border-white/20 rounded-xl p-5"
             >
               {/* TIMELINE DOT */}
               <div className="flex flex-col items-center">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                {index !== records.length - 1 && (
+                {index !== orders.length - 1 && (
                   <div className="w-px flex-1 bg-white/20 mt-2" />
                 )}
               </div>

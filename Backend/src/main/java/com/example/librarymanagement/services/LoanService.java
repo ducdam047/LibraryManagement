@@ -1,19 +1,19 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.models.BorrowOrderModel;
+import com.example.librarymanagement.dtos.models.LoanModel;
 import com.example.librarymanagement.dtos.requests.action.BorrowBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.Book;
-import com.example.librarymanagement.entities.BorrowOrder;
+import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
-import com.example.librarymanagement.enums.RecordStatus;
+import com.example.librarymanagement.enums.LoanStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.BorrowOrderRepository;
+import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BorrowOrderService {
+public class LoanService {
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,34 +43,34 @@ public class BorrowOrderService {
     @Autowired
     private EvaluateRepository evaluateRepository;
 
-    public BorrowOrderModel toModel(BorrowOrder borrowOrder) {
-        Book book = borrowOrder.getBook();
-        return new BorrowOrderModel(
-                borrowOrder.getBorrowRecordId(),
-                borrowOrder.getUser().getFullName(),
+    public LoanModel toModel(Loan loan) {
+        Book book = loan.getBook();
+        return new LoanModel(
+                loan.getLoanId(),
+                loan.getUser().getFullName(),
                 book!=null ? book.getBookId():null,
-                borrowOrder.getTitle()!=null ? borrowOrder.getTitle(): borrowOrder.getBook().getTitle(),
+                loan.getTitle()!=null ? loan.getTitle(): loan.getBook().getTitle(),
                 book!=null ? book.getAuthor():null,
                 book!=null ? book.getImageUrl():null,
-                borrowOrder.getBorrowDay(),
-                borrowOrder.getBorrowDays(),
-                borrowOrder.getDueDay(),
-                borrowOrder.getReturnedDay(),
-                borrowOrder.getBorrowStatus(),
-                borrowOrder.getExtendCount()
+                loan.getBorrowDay(),
+                loan.getBorrowDays(),
+                loan.getDueDay(),
+                loan.getReturnedDay(),
+                loan.getBorrowStatus(),
+                loan.getExtendCount()
         );
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<BorrowOrderModel> getRecordHistory() {
+    public List<LoanModel> getLoanHistory() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdOrderByBorrowDayDesc(userCurrent.getUserId());
-            return borrowOrders.stream()
+            List<Loan> loans = loanRepository.findByUser_UserIdOrderByBorrowDayDesc(userCurrent.getUserId());
+            return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
@@ -78,23 +78,23 @@ public class BorrowOrderService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<BorrowOrderModel> getRecordList(int userId) {
-        List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserId(userId);
-        return borrowOrders.stream()
+    public List<LoanModel> getLoanList(int userId) {
+        List<Loan> loans = loanRepository.findByUser_UserId(userId);
+        return loans.stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<BorrowOrderModel> getActiveOverdueRecordList() {
+    public List<LoanModel> getActiveOverdueLoanList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()));
-            return borrowOrders.stream()
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()));
+            return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
@@ -102,15 +102,15 @@ public class BorrowOrderService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public List<BorrowOrderModel> getReturnedRecordList() {
+    public List<LoanModel> getReturnedLoanList() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(userCurrent.getUserId(), RecordStatus.RETURNED.name());
-            return borrowOrders.stream()
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(userCurrent.getUserId(), LoanStatus.RETURNED.name());
+            return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
@@ -118,7 +118,7 @@ public class BorrowOrderService {
     }
 
     @PreAuthorize("hasRole('USER')")
-    public BorrowOrderModel getBorrowedBook(int bookId) {
+    public LoanModel getBorrowedBook(int bookId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
@@ -126,45 +126,45 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, borrowedBook, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-            return toModel(borrowOrder);
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, borrowedBook, List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()))
+                    .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+            return toModel(loan);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
     @PreAuthorize("hasRole('USER')")
-    public BorrowOrderModel getReturnedBook(int recordId) {
+    public LoanModel getReturnedBook(int loanId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
-            BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-            if (borrowOrder.getUser().getUserId() != userCurrent.getUserId())
+            Loan loan = loanRepository.findById(loanId)
+                    .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+            if (loan.getUser().getUserId() != userCurrent.getUserId())
                 throw new AppException(ErrorCode.UNAUTHORIZED);
-            return toModel(borrowOrder);
+            return toModel(loan);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
     @Transactional
     @PreAuthorize("hasRole('USER')")
-    public BorrowOrderModel borrowBook(BorrowBookRequest request) {
+    public LoanModel borrowBook(BorrowBookRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            boolean bookRequest = borrowOrderRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), RecordStatus.PENDING_APPROVE.name());
-            boolean bookExists = borrowOrderRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), RecordStatus.ACTIVE.name());
+            boolean bookRequest = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.PENDING_APPROVE.name());
+            boolean bookExists = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.ACTIVE.name());
 
             if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
 
-            int activeCount = borrowOrderRepository.countByUserAndBorrowStatus(userCurrent, RecordStatus.ACTIVE.name());
-            int pendingCount = borrowOrderRepository.countByUserAndBorrowStatus(userCurrent, RecordStatus.PENDING_APPROVE.name());
+            int activeCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.ACTIVE.name());
+            int pendingCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.PENDING_APPROVE.name());
 
             if(bookRequest)
                 throw new AppException(ErrorCode.BOOK_REQUESTED);
@@ -176,7 +176,7 @@ public class BorrowOrderService {
                 throw new AppException(ErrorCode.BORROW_DAYS_EXCEEDED);
             int borrowDays = request.getBorrowDays();
 
-            BorrowOrder borrowOrder = BorrowOrder.builder()
+            Loan loan = Loan.builder()
                     .user(userCurrent)
                     .book(null)
                     .title(request.getTitle())
@@ -184,39 +184,39 @@ public class BorrowOrderService {
                     .borrowDays(borrowDays)
                     .dueDay(null)
                     .returnedDay(null)
-                    .borrowStatus(RecordStatus.PENDING_APPROVE.name())
+                    .borrowStatus(LoanStatus.PENDING_APPROVE.name())
                     .extendCount(0)
                     .build();
-            borrowOrderRepository.save(borrowOrder);
+            loanRepository.save(loan);
 
-            return toModel(borrowOrder);
+            return toModel(loan);
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public BorrowOrderModel approveBorrow(int recordId) {
-        BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
-                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
-            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+    public LoanModel approveBorrow(int loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+        if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
-        String title = borrowOrder.getTitle();
-        if(title==null && borrowOrder.getBook()!=null)
-            title = borrowOrder.getBook().getTitle();
+        String title = loan.getTitle();
+        if(title==null && loan.getBook()!=null)
+            title = loan.getBook().getTitle();
 
-        User user = borrowOrder.getUser();
+        User user = loan.getUser();
         Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
 
         LocalDate borrowDay = LocalDate.now();
-        LocalDate dueDay = borrowDay.plusDays(borrowOrder.getBorrowDays());
+        LocalDate dueDay = borrowDay.plusDays(loan.getBorrowDays());
 
-        borrowOrder.setBook(book);
-        borrowOrder.setBorrowDay(borrowDay);
-        borrowOrder.setDueDay(dueDay);
-        borrowOrder.setBorrowStatus(RecordStatus.ACTIVE.name());
+        loan.setBook(book);
+        loan.setBorrowDay(borrowDay);
+        loan.setDueDay(dueDay);
+        loan.setBorrowStatus(LoanStatus.ACTIVE.name());
 
         List<Book> sameTitleBooks = bookRepository.findAllByTitle(title);
         for (Book b : sameTitleBooks) {
@@ -228,19 +228,19 @@ public class BorrowOrderService {
         user.setBookBorrowing(user.getBookBorrowing() + 1);
         user.setStatus(UserStatus.BORROWING.name());
 
-        return toModel(borrowOrder);
+        return toModel(loan);
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public BorrowOrderModel rejectBorrow(int recordId) {
-        BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
-                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
-            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+    public LoanModel rejectBorrow(int loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+        if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
-        borrowOrder.setBorrowStatus(RecordStatus.REJECTED.name());
-        return toModel(borrowOrder);
+        loan.setBorrowStatus(LoanStatus.REJECTED.name());
+        return toModel(loan);
     }
 
     @Transactional
@@ -253,10 +253,10 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(RecordStatus.ACTIVE.name(), RecordStatus.OVERDUE.name()))
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()))
+                    .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
-            borrowOrder.setBorrowStatus(RecordStatus.PENDING_RETURN.name());
+            loan.setBorrowStatus(LoanStatus.PENDING_RETURN.name());
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
@@ -265,17 +265,17 @@ public class BorrowOrderService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public String confirmReturn(int recordId) {
-        BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
-                .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-        if(!RecordStatus.PENDING_RETURN.name().equals(borrowOrder.getBorrowStatus()))
-            throw new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND);
+    public String confirmReturn(int loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+        if(!LoanStatus.PENDING_RETURN.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
-        Book book = borrowOrder.getBook();
-        User user = borrowOrder.getUser();
+        Book book = loan.getBook();
+        User user = loan.getUser();
 
-        borrowOrder.setReturnedDay(LocalDate.now());
-        borrowOrder.setBorrowStatus(RecordStatus.RETURNED.name());
+        loan.setReturnedDay(LocalDate.now());
+        loan.setBorrowStatus(LoanStatus.RETURNED.name());
 
         List<Book> bookSameTitles = bookRepository.findAllByTitle(book.getTitle());
         for(Book b : bookSameTitles) {
@@ -300,22 +300,22 @@ public class BorrowOrderService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookExtend = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            BorrowOrder borrowOrder = borrowOrderRepository.findByUserAndBookAndBorrowStatus(userCurrent, bookExtend, RecordStatus.ACTIVE.name())
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatus(userCurrent, bookExtend, LoanStatus.ACTIVE.name())
+                    .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
-            if(borrowOrder.getExtendCount()==2)
+            if(loan.getExtendCount()==2)
                 throw new AppException(ErrorCode.EXTEND_LIMIT_EXCEEDED);
             if(request.getExtendDays()<=0)
                 throw new AppException(ErrorCode.INVALID_EXTEND_DAY);
             LocalDate extendDay = LocalDate.now();
-            if (extendDay.isAfter(borrowOrder.getDueDay()))
+            if (extendDay.isAfter(loan.getDueDay()))
                 throw new AppException(ErrorCode.EXTEND_DEADLINE_EXPIRED);
             if (request.getExtendDays() > 3)
                 throw new AppException(ErrorCode.EXTEND_DAY_EXCEEDED);
             int extendDays = request.getExtendDays();
-            borrowOrder.setDueDay(borrowOrder.getDueDay().plusDays(extendDays));
-            borrowOrder.setExtendCount(borrowOrder.getExtendCount() + 1);
-            borrowOrderRepository.save(borrowOrder);
+            loan.setDueDay(loan.getDueDay().plusDays(extendDays));
+            loan.setExtendCount(loan.getExtendCount() + 1);
+            loanRepository.save(loan);
             return "Book with title: " + bookExtend.getTitle() + " has been extended";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);

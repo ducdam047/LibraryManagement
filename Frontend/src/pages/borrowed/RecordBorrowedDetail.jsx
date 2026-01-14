@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getBorrowedRecordById, extendBook } from "../../api/userApi/borrowApi";
+import { getBorrowedorderById, extendBook } from "../../api/userApi/borrowApi";
 import toast from "react-hot-toast";
 
-export default function RecordDetail() {
+export default function RecordBorrowedDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [record, setRecord] = useState(null);
+    const [order, setorder] = useState(null);
 
     // Modal state
     const [showExtendModal, setShowExtendModal] = useState(false);
     const [extendDays, setExtendDays] = useState(1);
 
-    // Fetch record
-    const fetchRecord = async () => {
+    // Fetch order
+    const fetchorder = async () => {
         try {
-            const response = await getBorrowedRecordById(id);
-            setRecord(response);
+            const response = await getBorrowedorderById(id);
+            setorder(response);
         } catch (error) {
-            console.error("Error fetching record:", error);
+            console.error("Error fetching order:", error);
         }
     };
 
     useEffect(() => {
-        fetchRecord();
+        fetchorder();
     }, [id]);
 
-    if (!record) {
+    if (!order) {
         return (
             <div className="w-full flex justify-center pt-20 text-gray-500">
                 Đang tải dữ liệu...
@@ -39,8 +39,8 @@ export default function RecordDetail() {
         return new Date(dateStr).toLocaleDateString("vi-VN");
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
+    const getStatusColor = (borrowStatus) => {
+        switch (borrowStatus) {
             case "ACTIVE":
                 return "bg-blue-100 text-blue-700";
             case "OVERDUE":
@@ -57,11 +57,11 @@ export default function RecordDetail() {
     // --------------------------
     const handleExtendSubmit = async () => {
         try {
-            const res = await extendBook(record.bookId, extendDays);
+            const res = await extendBook(order.bookId, extendDays);
             toast.success(res.message || "Gia hạn thành công!");
-            console.log("record.bookId:", record.bookId);
+            console.log("order.bookId:", order.bookId);
             setShowExtendModal(false);
-            fetchRecord(); // reload data
+            fetchorder(); // reload data
         } catch (err) {
             toast.error(err.response?.data?.message || "Gia hạn thất bại!");
         }
@@ -86,26 +86,26 @@ export default function RecordDetail() {
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-gray-500 text-sm">Người mượn</p>
-                        <p className="text-lg font-semibold text-gray-800">{record.fullName}</p>
+                        <p className="text-lg font-semibold text-gray-800">{order.fullName}</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-gray-500 text-sm">Tên sách</p>
-                        <p className="text-lg font-semibold text-gray-800">{record.title}</p>
+                        <p className="text-lg font-semibold text-gray-800">{order.title}</p>
                     </div>
 
                     <div className="flex gap-4">
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 w-1/2">
                             <p className="text-gray-500 text-sm">Ngày mượn</p>
                             <p className="text-lg font-medium text-gray-800">
-                                {formatDate(record.borrowDay)}
+                                {formatDate(order.borrowDay)}
                             </p>
                         </div>
 
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 w-1/2">
                             <p className="text-gray-500 text-sm">Hạn trả</p>
                             <p className="text-lg font-medium text-gray-800">
-                                {formatDate(record.dueDay)}
+                                {formatDate(order.dueDay)}
                             </p>
                         </div>
                     </div>
@@ -119,10 +119,10 @@ export default function RecordDetail() {
                                 <p className="text-gray-500 text-sm">Trạng thái</p>
                                 <span
                                     className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                                        record.status
+                                        order.borrowStatus
                                     )}`}
                                 >
-                                    {record.status}
+                                    {order.borrowStatus}
                                 </span>
                             </div>
                         </div>
@@ -132,7 +132,7 @@ export default function RecordDetail() {
                             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <p className="text-gray-500 text-sm">Số lần gia hạn</p>
                                 <span className="text-lg font-semibold text-gray-800">
-                                    {record.extendCount}
+                                    {order.extendCount}
                                 </span>
                             </div>
                         </div>
@@ -140,28 +140,31 @@ export default function RecordDetail() {
                     </div>
                 </div>
 
-                {/* ACTION BUTTON */}
-                {record.status === "ACTIVE" && (
-                    <div className="mt-8 flex justify-between gap-4">
-                        {/* BACK BUTTON */}
-                        <button
-                            onClick={() => navigate("/borrowed")}
-                            className="w-1/2 px-5 py-3 bg-gray-200 text-gray-800 rounded-xl 
-                       hover:bg-gray-300 transition font-medium"
-                        >
-                            ← Quay lại danh sách
-                        </button>
+                <div className="mt-8 flex justify-between gap-4">
 
-                        {/* EXTEND BUTTON */}
+                    {/* BACK BUTTON — ACTIVE & OVERDUE */}
+                    {(order.borrowStatus === "ACTIVE" ||
+                        order.borrowStatus === "OVERDUE") && (
+                            <button
+                                onClick={() => navigate("/borrowed")}
+                                className="w-1/2 px-5 py-3 bg-gray-200 text-gray-800 rounded-xl 
+                 hover:bg-gray-300 transition font-medium"
+                            >
+                                ← Quay lại danh sách
+                            </button>
+                        )}
+
+                    {/* EXTEND BUTTON — ONLY ACTIVE */}
+                    {order.borrowStatus === "ACTIVE" && (
                         <button
                             onClick={() => setShowExtendModal(true)}
                             className="w-1/2 px-5 py-3 bg-blue-600 text-white rounded-xl shadow-md 
-                       hover:bg-blue-700 transition font-medium"
+                 hover:bg-blue-700 transition font-medium"
                         >
                             Gia hạn thêm
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
 
             </div>
 

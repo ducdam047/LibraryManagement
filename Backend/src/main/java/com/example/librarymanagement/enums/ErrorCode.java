@@ -23,7 +23,7 @@ public enum ErrorCode {
     PUBLISHER_ID_EXISTS(1037, "Publisher ID already exists", HttpStatus.BAD_REQUEST),
     PUBLISHER_NAME_EXISTS(1047, "Publisher name already exists", HttpStatus.BAD_REQUEST),
     PUBLISHER_NOT_FOUND(1007, "Publisher not found", HttpStatus.NOT_FOUND),
-    BORROW_RECORD_NOT_FOUND(1008, "Borrow record not found", HttpStatus.NOT_FOUND),
+    LOAN_NOT_FOUND(1008, "Loan not found", HttpStatus.NOT_FOUND),
     WISHLIST_NOT_FOUND(1009, "Wishlist not found", HttpStatus.NOT_FOUND),
     WISHLIST_EXISTED(1010, "This book was added", HttpStatus.CONFLICT),
     BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT),

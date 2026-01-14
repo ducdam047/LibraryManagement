@@ -6,22 +6,22 @@ export const getHistory = async () => {
 };
 
 export const getBorrowedBooks = async () => {
-  const res = await api.get("/borrowed/list-record-borrowed");
+  const res = await api.get("/borrowed/list-loan-borrowed");
   return res.data;
 };
 
 export const getReturnedBooks = async () => {
-  const res = await api.get("/borrowed/list-record-returned");
+  const res = await api.get("/borrowed/list-loan-returned");
   return res.data;
 };
 
-export async function getBorrowedRecordById(bookId) {
-  const res = await api.get(`/borrowed/record-active/${bookId}`);
+export async function getBorrowedorderById(bookId) {
+  const res = await api.get(`/borrowed/loan-active/${bookId}`);
   return res.data;
 }
 
-export async function getReturnedRecordById(recordId) {
-  const res = await api.get(`/borrowed/record-returned/${recordId}`);
+export async function getReturnedorderById(loanId) {
+  const res = await api.get(`/borrowed/loan-returned/${loanId}`);
   return res.data;
 }
 

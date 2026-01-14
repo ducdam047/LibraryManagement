@@ -5,13 +5,13 @@ import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.dtos.responses.rating.RatingCountResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Evaluate;
-import com.example.librarymanagement.entities.BorrowOrder;
+import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
-import com.example.librarymanagement.repositories.BorrowOrderRepository;
+import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +39,7 @@ public class EvaluateService {
     private BookRepository bookRepository;
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
     public EvaluateModel toModel(Evaluate evaluate) {
         return new EvaluateModel(
@@ -85,10 +85,10 @@ public class EvaluateService {
             if(evaluateRepository.existsByUserAndBook_Title(userCurrent, bookEvaluate.getTitle()))
                 throw new AppException(ErrorCode.BOOK_EVALUATED);
 
-            BorrowOrder borrowOrder = borrowOrderRepository.findFirstByUserAndBook(userCurrent, bookEvaluate)
+            Loan loan = loanRepository.findFirstByUserAndBook(userCurrent, bookEvaluate)
                     .orElseThrow(() -> new AppException(ErrorCode.NOT_BORROWED));
 
-            if(!borrowOrder.getBorrowStatus().equals("RETURNED"))
+            if(!loan.getBorrowStatus().equals("RETURNED"))
                 throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_EVALUATE);
 
             Evaluate evaluate = Evaluate.builder()

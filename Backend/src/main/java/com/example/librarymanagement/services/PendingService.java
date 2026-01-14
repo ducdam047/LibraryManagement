@@ -1,13 +1,13 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.dtos.models.BorrowOrderModel;
+import com.example.librarymanagement.dtos.models.LoanModel;
 import com.example.librarymanagement.entities.Book;
-import com.example.librarymanagement.entities.BorrowOrder;
+import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
-import com.example.librarymanagement.enums.RecordStatus;
+import com.example.librarymanagement.enums.LoanStatus;
 import com.example.librarymanagement.exception.AppException;
-import com.example.librarymanagement.repositories.BorrowOrderRepository;
+import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,73 +25,73 @@ public class PendingService {
     private UserRepository userRepository;
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
-    public BorrowOrderModel toModel(BorrowOrder borrowOrder) {
-        Book book = borrowOrder.getBook();
-        return new BorrowOrderModel(
-                borrowOrder.getBorrowRecordId(),
-                borrowOrder.getUser().getFullName(),
+    public LoanModel toModel(Loan loan) {
+        Book book = loan.getBook();
+        return new LoanModel(
+                loan.getLoanId(),
+                loan.getUser().getFullName(),
                 book!=null ? book.getBookId():null,
-                borrowOrder.getTitle()!=null ? borrowOrder.getTitle(): borrowOrder.getBook().getTitle(),
+                loan.getTitle()!=null ? loan.getTitle(): loan.getBook().getTitle(),
                 book!=null ? book.getAuthor():null,
                 book!=null ? book.getImageUrl():null,
-                borrowOrder.getBorrowDay(),
-                borrowOrder.getBorrowDays(),
-                borrowOrder.getDueDay(),
-                borrowOrder.getReturnedDay(),
-                borrowOrder.getBorrowStatus(),
-                borrowOrder.getExtendCount()
+                loan.getBorrowDay(),
+                loan.getBorrowDays(),
+                loan.getDueDay(),
+                loan.getReturnedDay(),
+                loan.getBorrowStatus(),
+                loan.getExtendCount()
         );
     }
 
-    public List<BorrowOrderModel> getRecordPendingBorrow() {
+    public List<LoanModel> getLoanPendingBorrow() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), RecordStatus.PENDING_APPROVE.name());
-            return borrowOrders.stream()
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), LoanStatus.PENDING_APPROVE.name());
+            return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
-    public List<BorrowOrderModel> getRecordPendingReturn() {
+    public List<LoanModel> getLoanPendingReturn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<BorrowOrder> borrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), RecordStatus.PENDING_RETURN.name());
-            return borrowOrders.stream()
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), LoanStatus.PENDING_RETURN.name());
+            return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
-    public String cancelPendingBorrow(int recordId) {
+    public String cancelPendingBorrow(int loanId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.getPrincipal() instanceof Jwt jwt) {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
-            BorrowOrder borrowOrder = borrowOrderRepository.findById(recordId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BORROW_RECORD_NOT_FOUND));
-            if(!RecordStatus.PENDING_APPROVE.name().equals(borrowOrder.getBorrowStatus()))
-                throw new IllegalStateException("The order cannot be canceled in its current state");
-            if(!borrowOrder.getUser().equals(userCurrent))
+            Loan loan = loanRepository.findById(loanId)
+                    .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+            if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+                throw new IllegalStateException("The loan cannot be canceled in its current state");
+            if(!loan.getUser().equals(userCurrent))
                 throw new AppException(ErrorCode.UNAUTHORIZED);
 
-            borrowOrder.setBorrowStatus(RecordStatus.CANCELLED.name());
-            borrowOrderRepository.save(borrowOrder);
+            loan.setBorrowStatus(LoanStatus.CANCELLED.name());
+            loanRepository.save(loan);
 
-            return "Record application cancelled successfully";
+            return "Loan application cancelled successfully";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }

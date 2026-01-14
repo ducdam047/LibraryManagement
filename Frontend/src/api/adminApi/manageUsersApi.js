@@ -10,7 +10,7 @@ export const getAllUsers = async () => {
   }
 };
 
-export const getRecordList = async (userId) => {
-  const res = await api.get(`/borrowed/list-record/${userId}`);
+export const getorderList = async (userId) => {
+  const res = await api.get(`/borrowed/list-loan/${userId}`);
   return res.data;
 };

@@ -18,7 +18,7 @@ export default function Pending() {
     const [borrowScroll, setBorrowScroll] = useState({ left: false, right: false });
     const [returnScroll, setReturnScroll] = useState({ left: false, right: false });
 
-    const [confirmRecord, setConfirmRecord] = useState(null);
+    const [confirmorder, setConfirmorder] = useState(null);
 
     const [showWishlistModal, setShowWishlistModal] = useState(false);
     const [wishlistBook, setWishlistBook] = useState(null);
@@ -59,23 +59,23 @@ export default function Pending() {
         });
     };
 
-    const handleCancelBorrow = (recordId) => {
-        setConfirmRecord(recordId);
+    const handleCancelBorrow = (loanId) => {
+        setConfirmorder(loanId);
     };
 
     const handleConfirmCancel = async () => {
-        if (!confirmRecord) return;
+        if (!confirmorder) return;
 
         const cancelledBook = pendingBorrow.find(
-            b => b.recordId === confirmRecord
+            b => b.loanId === confirmorder
         );
 
         try {
-            await cancelPendingBorrow(confirmRecord);
+            await cancelPendingBorrow(confirmorder);
             toast.success("Đã huỷ yêu cầu mượn");
 
             setPendingBorrow(prev =>
-                prev.filter(b => b.recordId !== confirmRecord)
+                prev.filter(b => b.loanId !== confirmorder)
             );
 
             // 👉 mở modal wishlist
@@ -87,7 +87,7 @@ export default function Pending() {
                 err.response?.data?.message || "Huỷ yêu cầu mượn thất bại"
             );
         } finally {
-            setConfirmRecord(null);
+            setConfirmorder(null);
         }
     };
 
@@ -150,7 +150,7 @@ export default function Pending() {
                             >
                                 {pendingBorrow.map((book) => (
                                     <PendingBorrowCard
-                                        key={book.recordId}
+                                        key={book.loanId}
                                         book={book}
                                         onCancel={handleCancelBorrow}
                                     />
@@ -197,7 +197,7 @@ export default function Pending() {
                             >
                                 {pendingReturn.map((book) => (
                                     <PendingReturnCard
-                                        key={book.recordId}
+                                        key={book.loanId}
                                         book={book}
                                     />
                                 ))}
@@ -218,10 +218,10 @@ export default function Pending() {
             </section>
 
             <ConfirmModal
-                open={!!confirmRecord}
+                open={!!confirmorder}
                 title="Xác nhận huỷ mượn?"
                 message="Bạn có chắc muốn huỷ yêu cầu mượn sách này không?"
-                onClose={() => setConfirmRecord(null)}
+                onClose={() => setConfirmorder(null)}
                 onConfirm={handleConfirmCancel}
             />
 

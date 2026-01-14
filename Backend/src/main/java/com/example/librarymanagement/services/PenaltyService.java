@@ -1,10 +1,10 @@
 package com.example.librarymanagement.services;
 
-import com.example.librarymanagement.entities.BorrowOrder;
+import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
-import com.example.librarymanagement.enums.RecordStatus;
+import com.example.librarymanagement.enums.LoanStatus;
 import com.example.librarymanagement.enums.UserStatus;
-import com.example.librarymanagement.repositories.BorrowOrderRepository;
+import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class PenaltyService {
     private UserRepository userRepository;
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
     @PostConstruct
     public void checkPenalty() {
@@ -34,10 +34,10 @@ public class PenaltyService {
     public void checkOverdueBorrowBook() {
         LocalDate today = LocalDate.now();
 
-        List<BorrowOrder> needOverdue = borrowOrderRepository.findByBorrowStatusAndDueDayBefore(RecordStatus.ACTIVE.name(), today);
-        for(BorrowOrder borrowOrder : needOverdue) {
-            borrowOrder.setBorrowStatus(RecordStatus.OVERDUE.name());
-            borrowOrderRepository.save(borrowOrder);
+        List<Loan> needOverdue = loanRepository.findByBorrowStatusAndDueDayBefore(LoanStatus.ACTIVE.name(), today);
+        for(Loan loan : needOverdue) {
+            loan.setBorrowStatus(LoanStatus.OVERDUE.name());
+            loanRepository.save(loan);
         }
 
         List<User> allUsers = userRepository.findAll();
@@ -60,7 +60,7 @@ public class PenaltyService {
         if(user.getBanUtil()!=null && !today.isBefore(user.getBanUtil())) {
             user.setBanUtil(null);
 
-            boolean hasActive = borrowOrderRepository.existsByUserAndBorrowStatus(user, RecordStatus.ACTIVE.name());
+            boolean hasActive = loanRepository.existsByUserAndBorrowStatus(user, LoanStatus.ACTIVE.name());
             if(hasActive) {
                 user.setStatus(UserStatus.BORROWING.name());
             } else {
@@ -79,7 +79,7 @@ public class PenaltyService {
     }
 
     private int countOverdueOfUser(User user) {
-        List<BorrowOrder> overdueBorrowOrders = borrowOrderRepository.findByUser_UserIdAndBorrowStatus(user.getUserId(), RecordStatus.OVERDUE.name());
-        return overdueBorrowOrders.size();
+        List<Loan> overdueLoans = loanRepository.findByUser_UserIdAndBorrowStatus(user.getUserId(), LoanStatus.OVERDUE.name());
+        return overdueLoans.size();
     }
 }

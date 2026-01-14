@@ -19,7 +19,7 @@ export default function PendingBorrowCard({ book, onCancel }) {
 
       {/* mt-auto sẽ đẩy nút xuống đáy */}
       <button
-        onClick={() => onCancel(book.recordId)}
+        onClick={() => onCancel(book.loanId)}
         className="mt-auto w-full bg-red-500/80 hover:bg-red-600
           text-white py-2 rounded-lg transition"
       >

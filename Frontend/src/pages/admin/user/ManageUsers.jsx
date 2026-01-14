@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "../../../components/admin/SearchBar";
 import { getAllUsers } from "../../../api/adminApi/manageUsersApi";
-import { getRecordList } from "../../../api/adminApi/manageUsersApi";
+import { getorderList } from "../../../api/adminApi/manageUsersApi";
 import { FaHistory } from "react-icons/fa";
 
 export default function ManageUsers() {
@@ -58,7 +58,7 @@ export default function ManageUsers() {
     // Open history modal
     const openHistory = async (userId) => {
         try {
-            const list = await getRecordList(userId);
+            const list = await getorderList(userId);
             setHistoryData(list);
             setHistoryModal(true);
         } catch (err) {
@@ -196,7 +196,7 @@ export default function ManageUsers() {
 
                                 return (
                                     <div
-                                        key={r.recordId}
+                                        key={r.loanId}
                                         className="flex gap-4 bg-zinc-800/40 hover:bg-zinc-800/70 transition rounded-xl p-4"
                                     >
                                         {/* Ảnh sách */}

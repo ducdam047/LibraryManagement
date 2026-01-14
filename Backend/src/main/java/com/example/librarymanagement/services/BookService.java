@@ -49,7 +49,7 @@ public class BookService {
     private WishlistService wishlistService;
 
     @Autowired
-    private BorrowOrderRepository borrowOrderRepository;
+    private LoanRepository loanRepository;
 
     public Book getById(int bookId) {
         return bookRepository.findById(bookId)
@@ -101,7 +101,7 @@ public class BookService {
 
     public List<BookTrending> getTrendingBooks(int limit) {
         LocalDate startDate = LocalDate.now().minusDays(7);
-        List<BookTrending> rawList = borrowOrderRepository.findTrendingBooks(startDate);
+        List<BookTrending> rawList = loanRepository.findTrendingBooks(startDate);
 
         Map<String, BookTrending> grouped = new LinkedHashMap<>();
 

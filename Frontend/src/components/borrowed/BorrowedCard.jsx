@@ -5,13 +5,13 @@ export default function BorrowedCard({ book, onReturn }) {
   const navigate = useNavigate();
 
   // 🔥 Tính toán nhãn hiển thị
-  const isOverdue = book.status === "OVERDUE";
+  const isOverdue = book.borrowStatus === "OVERDUE";
   const badgeText = isOverdue ? "Quá hạn trả" : "Đang mượn";
   const badgeColor = isOverdue ? "bg-red-600" : "bg-green-500";
 
   return (
     <div
-      onClick={() => navigate(`/borrowed/record-active/${book.bookId}`)}
+      onClick={() => navigate(`/borrowed/order-active/${book.bookId}`)}
       className="
         bg-white/10 backdrop-blur-lg 
         rounded-2xl overflow-hidden 

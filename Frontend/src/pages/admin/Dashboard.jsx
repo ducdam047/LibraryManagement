@@ -5,9 +5,9 @@ import { Users, Book, Ban, Clock } from "lucide-react";
 
 import {
   getDashboardSummary,
-  approveRecord,
-  rejectRecord,
-  confirmReturnRecord,
+  approveorder,
+  rejectorder,
+  confirmReturnorder,
 } from "../../api/adminApi/dashboardApi";
 
 import ColumnChart from "../../components/admin/chart/ColumnChart";
@@ -29,12 +29,12 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState(TABS.APPROVE);
 
-  const [pendingApproveRecords, setPendingApproveRecords] = useState([]);
-  const [pendingReturnRecords, setPendingReturnRecords] = useState([]);
+  const [pendingApproveorders, setPendingApproveorders] = useState([]);
+  const [pendingReturnorders, setPendingReturnorders] = useState([]);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
-  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [selectedorder, setSelectedorder] = useState(null);
 
   const [stats, setStats] = useState({
     totalBooks: 0,
@@ -43,50 +43,50 @@ export default function Dashboard() {
     totalUsers: 0,
     borrowingUsers: 0,
     bannedUsers: 0,
-    overdueRecords: [],
+    overdueorders: [],
     categoryStats: [],
   });
 
   /* ===================== CONFIRM ===================== */
-  const openConfirmModal = (record, action) => {
-    setSelectedRecord(record);
+  const openConfirmModal = (order, action) => {
+    setSelectedorder(order);
     setConfirmAction(action);
     setConfirmOpen(true);
   };
 
   const closeConfirmModal = () => {
     setConfirmOpen(false);
-    setSelectedRecord(null);
+    setSelectedorder(null);
     setConfirmAction(null);
   };
 
   const handleConfirm = async () => {
-    if (!selectedRecord) return;
+    if (!selectedorder) return;
 
     try {
-      setProcessingId(selectedRecord.recordId);
+      setProcessingId(selectedorder.loanId);
 
       if (confirmAction === "approve") {
-        await approveRecord(selectedRecord.recordId);
+        await approveorder(selectedorder.loanId);
         toast.success("Duyệt mượn sách thành công");
-        setPendingApproveRecords((prev) =>
-          prev.filter((r) => r.recordId !== selectedRecord.recordId)
+        setPendingApproveorders((prev) =>
+          prev.filter((r) => r.loanId !== selectedorder.loanId)
         );
       }
 
       if (confirmAction === "reject") {
-        await rejectRecord(selectedRecord.recordId);
+        await rejectorder(selectedorder.loanId);
         toast.success("Đã từ chối yêu cầu");
-        setPendingApproveRecords((prev) =>
-          prev.filter((r) => r.recordId !== selectedRecord.recordId)
+        setPendingApproveorders((prev) =>
+          prev.filter((r) => r.loanId !== selectedorder.loanId)
         );
       }
 
       if (confirmAction === "confirmReturn") {
-        await confirmReturnRecord(selectedRecord.recordId);
+        await confirmReturnorder(selectedorder.loanId);
         toast.success("Đã xác nhận nhận sách");
-        setPendingReturnRecords((prev) =>
-          prev.filter((r) => r.recordId !== selectedRecord.recordId)
+        setPendingReturnorders((prev) =>
+          prev.filter((r) => r.loanId !== selectedorder.loanId)
         );
       }
     } catch (err) {
@@ -106,7 +106,7 @@ export default function Dashboard() {
       .then((data) => {
         if (!mounted) return;
 
-        const overdueWithDays = (data.overdueRecords || []).map((r) => {
+        const overdueWithDays = (data.overdueLoans || []).map((r) => {
           const due = new Date(r.dueDay);
           const today = new Date();
           const days = Math.floor((today - due) / (1000 * 60 * 60 * 24));
@@ -120,12 +120,12 @@ export default function Dashboard() {
           totalUsers: data.totalUsers,
           borrowingUsers: data.borrowingUsers,
           bannedUsers: data.bannedUsers,
-          overdueRecords: overdueWithDays,
+          overdueorders: overdueWithDays,
           categoryStats: data.categoryStats || [],
         });
 
-        setPendingApproveRecords(data.pendingApproveRecords || []);
-        setPendingReturnRecords(data.pendingReturnRecords || []);
+        setPendingApproveorders(data.pendingApproveLoans || []);
+        setPendingReturnorders(data.pendingReturnLoans || []);
       })
       .finally(() => mounted && setLoading(false));
 
@@ -134,10 +134,10 @@ export default function Dashboard() {
 
   const tableData =
     activeTab === TABS.APPROVE
-      ? pendingApproveRecords
+      ? pendingApproveorders
       : activeTab === TABS.RETURN
-        ? pendingReturnRecords
-        : stats.overdueRecords;
+        ? pendingReturnorders
+        : stats.overdueorders;
 
   return (
     <div className="p-6 text-white bg-black min-h-screen">
@@ -161,7 +161,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ===================== RECORD TABLE ===================== */}
+      {/* ===================== order TABLE ===================== */}
       <div className="mt-12 p-8 bg-zinc-900 rounded-2xl border border-zinc-800">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -197,7 +197,7 @@ export default function Dashboard() {
 
             <tbody className="divide-y divide-zinc-800">
               {tableData.map((r) => (
-                <tr key={r.recordId} className="align-middle">
+                <tr key={r.loanId} className="align-middle">
                   {/* Người dùng */}
                   <td className="p-4 whitespace-nowrap">
                     {r.fullName}
