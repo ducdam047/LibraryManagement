@@ -29,17 +29,17 @@ export const getDashboardPieChart = async () => {
   return res.data;
 };
 
-export const approveorder = async (loanId) => {
+export const approveLoan = async (loanId) => {
   const res = await api.put(`/borrowed/approve/${loanId}`);
   return res.data;
 };
 
-export const rejectorder = async (loanId) => {
+export const rejectLoan = async (loanId) => {
   const res = await api.put(`/borrowed/reject/${loanId}`);
   return res.data;
 };
 
-export const confirmReturnorder = async (loanId) => {
+export const confirmReturnLoan = async (loanId) => {
   const res = await api.put(`/borrowed/confirm/${loanId}`);
   return res.data;
 };

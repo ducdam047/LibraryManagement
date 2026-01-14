@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { checkEvaluateExists } from "../../api/userApi/evaluateApi";
 
-export default function ReturnedCard({ order }) {
+export default function ReturnedCard({ loan }) {
   const navigate = useNavigate();
 
   // --- hooks (luôn ở trên cùng) ---
   const [evaluated, setEvaluated] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  const bookId = order?.bookId;
-  const title = order?.title || "";
+  const bookId = loan?.bookId;
+  const title = loan?.title || "";
 
   useEffect(() => {
     if (!bookId) {
@@ -36,8 +36,8 @@ export default function ReturnedCard({ order }) {
     return () => { mounted = false };
   }, [bookId]);
 
-  // Nếu chưa load order (ví dụ parent đang fetch), trả skeleton chỗ card (không làm vỡ layout)
-  if (!order) {
+  // Nếu chưa load Loan (ví dụ parent đang fetch), trả skeleton chỗ card (không làm vỡ layout)
+  if (!loan) {
     return (
       <div
         className="
@@ -56,7 +56,7 @@ export default function ReturnedCard({ order }) {
   // --- Render chính ---
   return (
     <div
-      onClick={() => navigate(`/borrowed/order-returned/${order.loanId}`)}
+      onClick={() => navigate(`/borrowed/loan-returned/${loan.loanId}`)}
       className="
     bg-white/10 backdrop-blur-lg 
     rounded-2xl overflow-hidden 
@@ -70,8 +70,8 @@ export default function ReturnedCard({ order }) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={order.imageUrl}
-          alt={order.title}
+          src={loan.imageUrl}
+          alt={loan.title}
           className="w-full h-80 object-cover object-top hover:scale-110 transition duration-500"
         />
 
@@ -84,13 +84,13 @@ export default function ReturnedCard({ order }) {
       <div className="p-5 text-white flex flex-col flex-1">
         {/* phần thông tin */}
         <div className="flex-1">
-          <h4 className="text-lg font-bold truncate">{order.title}</h4>
+          <h4 className="text-lg font-bold truncate">{loan.title}</h4>
           <p className="text-sm text-gray-300 mt-1 overflow-hidden text-ellipsis whitespace-nowrap">
-            {order.author}
+            {loan.author}
           </p>
 
           <p className="mt-3 text-sm text-green-400">
-            Đã trả ngày: {order.returnedDay}
+            Đã trả ngày: {loan.returnedDay}
           </p>
         </div>
 

@@ -3,7 +3,7 @@ import { getHistory } from "../../api/userApi/borrowApi";
 import toast from "react-hot-toast";
 
 export default function HistoryBorrow() {
-  const [orders, setorders] = useState([]);
+  const [loans, setLoans] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function HistoryBorrow() {
   const fetchHistory = async () => {
     try {
       const data = await getHistory();
-      setorders(data); // ✅ BE đã sort rồi
+      setLoans(data); // ✅ BE đã sort rồi
     } catch (err) {
       toast.error("Không tải được lịch sử mượn sách");
     } finally {
@@ -77,13 +77,13 @@ export default function HistoryBorrow() {
         </p>
       </div>
 
-      {orders.length === 0 ? (
+      {loans.length === 0 ? (
         <p className="text-gray-400 text-center">
           Chưa có lịch sử mượn sách
         </p>
       ) : (
         <div className="space-y-4">
-          {orders.map((item, index) => (
+          {loans.map((item, index) => (
             <div
               key={item.loanId}
               className="flex gap-6 bg-white/10 backdrop-blur-md
@@ -92,7 +92,7 @@ export default function HistoryBorrow() {
               {/* TIMELINE DOT */}
               <div className="flex flex-col items-center">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                {index !== orders.length - 1 && (
+                {index !== loans.length - 1 && (
                   <div className="w-px flex-1 bg-white/20 mt-2" />
                 )}
               </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "../../../components/admin/SearchBar";
 import { getAllUsers } from "../../../api/adminApi/manageUsersApi";
-import { getorderList } from "../../../api/adminApi/manageUsersApi";
+import { getLoanList } from "../../../api/adminApi/manageUsersApi";
 import { FaHistory } from "react-icons/fa";
 
 export default function ManageUsers() {
@@ -58,7 +58,7 @@ export default function ManageUsers() {
     // Open history modal
     const openHistory = async (userId) => {
         try {
-            const list = await getorderList(userId);
+            const list = await getLoanList(userId);
             setHistoryData(list);
             setHistoryModal(true);
         } catch (err) {

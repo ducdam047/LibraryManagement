@@ -11,7 +11,7 @@ export default function BorrowedCard({ book, onReturn }) {
 
   return (
     <div
-      onClick={() => navigate(`/borrowed/order-active/${book.bookId}`)}
+      onClick={() => navigate(`/borrowed/loan-active/${book.bookId}`)}
       className="
         bg-white/10 backdrop-blur-lg 
         rounded-2xl overflow-hidden 

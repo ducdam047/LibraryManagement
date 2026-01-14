@@ -31,10 +31,10 @@ export default function Borrowed() {
     setLoading(true);
     try {
       // 🔥 NEW: lấy danh sách bản ghi đang mượn (ACTIVE + OVERDUE)
-      const activeorders = await getBorrowedBooks();
+      const activeLoans = await getBorrowedBooks();
 
-      // chuyển order → dữ liệu card để không phải sửa BorrowedCard
-      const mappedActive = (activeorders || []).map(r => ({
+      // chuyển loan → dữ liệu card để không phải sửa BorrowedCard
+      const mappedActive = (activeLoans || []).map(r => ({
         loanId: r.loanId,
         bookId: r.bookId,
         title: r.title,
@@ -191,10 +191,10 @@ export default function Borrowed() {
               onScroll={() => checkScroll(returnedRef, setReturnedScroll)}
               className="flex gap-8 overflow-x-auto no-scrollbar pb-4 scroll-smooth"
             >
-              {returned.map((order) => (
+              {returned.map((loan) => (
                 <ReturnedCard
-                  key={order.loanId}
-                  order={order}
+                  key={loan.loanId}
+                  loan={loan}
                 />
               ))}
             </div>

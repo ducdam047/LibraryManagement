@@ -92,7 +92,7 @@ export default function AppRoutes() {
         />
 
         <Route
-          path="/borrowed/order-active/:id"
+          path="/borrowed/loan-active/:id"
           element={
             <MainLayout>
               <RecordBorrowedDetail />
@@ -101,7 +101,7 @@ export default function AppRoutes() {
         />
 
         <Route
-          path="/borrowed/order-returned/:loanId"
+          path="/borrowed/loan-returned/:loanId"
           element={
             <MainLayout>
               <RecordReturnedDetail />

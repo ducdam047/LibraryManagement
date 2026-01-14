@@ -15,12 +15,12 @@ export const getReturnedBooks = async () => {
   return res.data;
 };
 
-export async function getBorrowedorderById(bookId) {
+export async function getBorrowedLoanById(bookId) {
   const res = await api.get(`/borrowed/loan-active/${bookId}`);
   return res.data;
 }
 
-export async function getReturnedorderById(loanId) {
+export async function getReturnedLoanById(loanId) {
   const res = await api.get(`/borrowed/loan-returned/${loanId}`);
   return res.data;
 }

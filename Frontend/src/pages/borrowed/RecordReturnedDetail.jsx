@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getReturnedorderById } from "../../api/userApi/borrowApi";
+import { getReturnedLoanById } from "../../api/userApi/borrowApi";
 import toast from "react-hot-toast";
 
 export default function LoanReturnedDetail() {
   const { loanId } = useParams();
   const navigate = useNavigate();
 
-  const [order, setorder] = useState(null);
+  const [loan, setLoan] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,8 +20,8 @@ export default function LoanReturnedDetail() {
 
   async function load() {
     try {
-      const data = await getReturnedorderById(loanId);
-      setorder(data);
+      const data = await getReturnedLoanById(loanId);
+      setLoan(data);
     } catch (err) {
       toast.error("Không tải được thông tin mượn sách");
     } finally {
@@ -37,7 +37,7 @@ export default function LoanReturnedDetail() {
     );
   }
 
-  if (!order) {
+  if (!loan) {
     return (
       <p className="text-center text-gray-300 py-10 text-lg">
         Không tìm thấy bản ghi.
@@ -52,14 +52,14 @@ export default function LoanReturnedDetail() {
         {/* HEADER */}
         <div className="flex items-start gap-8">
           <img
-            src={order.imageUrl}
-            alt={order.title}
+            src={loan.imageUrl}
+            alt={loan.title}
             className="w-52 h-72 object-cover rounded-xl shadow-lg border border-white/20"
           />
 
           <div className="flex-1 text-white">
-            <h1 className="text-3xl font-bold mb-2">{order.title}</h1>
-            <p className="text-lg text-gray-300 mb-2">{order.author}</p>
+            <h1 className="text-3xl font-bold mb-2">{loan.title}</h1>
+            <p className="text-lg text-gray-300 mb-2">{loan.author}</p>
 
             <span className="px-4 py-1 bg-blue-600 text-white rounded-full text-sm font-semibold shadow-md">
               ✔ ĐÃ TRẢ
@@ -68,11 +68,11 @@ export default function LoanReturnedDetail() {
             <div className="mt-6 text-gray-200 space-y-1">
               <p>
                 <span className="font-semibold text-white">Ngày mượn:</span>{" "}
-                {order.borrowDay}
+                {loan.borrowDay}
               </p>
               <p>
                 <span className="font-semibold text-white">Ngày trả:</span>{" "}
-                {order.returnedDay}
+                {loan.returnedDay}
               </p>
             </div>
           </div>

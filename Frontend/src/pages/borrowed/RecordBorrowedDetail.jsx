@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getBorrowedorderById, extendBook } from "../../api/userApi/borrowApi";
+import { getBorrowedLoanById, extendBook } from "../../api/userApi/borrowApi";
 import toast from "react-hot-toast";
 
-export default function RecordBorrowedDetail() {
+export default function LoanBorrowedDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [order, setorder] = useState(null);
+    const [loan, setLoan] = useState(null);
 
     // Modal state
     const [showExtendModal, setShowExtendModal] = useState(false);
     const [extendDays, setExtendDays] = useState(1);
 
-    // Fetch order
-    const fetchorder = async () => {
+    // Fetch loan
+    const fetchLoan = async () => {
         try {
-            const response = await getBorrowedorderById(id);
-            setorder(response);
+            const response = await getBorrowedLoanById(id);
+            setLoan(response);
         } catch (error) {
-            console.error("Error fetching order:", error);
+            console.error("Error fetching loan:", error);
         }
     };
 
     useEffect(() => {
-        fetchorder();
+        fetchLoan();
     }, [id]);
 
-    if (!order) {
+    if (!loan) {
         return (
             <div className="w-full flex justify-center pt-20 text-gray-500">
                 Đang tải dữ liệu...
@@ -57,11 +57,11 @@ export default function RecordBorrowedDetail() {
     // --------------------------
     const handleExtendSubmit = async () => {
         try {
-            const res = await extendBook(order.bookId, extendDays);
+            const res = await extendBook(loan.bookId, extendDays);
             toast.success(res.message || "Gia hạn thành công!");
-            console.log("order.bookId:", order.bookId);
+            console.log("loan.bookId:", loan.bookId);
             setShowExtendModal(false);
-            fetchorder(); // reload data
+            fetchLoan(); // reload data
         } catch (err) {
             toast.error(err.response?.data?.message || "Gia hạn thất bại!");
         }
@@ -86,26 +86,26 @@ export default function RecordBorrowedDetail() {
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-gray-500 text-sm">Người mượn</p>
-                        <p className="text-lg font-semibold text-gray-800">{order.fullName}</p>
+                        <p className="text-lg font-semibold text-gray-800">{loan.fullName}</p>
                     </div>
 
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-gray-500 text-sm">Tên sách</p>
-                        <p className="text-lg font-semibold text-gray-800">{order.title}</p>
+                        <p className="text-lg font-semibold text-gray-800">{loan.title}</p>
                     </div>
 
                     <div className="flex gap-4">
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 w-1/2">
                             <p className="text-gray-500 text-sm">Ngày mượn</p>
                             <p className="text-lg font-medium text-gray-800">
-                                {formatDate(order.borrowDay)}
+                                {formatDate(loan.borrowDay)}
                             </p>
                         </div>
 
                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 w-1/2">
                             <p className="text-gray-500 text-sm">Hạn trả</p>
                             <p className="text-lg font-medium text-gray-800">
-                                {formatDate(order.dueDay)}
+                                {formatDate(loan.dueDay)}
                             </p>
                         </div>
                     </div>
@@ -119,10 +119,10 @@ export default function RecordBorrowedDetail() {
                                 <p className="text-gray-500 text-sm">Trạng thái</p>
                                 <span
                                     className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                                        order.borrowStatus
+                                        loan.borrowStatus
                                     )}`}
                                 >
-                                    {order.borrowStatus}
+                                    {loan.borrowStatus}
                                 </span>
                             </div>
                         </div>
@@ -132,7 +132,7 @@ export default function RecordBorrowedDetail() {
                             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <p className="text-gray-500 text-sm">Số lần gia hạn</p>
                                 <span className="text-lg font-semibold text-gray-800">
-                                    {order.extendCount}
+                                    {loan.extendCount}
                                 </span>
                             </div>
                         </div>
@@ -143,8 +143,8 @@ export default function RecordBorrowedDetail() {
                 <div className="mt-8 flex justify-between gap-4">
 
                     {/* BACK BUTTON — ACTIVE & OVERDUE */}
-                    {(order.borrowStatus === "ACTIVE" ||
-                        order.borrowStatus === "OVERDUE") && (
+                    {(loan.borrowStatus === "ACTIVE" ||
+                        loan.borrowStatus === "OVERDUE") && (
                             <button
                                 onClick={() => navigate("/borrowed")}
                                 className="w-1/2 px-5 py-3 bg-gray-200 text-gray-800 rounded-xl 
@@ -155,7 +155,7 @@ export default function RecordBorrowedDetail() {
                         )}
 
                     {/* EXTEND BUTTON — ONLY ACTIVE */}
-                    {order.borrowStatus === "ACTIVE" && (
+                    {loan.borrowStatus === "ACTIVE" && (
                         <button
                             onClick={() => setShowExtendModal(true)}
                             className="w-1/2 px-5 py-3 bg-blue-600 text-white rounded-xl shadow-md 

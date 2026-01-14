@@ -5,9 +5,9 @@ import { Users, Book, Ban, Clock } from "lucide-react";
 
 import {
   getDashboardSummary,
-  approveorder,
-  rejectorder,
-  confirmReturnorder,
+  approveLoan,
+  rejectLoan,
+  confirmReturnLoan,
 } from "../../api/adminApi/dashboardApi";
 
 import ColumnChart from "../../components/admin/chart/ColumnChart";
@@ -29,12 +29,12 @@ export default function Dashboard() {
 
   const [activeTab, setActiveTab] = useState(TABS.APPROVE);
 
-  const [pendingApproveorders, setPendingApproveorders] = useState([]);
-  const [pendingReturnorders, setPendingReturnorders] = useState([]);
+  const [pendingApproveLoans, setPendingApproveLoans] = useState([]);
+  const [pendingReturnLoans, setPendingReturnLoans] = useState([]);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
-  const [selectedorder, setSelectedorder] = useState(null);
+  const [selectedLoan, setSelectedLoan] = useState(null);
 
   const [stats, setStats] = useState({
     totalBooks: 0,
@@ -43,50 +43,50 @@ export default function Dashboard() {
     totalUsers: 0,
     borrowingUsers: 0,
     bannedUsers: 0,
-    overdueorders: [],
+    overdueLoans: [],
     categoryStats: [],
   });
 
   /* ===================== CONFIRM ===================== */
-  const openConfirmModal = (order, action) => {
-    setSelectedorder(order);
+  const openConfirmModal = (Loan, action) => {
+    setSelectedLoan(Loan);
     setConfirmAction(action);
     setConfirmOpen(true);
   };
 
   const closeConfirmModal = () => {
     setConfirmOpen(false);
-    setSelectedorder(null);
+    setSelectedLoan(null);
     setConfirmAction(null);
   };
 
   const handleConfirm = async () => {
-    if (!selectedorder) return;
+    if (!selectedLoan) return;
 
     try {
-      setProcessingId(selectedorder.loanId);
+      setProcessingId(selectedLoan.loanId);
 
       if (confirmAction === "approve") {
-        await approveorder(selectedorder.loanId);
+        await approveLoan(selectedLoan.loanId);
         toast.success("Duyệt mượn sách thành công");
-        setPendingApproveorders((prev) =>
-          prev.filter((r) => r.loanId !== selectedorder.loanId)
+        setPendingApproveLoans((prev) =>
+          prev.filter((r) => r.loanId !== selectedLoan.loanId)
         );
       }
 
       if (confirmAction === "reject") {
-        await rejectorder(selectedorder.loanId);
+        await rejectLoan(selectedLoan.loanId);
         toast.success("Đã từ chối yêu cầu");
-        setPendingApproveorders((prev) =>
-          prev.filter((r) => r.loanId !== selectedorder.loanId)
+        setPendingApproveLoans((prev) =>
+          prev.filter((r) => r.loanId !== selectedLoan.loanId)
         );
       }
 
       if (confirmAction === "confirmReturn") {
-        await confirmReturnorder(selectedorder.loanId);
+        await confirmReturnLoan(selectedLoan.loanId);
         toast.success("Đã xác nhận nhận sách");
-        setPendingReturnorders((prev) =>
-          prev.filter((r) => r.loanId !== selectedorder.loanId)
+        setPendingReturnLoans((prev) =>
+          prev.filter((r) => r.loanId !== selectedLoan.loanId)
         );
       }
     } catch (err) {
@@ -120,12 +120,12 @@ export default function Dashboard() {
           totalUsers: data.totalUsers,
           borrowingUsers: data.borrowingUsers,
           bannedUsers: data.bannedUsers,
-          overdueorders: overdueWithDays,
+          overdueLoans: overdueWithDays,
           categoryStats: data.categoryStats || [],
         });
 
-        setPendingApproveorders(data.pendingApproveLoans || []);
-        setPendingReturnorders(data.pendingReturnLoans || []);
+        setPendingApproveLoans(data.pendingApproveLoans || []);
+        setPendingReturnLoans(data.pendingReturnLoans || []);
       })
       .finally(() => mounted && setLoading(false));
 
@@ -134,10 +134,10 @@ export default function Dashboard() {
 
   const tableData =
     activeTab === TABS.APPROVE
-      ? pendingApproveorders
+      ? pendingApproveLoans
       : activeTab === TABS.RETURN
-        ? pendingReturnorders
-        : stats.overdueorders;
+        ? pendingReturnLoans
+        : stats.overdueLoans;
 
   return (
     <div className="p-6 text-white bg-black min-h-screen">
@@ -161,12 +161,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ===================== order TABLE ===================== */}
+      {/* ===================== Loan TABLE ===================== */}
       <div className="mt-12 p-8 bg-zinc-900 rounded-2xl border border-zinc-800">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Clock />
-            Manage Borrow / Return Orders
+            Manage Borrow / Return Loans
           </h2>
 
           <div className="flex bg-zinc-800 rounded-xl p-1">

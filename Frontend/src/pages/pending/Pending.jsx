@@ -18,7 +18,7 @@ export default function Pending() {
     const [borrowScroll, setBorrowScroll] = useState({ left: false, right: false });
     const [returnScroll, setReturnScroll] = useState({ left: false, right: false });
 
-    const [confirmorder, setConfirmorder] = useState(null);
+    const [confirmLoan, setConfirmLoan] = useState(null);
 
     const [showWishlistModal, setShowWishlistModal] = useState(false);
     const [wishlistBook, setWishlistBook] = useState(null);
@@ -60,22 +60,22 @@ export default function Pending() {
     };
 
     const handleCancelBorrow = (loanId) => {
-        setConfirmorder(loanId);
+        setConfirmLoan(loanId);
     };
 
     const handleConfirmCancel = async () => {
-        if (!confirmorder) return;
+        if (!confirmLoan) return;
 
         const cancelledBook = pendingBorrow.find(
-            b => b.loanId === confirmorder
+            b => b.loanId === confirmLoan
         );
 
         try {
-            await cancelPendingBorrow(confirmorder);
+            await cancelPendingBorrow(confirmLoan);
             toast.success("Đã huỷ yêu cầu mượn");
 
             setPendingBorrow(prev =>
-                prev.filter(b => b.loanId !== confirmorder)
+                prev.filter(b => b.loanId !== confirmLoan)
             );
 
             // 👉 mở modal wishlist
@@ -87,7 +87,7 @@ export default function Pending() {
                 err.response?.data?.message || "Huỷ yêu cầu mượn thất bại"
             );
         } finally {
-            setConfirmorder(null);
+            setConfirmLoan(null);
         }
     };
 
@@ -218,10 +218,10 @@ export default function Pending() {
             </section>
 
             <ConfirmModal
-                open={!!confirmorder}
+                open={!!confirmLoan}
                 title="Xác nhận huỷ mượn?"
                 message="Bạn có chắc muốn huỷ yêu cầu mượn sách này không?"
-                onClose={() => setConfirmorder(null)}
+                onClose={() => setConfirmLoan(null)}
                 onConfirm={handleConfirmCancel}
             />
 
