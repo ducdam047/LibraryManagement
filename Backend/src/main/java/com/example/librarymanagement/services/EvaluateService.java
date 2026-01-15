@@ -14,6 +14,7 @@ import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -65,7 +66,8 @@ public class EvaluateService {
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
-    public List<EvaluateModel> seeEvaluated(String title) {
+    @Cacheable(value = "evaluates:review", key = "#title")
+    public List<EvaluateModel> reviewEvaluated(String title) {
         List<Evaluate> evaluates = evaluateRepository.findByBook_Title(title);
         return evaluates.stream()
                 .map(this::toModel)
@@ -104,6 +106,7 @@ public class EvaluateService {
         throw new AppException(ErrorCode.UNAUTHORIZED);
     }
 
+    @Cacheable(value = "evaluates:count", key = "#title")
     public List<RatingCountResponse> countRating(String title) {
         return evaluateRepository.countRatingByBookTitle(title)
                 .stream()
@@ -114,6 +117,7 @@ public class EvaluateService {
                 .toList();
     }
 
+    @Cacheable(value = "evaluates:average", key = "#title")
     public double averageRating(String title) {
         return Optional.ofNullable(evaluateRepository.averageRatingByBookId(title)).orElse(0.0);
     }

@@ -6,6 +6,7 @@ import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Cacheable("categories:all")
     public List<Category> getAllCategory() {
         return categoryRepository.findAll();
     }

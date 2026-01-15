@@ -29,11 +29,11 @@ public class EvaluateController {
     }
 
     @GetMapping()
-    public ApiResponse<List<EvaluateModel>> seeEvaluated(@RequestParam String title) {
+    public ApiResponse<List<EvaluateModel>> reviewEvaluated(@RequestParam String title) {
         return ApiResponse.<List<EvaluateModel>>builder()
                 .code(200)
                 .message("Show evaluated successfully")
-                .data(evaluateService.seeEvaluated(title))
+                .data(evaluateService.reviewEvaluated(title))
                 .build();
     }
 

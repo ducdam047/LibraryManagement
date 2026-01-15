@@ -6,6 +6,7 @@ import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class PublisherService {
     @Autowired
     private PublisherRepository publisherRepository;
 
+    @Cacheable("publishers:all")
     public List<Publisher> getAllPublisher() {
         return publisherRepository.findAll();
     }

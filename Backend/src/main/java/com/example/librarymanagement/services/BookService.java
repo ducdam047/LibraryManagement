@@ -12,6 +12,7 @@ import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,12 +74,14 @@ public class BookService {
         );
     }
 
+    @Cacheable(value = "book:detail", key = "#title")
     public BookModel getBook(String title) {
         Book book = bookRepository.findFirstByTitle(title)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         return toModel(book);
     }
 
+    @Cacheable("books:featured")
     public List<BookModel> getFeaturedBooks() {
         List<Book> books = bookRepository.findAll();
         Collections.shuffle(books);
@@ -128,6 +131,7 @@ public class BookService {
                 .toList();
     }
 
+    @Cacheable(value = "books:category", key = "#categoryName")
     public List<BookModel> filterCategory(String categoryName) {
         List<Book> books = bookRepository.findByCategory_CategoryName(categoryName);
         return books.stream()
