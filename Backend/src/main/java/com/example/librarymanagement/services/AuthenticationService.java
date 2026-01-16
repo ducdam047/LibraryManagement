@@ -12,7 +12,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,14 +25,9 @@ import java.util.Date;
 @Slf4j
 public class AuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @NonFinal
     @Value("${jwt.signerKey}")

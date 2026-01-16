@@ -11,7 +11,7 @@ import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -23,34 +23,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
-    @Autowired
-    private PdfStorageService pdfStorageService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private PublisherRepository publisherRepository;
-
-    @Autowired
-    private CloudinaryService cloudinaryService;
-
-    @Autowired
-    private ReadingService readingService;
-
-    @Autowired
-    private WishlistService wishlistService;
-
-    @Autowired
-    private LoanRepository loanRepository;
+    private final PdfStorageService pdfStorageService;
+    private final CategoryRepository categoryRepository;
+    private final PublisherRepository publisherRepository;
+    private final CloudinaryService cloudinaryService;
+    private final LoanRepository loanRepository;
 
     public Book getById(int bookId) {
         return bookRepository.findById(bookId)

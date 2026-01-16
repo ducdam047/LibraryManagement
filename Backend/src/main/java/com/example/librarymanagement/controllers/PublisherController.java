@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.requests.publisher.PublisherAddRequest
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Publisher;
 import com.example.librarymanagement.services.PublisherService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/publishers")
+@RequiredArgsConstructor
 public class PublisherController {
 
-    @Autowired
-    private PublisherService publisherService;
+    private final PublisherService publisherService;
 
     @GetMapping()
     public ApiResponse<List<Publisher>> getAllPublisher() {

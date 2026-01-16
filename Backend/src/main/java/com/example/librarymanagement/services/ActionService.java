@@ -5,10 +5,7 @@ import com.example.librarymanagement.entities.*;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
-import com.example.librarymanagement.repositories.LoanRepository;
-import com.example.librarymanagement.repositories.EvaluateRepository;
-import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,19 +13,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ActionService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private LoanRepository loanRepository;
-
-    @Autowired
-    private EvaluateRepository evaluateRepository;
+    private final BookRepository bookRepository;
 
     public BookModel toModel(Book book) {
         return new BookModel(

@@ -3,6 +3,7 @@ package com.example.librarymanagement.controllers;
 import com.example.librarymanagement.dtos.models.LoanModel;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/pending")
+@RequiredArgsConstructor
 public class PendingController {
 
-    @Autowired
-    private PendingService pendingService;
+    private final PendingService pendingService;
 
     @GetMapping("/borrow")
     public ApiResponse<List<LoanModel>> getLoanPendingBorrow() {

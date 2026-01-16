@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.StatisticalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/statistical")
+@RequiredArgsConstructor
 public class StatisticalController {
 
-    @Autowired
-    private StatisticalService statisticalService;
+    private final StatisticalService statisticalService;
 
     @GetMapping("/all-book")
     public long allBook() {

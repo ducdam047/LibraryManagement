@@ -13,6 +13,7 @@ import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,18 +29,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EvaluateService {
 
-    @Autowired
     private EvaluateRepository evaluateRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
     private LoanRepository loanRepository;
 
     public EvaluateModel toModel(Evaluate evaluate) {

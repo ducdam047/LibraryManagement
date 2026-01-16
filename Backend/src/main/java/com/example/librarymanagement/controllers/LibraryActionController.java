@@ -2,7 +2,7 @@ package com.example.librarymanagement.controllers;
 
 import com.example.librarymanagement.dtos.models.BookModel;
 import com.example.librarymanagement.services.ActionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +10,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/action")
+@RequiredArgsConstructor
 public class LibraryActionController {
 
-    @Autowired
-    private ActionService actionService;
+    private final ActionService actionService;
 
     @GetMapping("/searchTitle/{title}")
     public ResponseEntity<BookModel> searchTitle(@PathVariable String title) {

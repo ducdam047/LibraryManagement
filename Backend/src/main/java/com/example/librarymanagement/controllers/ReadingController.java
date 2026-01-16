@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.requests.reading.ReadingAddRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Reading;
 import com.example.librarymanagement.services.ReadingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/reading")
+@RequiredArgsConstructor
 public class ReadingController {
 
-    @Autowired
-    private ReadingService readingService;
+    private final ReadingService readingService;
 
     @GetMapping
     public ApiResponse<List<ReadingModel>> getReadingList() {

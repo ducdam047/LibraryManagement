@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.models.WishlistModel;
 import com.example.librarymanagement.dtos.requests.wishlist.WishlistAddRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.WishlistService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/wishlist")
+@RequiredArgsConstructor
 public class WishlistController {
 
-    @Autowired
-    private WishlistService wishlistService;
+    private final WishlistService wishlistService;
 
     @GetMapping
     public ApiResponse<List<WishlistModel>> getWishlist() {

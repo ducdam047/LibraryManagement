@@ -10,6 +10,7 @@ import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.services.AuthenticationService;
 import com.example.librarymanagement.services.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     private AuthenticationService authenticationService;

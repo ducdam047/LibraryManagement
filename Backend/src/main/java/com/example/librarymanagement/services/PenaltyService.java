@@ -7,7 +7,7 @@ import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +15,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PenaltyService {
 
     private static final int BAN_DAYS = 3;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private LoanRepository loanRepository;
+    private final UserRepository userRepository;
+    private final LoanRepository loanRepository;
 
     @PostConstruct
     public void checkPenalty() {

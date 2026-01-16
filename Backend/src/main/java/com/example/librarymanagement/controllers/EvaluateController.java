@@ -5,7 +5,7 @@ import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.dtos.responses.rating.RatingCountResponse;
 import com.example.librarymanagement.services.EvaluateService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/evaluations")
+@RequiredArgsConstructor
 public class EvaluateController {
 
-    @Autowired
-    private EvaluateService evaluateService;
+    private final EvaluateService evaluateService;
 
     @GetMapping("/status")
     public ApiResponse<?> checkEvaluated(@RequestParam String title) {

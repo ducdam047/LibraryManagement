@@ -8,7 +8,7 @@ import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookController {
 
-    @Autowired
-    private BookService bookService;
+    private final BookService bookService;
 
     @GetMapping("/detail")
     public ApiResponse<BookModel> getBook(@RequestParam String title) {

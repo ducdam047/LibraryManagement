@@ -9,7 +9,7 @@ import com.example.librarymanagement.enums.LoanStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PendingService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private LoanRepository loanRepository;
+    private final UserRepository userRepository;
+    private final LoanRepository loanRepository;
 
     public LoanModel toModel(Loan loan) {
         Book book = loan.getBook();

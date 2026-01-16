@@ -5,7 +5,7 @@ import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Cacheable("categories:all")
     public List<Category> getAllCategory() {

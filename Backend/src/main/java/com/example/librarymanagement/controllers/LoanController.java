@@ -6,7 +6,7 @@ import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.LoanService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/borrowed")
+@RequiredArgsConstructor
 public class LoanController {
 
-    @Autowired
-    private LoanService loanService;
+    private final LoanService loanService;
 
     @GetMapping("/history")
     public ResponseEntity<List<LoanModel>> getLoanHistory() {

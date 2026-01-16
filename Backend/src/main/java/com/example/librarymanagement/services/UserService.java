@@ -9,8 +9,7 @@ import com.example.librarymanagement.enums.UserRole;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,13 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User signupUser(SignupRequest request) {
         if(userRepository.existsByEmail(request.getEmail()) || userRepository.existsByUsername(request.getUsername()))

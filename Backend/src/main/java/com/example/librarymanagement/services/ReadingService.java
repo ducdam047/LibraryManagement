@@ -10,7 +10,7 @@ import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.ReadingRepository;
 import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,14 +23,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ReadingService {
 
-    @Autowired
-    private ReadingRepository readingRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BookRepository bookRepository;
+    private final ReadingRepository readingRepository;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
     private ReadingModel toModel(Reading reading) {
         return new ReadingModel(

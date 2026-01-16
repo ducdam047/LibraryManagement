@@ -14,10 +14,9 @@ import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.LoanRepository;
-import com.example.librarymanagement.repositories.EvaluateRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,19 +28,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LoanService {
 
-    @Autowired
     private LoanRepository loanRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
-    private EvaluateRepository evaluateRepository;
 
     public LoanModel toModel(Loan loan) {
         Book book = loan.getBook();

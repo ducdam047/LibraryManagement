@@ -4,7 +4,7 @@ import com.example.librarymanagement.dtos.requests.category.CategoryAddRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Category;
 import com.example.librarymanagement.services.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping()
     public ApiResponse<List<Category>> getAllCategory() {

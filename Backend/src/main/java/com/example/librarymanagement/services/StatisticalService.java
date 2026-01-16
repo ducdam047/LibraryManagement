@@ -7,7 +7,7 @@ import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class StatisticalService {
 
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private BookService bookService;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final BookRepository bookRepository;
+    private final BookService bookService;
+    private final UserRepository userRepository;
 
     public long countAllBook() {
         return bookRepository.count();

@@ -10,7 +10,7 @@ import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import com.example.librarymanagement.repositories.WishlistRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,16 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WishlistService {
 
-    @Autowired
-    private WishlistRepository wishlistRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
+    private final WishlistRepository wishlistRepository;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
     public WishlistModel toModel(Wishlist wishlist) {
         return new WishlistModel(

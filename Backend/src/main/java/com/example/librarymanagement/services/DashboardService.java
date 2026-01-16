@@ -12,7 +12,7 @@ import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.LoanRepository;
 import com.example.librarymanagement.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +24,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DashboardService {
 
-    @Autowired
     private BookRepository bookRepository;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private LoanRepository loanRepository;
 
     public BookModel toModel(Book book) {
