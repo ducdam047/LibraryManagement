@@ -14,6 +14,7 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -31,15 +32,16 @@ public class AuthenticationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
     public AuthenticationResponse authenticate(LoginRequest request) {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if(!authenticated)
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         var token = generateToken(user);
 
