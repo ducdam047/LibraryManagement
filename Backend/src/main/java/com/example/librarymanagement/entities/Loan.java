@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -45,6 +46,21 @@ public class Loan {
 
     @Column(name = "borrow_status")
     String borrowStatus;
+
+    @Column(name = "deposit_required")
+    BigDecimal depositRequired;
+
+    @Column(name = "deposit_paid")
+    Boolean depositPaid;
+
+    @Column(name = "borrow_fee")
+    BigDecimal borrowFee;
+
+    @Column(name = "borrow_fee_paid")
+    Boolean borrowFeePaid;
+
+    @Column(name = "total_penalty")
+    BigDecimal totalPenalty;
 
     @Column(name = "extend_count")
     int extendCount;
