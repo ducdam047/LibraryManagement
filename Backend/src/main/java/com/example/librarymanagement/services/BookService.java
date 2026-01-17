@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-
     private final PdfStorageService pdfStorageService;
     private final CategoryRepository categoryRepository;
     private final PublisherRepository publisherRepository;

@@ -5,6 +5,7 @@ import com.example.librarymanagement.entities.Publisher;
 import com.example.librarymanagement.enums.ErrorCode;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.PublisherRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,10 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PublisherService {
 
-    @Autowired
-    private PublisherRepository publisherRepository;
+    private final PublisherRepository publisherRepository;
 
     @Cacheable("publishers:all")
     public List<Publisher> getAllPublisher() {

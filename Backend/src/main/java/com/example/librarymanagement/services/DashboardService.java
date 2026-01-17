@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DashboardService {
 
-    private BookRepository bookRepository;
-    private UserRepository userRepository;
-    private LoanRepository loanRepository;
+    private final BookRepository bookRepository;
+    private final UserRepository userRepository;
+    private final LoanRepository loanRepository;
 
     public BookModel toModel(Book book) {
         return new BookModel(

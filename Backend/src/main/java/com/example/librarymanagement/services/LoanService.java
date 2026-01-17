@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LoanService {
 
-    private LoanRepository loanRepository;
-    private UserRepository userRepository;
-    private BookRepository bookRepository;
+    private final LoanRepository loanRepository;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
     public LoanModel toModel(Loan loan) {
         Book book = loan.getBook();

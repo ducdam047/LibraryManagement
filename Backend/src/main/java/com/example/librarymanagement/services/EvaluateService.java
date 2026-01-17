@@ -32,10 +32,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EvaluateService {
 
-    private EvaluateRepository evaluateRepository;
-    private UserRepository userRepository;
-    private BookRepository bookRepository;
-    private LoanRepository loanRepository;
+    private final EvaluateRepository evaluateRepository;
+    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
+    private final LoanRepository loanRepository;
 
     public EvaluateModel toModel(Evaluate evaluate) {
         return new EvaluateModel(
