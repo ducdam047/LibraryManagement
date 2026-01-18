@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -25,5 +26,10 @@ public class LoanModel {
     LocalDate dueDay;
     LocalDate returnedDay;
     String borrowStatus;
+    BigDecimal depositRequired;
+    Boolean depositPaid;
+    BigDecimal borrowFee;
+    Boolean borrowFeePaid;
+    BigDecimal totalPenalty;
     int extendCount;
 }

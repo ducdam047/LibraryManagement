@@ -67,7 +67,7 @@ public class LoanController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @PutMapping("/approve/{loanId}")
+    @PutMapping("/{loanId}/approve")
     public ResponseEntity<ApiResponse<LoanModel>> approveLoan(@PathVariable int loanId) {
         ApiResponse<LoanModel> apiResponse = ApiResponse.<LoanModel>builder()
                 .code(200)
@@ -78,7 +78,29 @@ public class LoanController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @PutMapping("/reject/{loanId}")
+    @PutMapping("/{loanId}/confirmBorrow")
+    public ResponseEntity<ApiResponse<LoanModel>> confirmBorrow(@PathVariable int loanId) {
+        ApiResponse<LoanModel> apiResponse = ApiResponse.<LoanModel>builder()
+                .code(200)
+                .message("Confirmed successfully")
+                .data(loanService.confirmBorrow(loanId))
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PutMapping("/{loanId}/handover")
+    public ResponseEntity<ApiResponse<LoanModel>> handoverBook(@PathVariable int loanId) {
+        ApiResponse<LoanModel> apiResponse = ApiResponse.<LoanModel>builder()
+                .code(200)
+                .message("Handover successfully")
+                .data(loanService.handoverBook(loanId))
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PutMapping("/{loanId}/reject")
     public ResponseEntity<ApiResponse<LoanModel>> rejectLoan(@PathVariable int loanId) {
         ApiResponse<LoanModel> apiResponse = ApiResponse.<LoanModel>builder()
                 .code(200)
@@ -100,7 +122,7 @@ public class LoanController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @PutMapping("/confirm/{loanId}")
+    @PutMapping("/{loanId}/confirm")
     public ResponseEntity<ApiResponse<String>> confirmReturn(@PathVariable int loanId) {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)

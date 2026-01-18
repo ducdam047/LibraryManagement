@@ -6,14 +6,13 @@ import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Loan;
+import com.example.librarymanagement.entities.Payment;
 import com.example.librarymanagement.entities.User;
-import com.example.librarymanagement.enums.BookStatus;
-import com.example.librarymanagement.enums.ErrorCode;
-import com.example.librarymanagement.enums.LoanStatus;
-import com.example.librarymanagement.enums.UserStatus;
+import com.example.librarymanagement.enums.*;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.BookRepository;
 import com.example.librarymanagement.repositories.LoanRepository;
+import com.example.librarymanagement.repositories.PaymentRepository;
 import com.example.librarymanagement.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final PaymentRepository paymentRepository;
 
     public LoanModel toModel(Loan loan) {
         Book book = loan.getBook();
@@ -49,6 +51,11 @@ public class LoanService {
                 loan.getDueDay(),
                 loan.getReturnedDay(),
                 loan.getBorrowStatus(),
+                loan.getDepositRequired(),
+                loan.getDepositPaid(),
+                loan.getBorrowFee(),
+                loan.getBorrowFeePaid(),
+                loan.getTotalPenalty(),
                 loan.getExtendCount()
         );
     }
@@ -194,11 +201,61 @@ public class LoanService {
         if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
+        loan.setDepositRequired(BigDecimal.valueOf(50000));
+        loan.setBorrowFee(BigDecimal.valueOf(20000));
+        loan.setDepositPaid(false);
+        loan.setBorrowFeePaid(false);
+        loan.setTotalPenalty(BigDecimal.ZERO);
+        loan.setBorrowStatus(LoanStatus.PENDING_PAYMENT.name());
+
+        BigDecimal totalAmount = loan.getDepositRequired().add(loan.getBorrowFee());
+
+        Payment payment = Payment.builder()
+                .loan(loan)
+                .user(loan.getUser())
+                .amount(totalAmount)
+                .type(PaymentType.BORROW_FEE.name())
+                .status(PaymentStatus.PENDING.name())
+                .transactionRef("LOAN_" + loan.getLoanId())
+                .build();
+        paymentRepository.save(payment);
+
+        return toModel(loan);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('USER')")
+    public LoanModel confirmBorrow(int loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+
+        if(!LoanStatus.PENDING_PAYMENT.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.INVALID_LOAN_STATE);
+
+        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING.name())
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+        payment.setStatus(PaymentStatus.SUCCESS.name());
+        payment.setPaidAt(LocalDateTime.now());
+
+        loan.setBorrowStatus(LoanStatus.PAID.name());
+        loan.setDepositPaid(true);
+        loan.setBorrowFeePaid(true);
+
+        return toModel(loan);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public LoanModel handoverBook(int loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+        if(!LoanStatus.PAID.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.PAYMENT_NOT_COMPLETED);
+
         String title = loan.getTitle();
         if(title==null && loan.getBook()!=null)
             title = loan.getBook().getTitle();
 
-        User user = loan.getUser();
         Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
 
@@ -215,8 +272,9 @@ public class LoanService {
             b.setAvailableCopies(b.getAvailableCopies() - 1);
             b.setBorrowedCopies(b.getBorrowedCopies() + 1);
         }
-
         book.setStatus(BookStatus.BORROWED.name());
+
+        User user = loan.getUser();
         user.setBookBorrowing(user.getBookBorrowing() + 1);
         user.setStatus(UserStatus.BORROWING.name());
 

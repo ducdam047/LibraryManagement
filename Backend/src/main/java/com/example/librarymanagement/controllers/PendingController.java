@@ -4,7 +4,6 @@ import com.example.librarymanagement.dtos.models.LoanModel;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.PendingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +34,7 @@ public class PendingController {
                 .build();
     }
 
-    @PutMapping("/cancel/{loanId}")
+    @PutMapping("/{loanId}/cancel")
     public ResponseEntity<ApiResponse<String>> cancelPendingBorrow(@PathVariable int loanId) {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)

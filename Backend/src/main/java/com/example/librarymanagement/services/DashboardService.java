@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.dtos.responses.chart.WeeklyStat;
 import com.example.librarymanagement.dtos.responses.dashboard.DashboardResponse;
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.BookStatus;
 import com.example.librarymanagement.enums.LoanStatus;
@@ -57,6 +58,29 @@ public class DashboardService {
         );
     }
 
+    public LoanModel toModel(Loan loan) {
+        Book book = loan.getBook();
+        return new LoanModel(
+                loan.getLoanId(),
+                loan.getUser().getFullName(),
+                book != null ? book.getBookId():null,
+                loan.getTitle(),
+                book != null ? book.getAuthor():null,
+                book != null ? book.getImageUrl():null,
+                loan.getBorrowDay(),
+                loan.getBorrowDays(),
+                loan.getDueDay(),
+                loan.getReturnedDay(),
+                loan.getBorrowStatus(),
+                loan.getDepositRequired(),
+                loan.getDepositPaid(),
+                loan.getBorrowFee(),
+                loan.getBorrowFeePaid(),
+                loan.getTotalPenalty(),
+                loan.getExtendCount()
+        );
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     public DashboardResponse getSummary() {
         long totalBooks = bookRepository.count();
@@ -69,62 +93,22 @@ public class DashboardService {
 
         List<LoanModel> pendingApproveLoans = loanRepository.getPendingApproveLoans()
                 .stream()
-                .map(loan -> {
-                    Book book = loan.getBook();
-                    return new LoanModel(
-                            loan.getLoanId(),
-                            loan.getUser().getFullName(),
-                            book != null ? book.getBookId():null,
-                            loan.getTitle(),
-                            book != null ? book.getAuthor():null,
-                            book != null ? book.getImageUrl():null,
-                            loan.getBorrowDay(),
-                            loan.getBorrowDays(),
-                            loan.getDueDay(),
-                            loan.getReturnedDay(),
-                            loan.getBorrowStatus(),
-                            loan.getExtendCount()
-                    );
-                })
+                .map(this::toModel)
+                .collect(Collectors.toList());
+
+        List<LoanModel> pendingPaidLoans = loanRepository.getPendingPaidLoans()
+                .stream()
+                .map(this::toModel)
                 .collect(Collectors.toList());
 
         List<LoanModel> pendingReturnLoans = loanRepository.getPendingReturnLoans()
                 .stream()
-                .map(loan -> {
-                    Book book = loan.getBook();
-                    return new LoanModel(
-                            loan.getLoanId(),
-                            loan.getUser().getFullName(),
-                            book != null ? book.getBookId():null,
-                            loan.getTitle(),
-                            book != null ? book.getAuthor():null,
-                            book != null ? book.getImageUrl():null,
-                            loan.getBorrowDay(),
-                            loan.getBorrowDays(),
-                            loan.getDueDay(),
-                            loan.getReturnedDay(),
-                            loan.getBorrowStatus(),
-                            loan.getExtendCount()
-                    );
-                })
+                .map(this::toModel)
                 .collect(Collectors.toList());
 
         List<LoanModel> overdueLoans = loanRepository.getOverdueLoans()
                 .stream()
-                .map(loan -> new LoanModel(
-                        loan.getLoanId(),
-                        loan.getUser().getFullName(),
-                        loan.getBook().getBookId(),
-                        loan.getBook().getTitle(),
-                        loan.getBook().getAuthor(),
-                        loan.getBook().getImageUrl(),
-                        loan.getBorrowDay(),
-                        loan.getBorrowDays(),
-                        loan.getDueDay(),
-                        loan.getReturnedDay(),
-                        loan.getBorrowStatus(),
-                        loan.getExtendCount()
-                ))
+                .map(this::toModel)
                 .collect(Collectors.toList());
 
         return DashboardResponse.builder()
@@ -135,6 +119,7 @@ public class DashboardService {
                 .borrowingUsers(borrowingUsers)
                 .bannedUsers(bannedUsers)
                 .pendingApproveLoans(pendingApproveLoans)
+                .pendingPaidLoans(pendingPaidLoans)
                 .pendingReturnLoans(pendingReturnLoans)
                 .overdueLoans(overdueLoans)
                 .build();

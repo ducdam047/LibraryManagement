@@ -24,6 +24,8 @@ public enum ErrorCode {
     PUBLISHER_NAME_EXISTS(1047, "Publisher name already exists", HttpStatus.BAD_REQUEST),
     PUBLISHER_NOT_FOUND(1007, "Publisher not found", HttpStatus.NOT_FOUND),
     LOAN_NOT_FOUND(1008, "Loan not found", HttpStatus.NOT_FOUND),
+    PAYMENT_NOT_FOUND(1018, "Payment not found", HttpStatus.NOT_FOUND),
+    PAYMENT_NOT_COMPLETED(1028, "Payment has not been completed", HttpStatus.CONFLICT),
     WISHLIST_NOT_FOUND(1009, "Wishlist not found", HttpStatus.NOT_FOUND),
     WISHLIST_EXISTED(1010, "This book was added", HttpStatus.CONFLICT),
     BOOK_EVALUATED(1011, "This book was evaluated", HttpStatus.CONFLICT),
@@ -38,7 +40,9 @@ public enum ErrorCode {
     EXTEND_DAY_EXCEEDED(3007, "The extending period must not exceed 3 days", HttpStatus.BAD_REQUEST),
     NOT_BORROWED(3008, "You have not borrowed this book before", HttpStatus.BAD_REQUEST),
     NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST),
-    INVALID_EXTEND_DAY(3010, "The number of extension days must be greater than 0", HttpStatus.BAD_REQUEST)
+    INVALID_EXTEND_DAY(3010, "The number of extension days must be greater than 0", HttpStatus.BAD_REQUEST),
+    INVALID_SIGNATURE(4001, "Invalid payment signature", HttpStatus.UNAUTHORIZED),
+    INVALID_LOAN_STATE(4002, "Loan is not in a valid state for this operation", HttpStatus.CONFLICT)
     ;
 
     int code;

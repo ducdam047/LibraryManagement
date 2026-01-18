@@ -33,6 +33,8 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     List<Loan> findByUser_UserIdAndBorrowStatusIn(int userId, List<String> status);
     @Query("select r from Loan r where r.borrowStatus = 'PENDING_APPROVE'")
     List<Loan> getPendingApproveLoans();
+    @Query("select r from Loan r where r.borrowStatus = 'PAID'")
+    List<Loan> getPendingPaidLoans();
     @Query("select r from Loan r where r.borrowStatus = 'PENDING_RETURN'")
     List<Loan> getPendingReturnLoans();
     @Query("select r from Loan r where r.borrowStatus = 'OVERDUE'")

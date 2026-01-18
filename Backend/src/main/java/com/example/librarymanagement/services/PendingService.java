@@ -39,6 +39,11 @@ public class PendingService {
                 loan.getDueDay(),
                 loan.getReturnedDay(),
                 loan.getBorrowStatus(),
+                loan.getDepositRequired(),
+                loan.getDepositPaid(),
+                loan.getBorrowFee(),
+                loan.getBorrowFeePaid(),
+                loan.getTotalPenalty(),
                 loan.getExtendCount()
         );
     }
@@ -50,7 +55,7 @@ public class PendingService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), LoanStatus.PENDING_APPROVE.name());
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.PENDING_APPROVE.name(), LoanStatus.PENDING_PAYMENT.name()));
             return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
