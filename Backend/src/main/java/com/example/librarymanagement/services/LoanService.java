@@ -36,6 +36,7 @@ public class LoanService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final PaymentRepository paymentRepository;
+    private final VnPayService vnPayService;
 
     public LoanModel toModel(Loan loan) {
         Book book = loan.getBook();
@@ -369,5 +370,20 @@ public class LoanService {
             return "Book with title: " + bookExtend.getTitle() + " has been extended";
         }
         throw new AppException(ErrorCode.UNAUTHORIZED);
+    }
+
+    @Transactional()
+    @PreAuthorize("hasRole('USER')")
+    public String getPaymentUrl(int loanId, String clientIp) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
+
+        if(!LoanStatus.PENDING_PAYMENT.name().equals(loan.getBorrowStatus()))
+            throw new AppException(ErrorCode.INVALID_LOAN_STATE);
+
+        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING.name())
+                .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        return vnPayService.createPaymentUrl(payment, clientIp);
     }
 }

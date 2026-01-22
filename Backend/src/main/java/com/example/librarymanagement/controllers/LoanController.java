@@ -6,6 +6,7 @@ import com.example.librarymanagement.dtos.requests.action.ExtendBookRequest;
 import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.LoanService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -142,5 +143,11 @@ public class LoanController {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/{loanId}/payment-url")
+    public ResponseEntity<String> getPaymentUrl(@PathVariable int loanId, HttpServletRequest request) {
+        String url = loanService.getPaymentUrl(loanId, request.getRemoteAddr());
+        return ResponseEntity.ok(url);
     }
 }
