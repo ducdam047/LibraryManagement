@@ -78,7 +78,16 @@ public class BookServiceTest {
         //THEN
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Tiếng gọi nơi hoang dã");
+        assertThat(result.getAuthor()).isEqualTo("Jack London");
+        assertThat(result.getCategoryName()).isEqualTo("Tiểu thuyết");
+        assertThat(result.getPublisherName()).isEqualTo("NXB Dân Trí");
+        assertThat(result.getImageUrl()).isEqualTo("image-url");
+        assertThat(result.getPdfPath()).isEqualTo("pdf-url");
 
         verify(bookRepository).save(any(Book.class));
+        verify(cloudinaryService).uploadImage(imageFile);
+        verify(cloudinaryService).uploadPdf(pdfFile);
+        verify(categoryRepository).findByCategoryName("Tiểu thuyết");
+        verify(publisherRepository).findByPublisherName("NXB Dân Trí");
     }
 }

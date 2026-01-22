@@ -6,6 +6,7 @@ import { Users, Book, Ban, Clock } from "lucide-react";
 import {
   getDashboardSummary,
   approveLoan,
+  handoverBook,
   rejectLoan,
   confirmReturnLoan,
 } from "../../api/adminApi/dashboardApi";
@@ -17,6 +18,7 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 /* ===================== TAB CONST ===================== */
 const TABS = {
   APPROVE: "approve",
+  PAID: "paid",
   RETURN: "return",
   OVERDUE: "overdue",
 };
@@ -31,6 +33,7 @@ export default function Dashboard() {
 
   const [pendingApproveLoans, setPendingApproveLoans] = useState([]);
   const [pendingReturnLoans, setPendingReturnLoans] = useState([]);
+  const [paidLoans, setPaidLoans] = useState([]);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -71,6 +74,17 @@ export default function Dashboard() {
         toast.success("Duyệt mượn sách thành công");
         setPendingApproveLoans((prev) =>
           prev.filter((r) => r.loanId !== selectedLoan.loanId)
+        );
+      }
+
+      if (confirmAction === "handover") {
+        await handoverBook(selectedLoan.loanId);
+
+        toast.success("Đã giao sách thành công");
+
+        // remove khỏi tab PAID
+        setPaidLoans(prev =>
+          prev.filter(r => r.loanId !== selectedLoan.loanId)
         );
       }
 
@@ -125,6 +139,7 @@ export default function Dashboard() {
         });
 
         setPendingApproveLoans(data.pendingApproveLoans || []);
+        setPaidLoans(data.pendingPaidLoans || []);
         setPendingReturnLoans(data.pendingReturnLoans || []);
       })
       .finally(() => mounted && setLoading(false));
@@ -135,9 +150,11 @@ export default function Dashboard() {
   const tableData =
     activeTab === TABS.APPROVE
       ? pendingApproveLoans
-      : activeTab === TABS.RETURN
-        ? pendingReturnLoans
-        : stats.overdueLoans;
+      : activeTab === TABS.PAID
+        ? paidLoans
+        : activeTab === TABS.RETURN
+          ? pendingReturnLoans
+          : stats.overdueLoans;
 
   return (
     <div className="p-6 text-white bg-black min-h-screen">
@@ -171,6 +188,7 @@ export default function Dashboard() {
 
           <div className="flex bg-zinc-800 rounded-xl p-1">
             <TabButton active={activeTab === TABS.APPROVE} onClick={() => setActiveTab(TABS.APPROVE)}>Approval Pending</TabButton>
+            <TabButton active={activeTab === TABS.PAID} onClick={() => setActiveTab(TABS.PAID)}>Paid</TabButton>
             <TabButton active={activeTab === TABS.RETURN} onClick={() => setActiveTab(TABS.RETURN)}>Return Pending</TabButton>
             <TabButton active={activeTab === TABS.OVERDUE} onClick={() => setActiveTab(TABS.OVERDUE)}>Overdue</TabButton>
           </div>
@@ -189,7 +207,9 @@ export default function Dashboard() {
                     ? "Number of days overdue"
                     : activeTab === TABS.APPROVE
                       ? "Number of days borrowed"
-                      : ""}
+                      : activeTab === TABS.PAID
+                        ? "Paid status"
+                        : ""}
                 </th>
                 <th className="p-4 text-center">Action</th>
               </tr>
@@ -213,6 +233,12 @@ export default function Dashboard() {
                     {activeTab === TABS.APPROVE && (
                       <span className="px-3 py-1 rounded-lg bg-zinc-700/60">
                         {r.borrowDays} ngày
+                      </span>
+                    )}
+
+                    {activeTab === TABS.PAID && (
+                      <span className="px-3 py-1 rounded-lg bg-green-600/15 text-green-400 font-semibold">
+                        Đã thanh toán
                       </span>
                     )}
 
@@ -240,6 +266,12 @@ export default function Dashboard() {
                       </>
                     )}
 
+                    {activeTab === TABS.PAID && (
+                      <ActionBtn color="green" onClick={() => openConfirmModal(r, "handover")}>
+                        Giao sách
+                      </ActionBtn>
+                    )}
+
                     {activeTab === TABS.RETURN && (
                       <ActionBtn color="blue" onClick={() => openConfirmModal(r, "confirmReturn")}>
                         Xác nhận trả
@@ -258,8 +290,9 @@ export default function Dashboard() {
 
 
           </table>
-        )}
-      </div>
+        )
+        }
+      </div >
 
       <ConfirmModal
         open={confirmOpen}
@@ -268,7 +301,7 @@ export default function Dashboard() {
         onConfirm={handleConfirm}
         onClose={closeConfirmModal}
       />
-    </div>
+    </div >
   );
 }
 

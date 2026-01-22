@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import PendingBorrowCard from "../../components/pending/PendingBorrowCard";
 import PendingReturnCard from "../../components/pending/PendingReturnCard";
 import { getPendingBorrow, getPendingReturn, cancelPendingBorrow } from "../../api/userApi/pendingApi";
+import { confirmBorrow } from "../../api/userApi/borrowApi";
 import { addToWishlist } from "../../api/userApi/wishlistApi";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import PaymentModal from "../../components/common/PaymentModal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -22,6 +24,9 @@ export default function Pending() {
 
     const [showWishlistModal, setShowWishlistModal] = useState(false);
     const [wishlistBook, setWishlistBook] = useState(null);
+
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentLoan, setPaymentLoan] = useState(null);
 
     useEffect(() => {
         load();
@@ -109,6 +114,11 @@ export default function Pending() {
         }
     };
 
+    const handlePayment = (loan) => {
+        setPaymentLoan(loan);
+        setShowPaymentModal(true);
+    };
+
     if (loading) {
         return (
             <p className="text-center text-gray-300 py-10 text-lg animate-pulse">
@@ -153,6 +163,7 @@ export default function Pending() {
                                         key={book.loanId}
                                         book={book}
                                         onCancel={handleCancelBorrow}
+                                        onPay={() => handlePayment(book)}
                                     />
                                 ))}
                             </div>
@@ -240,6 +251,34 @@ export default function Pending() {
                 onConfirm={handleConfirmWishlist}
             />
 
+            <PaymentModal
+                open={showPaymentModal}
+                loan={paymentLoan}
+                onClose={() => {
+                    setShowPaymentModal(false);
+                    setPaymentLoan(null);
+                }}
+                onSuccess={async () => {
+                    try {
+                        await confirmBorrow(paymentLoan.loanId);
+
+                        toast.success("Nhận sách thành công!");
+
+                        // remove khỏi pending list
+                        setPendingBorrow(prev =>
+                            prev.filter(b => b.loanId !== paymentLoan.loanId)
+                        );
+
+                    } catch (err) {
+                        toast.error(
+                            err.response?.data?.message || "Thanh toán thất bại"
+                        );
+                    } finally {
+                        setShowPaymentModal(false);
+                        setPaymentLoan(null);
+                    }
+                }}
+            />
 
         </div>
     );

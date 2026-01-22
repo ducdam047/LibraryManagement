@@ -11,6 +11,6 @@ export const getPendingReturn = async () => {
 };
 
 export const cancelPendingBorrow = async (loanId) => {
-  const res = await axios.put(`/pending/cancel/${loanId}`);
+  const res = await axios.put(`/pending/${loanId}/cancel`);
   return res.data;
 };

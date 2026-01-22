@@ -30,16 +30,21 @@ export const getDashboardPieChart = async () => {
 };
 
 export const approveLoan = async (loanId) => {
-  const res = await api.put(`/borrowed/approve/${loanId}`);
+  const res = await api.put(`/borrowed/${loanId}/approve`);
+  return res.data;
+};
+
+export const handoverBook = async (loanId) => {
+  const res = await api.put(`/borrowed/${loanId}/handover`);
   return res.data;
 };
 
 export const rejectLoan = async (loanId) => {
-  const res = await api.put(`/borrowed/reject/${loanId}`);
+  const res = await api.put(`/borrowed/${loanId}/reject`);
   return res.data;
 };
 
 export const confirmReturnLoan = async (loanId) => {
-  const res = await api.put(`/borrowed/confirm/${loanId}`);
+  const res = await api.put(`/borrowed/${loanId}/confirm`);
   return res.data;
 };

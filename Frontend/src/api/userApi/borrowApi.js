@@ -33,6 +33,10 @@ export const borrowBook = async (title, borrowDays) => {
   return res.data;
 };
 
+export const confirmBorrow = async (loanId) => {
+  return api.put(`/borrowed/${loanId}/confirmBorrow`);
+};
+
 export const returnBook = async (bookId) => {
   const res = await api.put("/borrowed/return-book", {
     bookId: Number(bookId),
@@ -51,4 +55,8 @@ export const extendBook = async (bookId, extendDays) => {
   } catch (err) {
     throw err.response?.data || err;
   }
+};
+
+export const getPaymentUrl = async (loanId) => {
+  return api.get(`/borrowed/${loanId}/payment-url`);
 };
