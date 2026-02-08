@@ -47,12 +47,4 @@ public class ActionService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
         return toModel(book);
     }
-
-    public List<BookModel> searchAuthor(String author) {
-        return findBooks(repo -> repo.findByAuthor(author));
-    }
-
-    public List<BookModel> searchPublisher(String publisherName) {
-        return findBooks(repo -> repo.findByPublisher_PublisherName(publisherName));
-    }
 }
