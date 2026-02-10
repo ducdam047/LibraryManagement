@@ -1,5 +1,6 @@
 package com.example.librarymanagement.entities;
 
+import com.example.librarymanagement.enums.LoanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -44,8 +45,9 @@ public class Loan {
     @Column(name = "returned_day")
     LocalDate returnedDay;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "borrow_status")
-    String borrowStatus;
+    LoanStatus borrowStatus;
 
     @Column(name = "deposit_required")
     BigDecimal depositRequired;

@@ -41,9 +41,9 @@ public class UserService {
                 .phoneNumber(request.getPhoneNumber())
                 .cid(request.getCid())
                 .address(request.getAddress())
-                .status(UserStatus.ACTIVE.name())
+                .status(UserStatus.ACTIVE)
                 .bookBorrowing(0)
-                .role(UserRole.USER.name())
+                .role(UserRole.USER)
                 .build();
         return userRepository.save(user);
     }

@@ -1,5 +1,7 @@
 package com.example.librarymanagement.entities;
 
+import com.example.librarymanagement.enums.UserRole;
+import com.example.librarymanagement.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -41,8 +43,9 @@ public class User {
     @Column(name = "address")
     String address;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    String status;
+    UserStatus status;
 
     @Column(name = "ban_util")
     LocalDate banUtil;
@@ -50,6 +53,7 @@ public class User {
     @Column(name = "book_borrowing")
     Integer bookBorrowing;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    String role;
+    UserRole role;
 }

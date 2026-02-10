@@ -1,5 +1,6 @@
 package com.example.librarymanagement.dtos.models;
 
+import com.example.librarymanagement.enums.BookStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,5 +21,5 @@ public class BookModel {
     long totalCopies;
     long availableCopies;
     int borrowedCopies;
-    String status;
+    BookStatus status;
 }

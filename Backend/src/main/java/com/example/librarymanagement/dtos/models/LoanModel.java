@@ -1,5 +1,6 @@
 package com.example.librarymanagement.dtos.models;
 
+import com.example.librarymanagement.enums.LoanStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class LoanModel {
     int borrowDays;
     LocalDate dueDay;
     LocalDate returnedDay;
-    String borrowStatus;
+    LoanStatus borrowStatus;
     BigDecimal depositRequired;
     Boolean depositPaid;
     BigDecimal borrowFee;

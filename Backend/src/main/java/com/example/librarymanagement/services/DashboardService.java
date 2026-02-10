@@ -85,7 +85,7 @@ public class DashboardService {
     public DashboardResponse getSummary() {
         long totalBooks = bookRepository.count();
         long availableBooks = bookRepository.countByStatus(BookStatus.AVAILABLE.name());
-        long borrowedBooks =bookRepository.countByStatus(BookStatus.BORROWED.name());
+        long borrowedBooks = bookRepository.countByStatus(BookStatus.BORROWED.name());
 
         long totalUser = userRepository.count();
         long borrowingUsers = loanRepository.countDistinctUserByBorrowStatus(LoanStatus.ACTIVE.name());

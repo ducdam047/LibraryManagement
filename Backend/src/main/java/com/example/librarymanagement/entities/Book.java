@@ -1,5 +1,6 @@
 package com.example.librarymanagement.entities;
 
+import com.example.librarymanagement.enums.BookStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,8 +57,9 @@ public class Book {
     @Column(name = "borrowed_copies")
     int borrowedCopies;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    String status;
+    BookStatus status;
 
     @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)

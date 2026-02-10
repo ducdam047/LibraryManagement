@@ -51,13 +51,8 @@ public class WishlistController {
     }
 
     @DeleteMapping("/{wishlistId}")
-    public ResponseEntity<ApiResponse<Void>> deleteFromWishlist(@PathVariable int wishlistId) {
+    public ResponseEntity<Void> deleteFromWishlist(@PathVariable int wishlistId) {
         wishlistService.deleteFromWishlist(wishlistId);
-        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                .code(204)
-                .message("The book was deleted from wish list successfully")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.noContent().build();
     }
 }

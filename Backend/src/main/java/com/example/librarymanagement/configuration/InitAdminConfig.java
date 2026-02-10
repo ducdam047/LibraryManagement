@@ -2,6 +2,7 @@ package com.example.librarymanagement.configuration;
 
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.UserRole;
+import com.example.librarymanagement.enums.UserStatus;
 import com.example.librarymanagement.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -23,8 +24,8 @@ public class InitAdminConfig {
                         .email("admin@gmail.com")
                         .username("admin")
                         .password(passwordEncoder.encode("220903"))
-                        .status("MANAGER")
-                        .role(UserRole.ADMIN.name())
+                        .status(UserStatus.MANAGER)
+                        .role(UserRole.ADMIN)
                         .build();
                 userRepository.save(admin);
             }

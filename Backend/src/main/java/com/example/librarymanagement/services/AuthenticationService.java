@@ -4,6 +4,7 @@ import com.example.librarymanagement.dtos.requests.user.LoginRequest;
 import com.example.librarymanagement.dtos.responses.authentication.AuthenticationResponse;
 import com.example.librarymanagement.entities.User;
 import com.example.librarymanagement.enums.ErrorCode;
+import com.example.librarymanagement.enums.UserRole;
 import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.repositories.UserRepository;
 import com.nimbusds.jose.*;
@@ -71,8 +72,9 @@ public class AuthenticationService {
     }
 
     private String buildScope(User user) {
-        if(StringUtils.isEmpty(user.getRole()))
+        UserRole role = user.getRole();
+        if(role == null)
             return "";
-        return user.getRole();
+        return role.name();
     }
 }

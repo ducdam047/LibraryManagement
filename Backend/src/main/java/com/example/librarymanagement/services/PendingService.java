@@ -91,7 +91,7 @@ public class PendingService {
             if(!loan.getUser().equals(userCurrent))
                 throw new AppException(ErrorCode.UNAUTHORIZED);
 
-            loan.setBorrowStatus(LoanStatus.CANCELLED.name());
+            loan.setBorrowStatus(LoanStatus.CANCELLED);
             loanRepository.save(loan);
 
             return "Loan application cancelled successfully";

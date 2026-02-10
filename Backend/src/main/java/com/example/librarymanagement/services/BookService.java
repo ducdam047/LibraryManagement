@@ -38,6 +38,13 @@ public class BookService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
     }
 
+    public List<BookModel> getAll() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(this::toModel)
+                .collect(Collectors.toList());
+    }
+
     public BookModel toModel(Book book) {
         return new BookModel(
                 book.getBookId(),
@@ -112,7 +119,7 @@ public class BookService {
                 .toList();
     }
 
-    @Cacheable(value = "books:category", key = "#categoryName")
+    @Cacheable(value = "books:category", key = "#categoryName", unless = "#categoryName == null")
     public List<BookModel> filterCategory(String categoryName) {
         List<Book> books = bookRepository.findByCategory_CategoryName(categoryName);
         return books.stream()
@@ -155,7 +162,7 @@ public class BookService {
                 .previewPages(10)
                 .totalCopies(updateTotalCopies)
                 .availableCopies(updateAvailableCopies)
-                .status(BookStatus.AVAILABLE.name())
+                .status(BookStatus.AVAILABLE)
                 .build();
 
         bookRepository.save(book);

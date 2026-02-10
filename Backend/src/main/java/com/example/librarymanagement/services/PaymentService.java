@@ -38,13 +38,13 @@ public class PaymentService {
 
         String responseCode = params.get("vnp_ResponseCode");
         if("00".equals(responseCode)) {
-            payment.setStatus(PaymentStatus.SUCCESS.name());
+            payment.setStatus(PaymentStatus.SUCCESS);
             payment.setPaidAt(LocalDateTime.now());
 
             Loan loan = payment.getLoan();
-            loan.setBorrowStatus(LoanStatus.PAID.name());
+            loan.setBorrowStatus(LoanStatus.PAID);
         } else {
-            payment.setStatus(PaymentStatus.FAILED.name());
+            payment.setStatus(PaymentStatus.FAILED);
         }
     }
 }

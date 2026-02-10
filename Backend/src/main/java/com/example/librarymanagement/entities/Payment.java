@@ -1,5 +1,7 @@
 package com.example.librarymanagement.entities;
 
+import com.example.librarymanagement.enums.PaymentStatus;
+import com.example.librarymanagement.enums.PaymentType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -33,11 +35,13 @@ public class Payment {
     @Column(name = "amount")
     BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    String type;
+    PaymentType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    String status;
+    PaymentStatus status;
 
     @Column(name = "transaction_ref")
     String transactionRef;

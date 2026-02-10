@@ -56,7 +56,10 @@ public class BookController {
 
     @GetMapping()
     public ApiResponse<List<BookModel>> filterCategory(@RequestParam(required = false) String categoryName) {
-        List<BookModel> books = bookService.filterCategory(categoryName);
+        List<BookModel> books =
+                (categoryName == null)
+                    ? bookService.getAll()
+                    : bookService.filterCategory(categoryName);
         return ApiResponse.<List<BookModel>>builder()
                 .code(200)
                 .message("Filtered category")
@@ -96,13 +99,8 @@ public class BookController {
     }
 
     @DeleteMapping("/{bookId}")
-    public ResponseEntity<ApiResponse<Void>> deleteBook(@PathVariable int bookId) {
+    public ResponseEntity<Void> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
-        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                .code(204)
-                .message("The book was deleted successfully")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return ResponseEntity.noContent().build();
     }
 }

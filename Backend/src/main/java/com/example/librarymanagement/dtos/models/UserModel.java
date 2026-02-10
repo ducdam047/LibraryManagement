@@ -1,5 +1,6 @@
 package com.example.librarymanagement.dtos.models;
 
+import com.example.librarymanagement.enums.UserStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 public class UserModel {
 
     String fullName;
-    String status;
+    UserStatus status;
     LocalDate banUtil;
     int bookBorrowing;
 }

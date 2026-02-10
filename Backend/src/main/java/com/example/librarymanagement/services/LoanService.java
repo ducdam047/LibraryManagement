@@ -184,7 +184,7 @@ public class LoanService {
                     .borrowDays(borrowDays)
                     .dueDay(null)
                     .returnedDay(null)
-                    .borrowStatus(LoanStatus.PENDING_APPROVE.name())
+                    .borrowStatus(LoanStatus.PENDING_APPROVE)
                     .extendCount(0)
                     .build();
             loanRepository.save(loan);
@@ -207,7 +207,7 @@ public class LoanService {
         loan.setDepositPaid(false);
         loan.setBorrowFeePaid(false);
         loan.setTotalPenalty(BigDecimal.ZERO);
-        loan.setBorrowStatus(LoanStatus.PENDING_PAYMENT.name());
+        loan.setBorrowStatus(LoanStatus.PENDING_PAYMENT);
 
         BigDecimal totalAmount = loan.getDepositRequired().add(loan.getBorrowFee());
 
@@ -215,8 +215,8 @@ public class LoanService {
                 .loan(loan)
                 .user(loan.getUser())
                 .amount(totalAmount)
-                .type(PaymentType.BORROW_FEE.name())
-                .status(PaymentStatus.PENDING.name())
+                .type(PaymentType.BORROW_FEE)
+                .status(PaymentStatus.PENDING)
                 .transactionRef("LOAN_" + loan.getLoanId())
                 .build();
         paymentRepository.save(payment);
@@ -235,10 +235,10 @@ public class LoanService {
 
         Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING.name())
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
-        payment.setStatus(PaymentStatus.SUCCESS.name());
+        payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
 
-        loan.setBorrowStatus(LoanStatus.PAID.name());
+        loan.setBorrowStatus(LoanStatus.PAID);
         loan.setDepositPaid(true);
         loan.setBorrowFeePaid(true);
 
@@ -266,18 +266,18 @@ public class LoanService {
         loan.setBook(book);
         loan.setBorrowDay(borrowDay);
         loan.setDueDay(dueDay);
-        loan.setBorrowStatus(LoanStatus.ACTIVE.name());
+        loan.setBorrowStatus(LoanStatus.ACTIVE);
 
         List<Book> sameTitleBooks = bookRepository.findAllByTitle(title);
         for (Book b : sameTitleBooks) {
             b.setAvailableCopies(b.getAvailableCopies() - 1);
             b.setBorrowedCopies(b.getBorrowedCopies() + 1);
         }
-        book.setStatus(BookStatus.BORROWED.name());
+        book.setStatus(BookStatus.BORROWED);
 
         User user = loan.getUser();
         user.setBookBorrowing(user.getBookBorrowing() + 1);
-        user.setStatus(UserStatus.BORROWING.name());
+        user.setStatus(UserStatus.BORROWING);
 
         return toModel(loan);
     }
@@ -290,7 +290,7 @@ public class LoanService {
         if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
-        loan.setBorrowStatus(LoanStatus.REJECTED.name());
+        loan.setBorrowStatus(LoanStatus.REJECTED);
         return toModel(loan);
     }
 
@@ -307,7 +307,7 @@ public class LoanService {
             Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()))
                     .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
-            loan.setBorrowStatus(LoanStatus.PENDING_RETURN.name());
+            loan.setBorrowStatus(LoanStatus.PENDING_RETURN);
 
             return "Book with title: " + bookReturn.getTitle() + " has been returned";
         }
@@ -326,18 +326,18 @@ public class LoanService {
         User user = loan.getUser();
 
         loan.setReturnedDay(LocalDate.now());
-        loan.setBorrowStatus(LoanStatus.RETURNED.name());
+        loan.setBorrowStatus(LoanStatus.RETURNED);
 
         List<Book> bookSameTitles = bookRepository.findAllByTitle(book.getTitle());
         for(Book b : bookSameTitles) {
             b.setAvailableCopies(b.getAvailableCopies() + 1);
             b.setBorrowedCopies(b.getBorrowedCopies() - 1);
         }
-        book.setStatus(BookStatus.AVAILABLE.name());
+        book.setStatus(BookStatus.AVAILABLE);
 
         user.setBookBorrowing(user.getBookBorrowing() - 1);
         if(user.getBookBorrowing()==0 && user.getBanUtil()==null)
-            user.setStatus(UserStatus.ACTIVE.name());
+            user.setStatus(UserStatus.ACTIVE);
 
         return "Confirmation of successful book receipt";
     }
