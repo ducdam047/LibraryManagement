@@ -34,7 +34,7 @@ export const getBookDetail = async (title) => {
 };
 
 export const searchBooks = async (title) => {
-  const res = await axiosConfig.get(`/action/searchTitle/${encodeURIComponent(title)}`);
+  const res = await axiosConfig.get(`/api/searchTitle/${encodeURIComponent(title)}`);
 
   const book = res.data;  // backend trả về 1 object
 
