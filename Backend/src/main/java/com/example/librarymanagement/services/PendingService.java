@@ -70,7 +70,7 @@ public class PendingService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), LoanStatus.PENDING_RETURN.name());
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatus(userCurrent.getUserId(), LoanStatus.PENDING_RETURN);
             return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());

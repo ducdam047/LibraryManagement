@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.requests.action.EvaluateBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.dtos.responses.rating.RatingCountResponse;
 import com.example.librarymanagement.services.EvaluateService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class EvaluateController {
     }
 
     @PostMapping()
-    public ResponseEntity<ApiResponse<EvaluateModel>> evaluateBook(@RequestBody EvaluateBookRequest request) {
+    public ResponseEntity<ApiResponse<EvaluateModel>> evaluateBook(@Valid @RequestBody EvaluateBookRequest request) {
         ApiResponse<EvaluateModel> apiResponse = ApiResponse.<EvaluateModel>builder()
                 .code(200)
                 .message("Evaluated successfully")

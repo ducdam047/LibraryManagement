@@ -1,5 +1,6 @@
 package com.example.librarymanagement.dtos.requests.action;
 
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -9,5 +10,7 @@ import lombok.experimental.FieldDefaults;
 public class ExtendBookRequest {
 
     int bookId;
+
+    @Min(value = 1, message = "Borrow days must be at least 1")
     int extendDays;
 }

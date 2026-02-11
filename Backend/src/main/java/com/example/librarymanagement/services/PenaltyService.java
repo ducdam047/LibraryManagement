@@ -31,7 +31,7 @@ public class PenaltyService {
     public void checkOverdueBorrowBook() {
         LocalDate today = LocalDate.now();
 
-        List<Loan> needOverdue = loanRepository.findByBorrowStatusAndDueDayBefore(LoanStatus.ACTIVE.name(), today);
+        List<Loan> needOverdue = loanRepository.findByBorrowStatusAndDueDayBefore(LoanStatus.ACTIVE, today);
         for(Loan loan : needOverdue) {
             loan.setBorrowStatus(LoanStatus.OVERDUE);
             loanRepository.save(loan);
@@ -57,7 +57,7 @@ public class PenaltyService {
         if(user.getBanUtil()!=null && !today.isBefore(user.getBanUtil())) {
             user.setBanUtil(null);
 
-            boolean hasActive = loanRepository.existsByUserAndBorrowStatus(user, LoanStatus.ACTIVE.name());
+            boolean hasActive = loanRepository.existsByUserAndBorrowStatus(user, LoanStatus.ACTIVE);
             if(hasActive) {
                 user.setStatus(UserStatus.BORROWING);
             } else {
@@ -76,7 +76,7 @@ public class PenaltyService {
     }
 
     private int countOverdueOfUser(User user) {
-        List<Loan> overdueLoans = loanRepository.findByUser_UserIdAndBorrowStatus(user.getUserId(), LoanStatus.OVERDUE.name());
+        List<Loan> overdueLoans = loanRepository.findByUser_UserIdAndBorrowStatus(user.getUserId(), LoanStatus.OVERDUE);
         return overdueLoans.size();
     }
 }

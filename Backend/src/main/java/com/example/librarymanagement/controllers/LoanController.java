@@ -7,6 +7,7 @@ import com.example.librarymanagement.dtos.requests.action.ReturnBookRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.services.LoanService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,7 @@ public class LoanController {
     }
 
     @PostMapping("/borrow-book")
-    public ResponseEntity<ApiResponse<LoanModel>> borrowBook(@RequestBody BorrowBookRequest request) {
+    public ResponseEntity<ApiResponse<LoanModel>> borrowBook(@Valid @RequestBody BorrowBookRequest request) {
         ApiResponse<LoanModel> apiResponse = ApiResponse.<LoanModel>builder()
                 .code(201)
                 .message("Borrow request sent")
@@ -135,7 +136,7 @@ public class LoanController {
     }
 
     @PutMapping("/extend-book")
-    public ResponseEntity<ApiResponse<String>> extendBook(@RequestBody ExtendBookRequest request) {
+    public ResponseEntity<ApiResponse<String>> extendBook(@Valid @RequestBody ExtendBookRequest request) {
         ApiResponse<String> apiResponse = ApiResponse.<String>builder()
                 .code(200)
                 .message("Extended successfully")

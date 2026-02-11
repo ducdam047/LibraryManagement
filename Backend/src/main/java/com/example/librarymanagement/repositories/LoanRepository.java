@@ -5,6 +5,7 @@ import com.example.librarymanagement.dtos.responses.chart.CategoryBorrowStat;
 import com.example.librarymanagement.entities.Book;
 import com.example.librarymanagement.entities.Loan;
 import com.example.librarymanagement.entities.User;
+import com.example.librarymanagement.enums.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,10 +26,10 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     Optional<Loan> findFirstByUserAndBookAndBorrowStatusOrderByReturnedDayDesc(User user, Book book, String status);
     Optional<Loan> findFirstByUserAndBook(User user, Book book);
     boolean existsByUserAndTitleAndBorrowStatus(User user, String title, String status);
-    boolean existsByUserAndBorrowStatus(User user, String status);
+    boolean existsByUserAndBorrowStatus(User user, LoanStatus status);
     Optional<Loan> findByBookAndBorrowStatus(Book book, String status);
-    List<Loan> findByBorrowStatusAndDueDayBefore(String status, LocalDate currentDate);
-    List<Loan> findByUser_UserIdAndBorrowStatus(int userId, String status);
+    List<Loan> findByBorrowStatusAndDueDayBefore(LoanStatus status, LocalDate currentDate);
+    List<Loan> findByUser_UserIdAndBorrowStatus(int userId, LoanStatus status);
     List<Loan> findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(int userId, String status);
     List<Loan> findByUser_UserIdAndBorrowStatusIn(int userId, List<String> status);
     @Query("select r from Loan r where r.borrowStatus = 'PENDING_APPROVE'")
