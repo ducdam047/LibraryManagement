@@ -42,7 +42,8 @@ public enum ErrorCode {
     NOT_ELIGIBLE_TO_EVALUATE(3009, "You can only evaluate borrowed or returned books", HttpStatus.BAD_REQUEST),
     INVALID_EXTEND_DAY(3010, "The number of extension days must be greater than 0", HttpStatus.BAD_REQUEST),
     INVALID_SIGNATURE(4001, "Invalid payment signature", HttpStatus.UNAUTHORIZED),
-    INVALID_LOAN_STATE(4002, "Loan is not in a valid state for this operation", HttpStatus.CONFLICT)
+    INVALID_LOAN_STATE(4002, "Loan is not in a valid state for this operation", HttpStatus.CONFLICT),
+    IMAGE_REQUIRED(4003, "Image file is required", HttpStatus.BAD_REQUEST)
     ;
 
     int code;

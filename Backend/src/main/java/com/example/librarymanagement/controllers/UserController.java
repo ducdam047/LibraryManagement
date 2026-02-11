@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> loginUser(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthenticationResponse>> loginUser(@Valid @RequestBody LoginRequest request) {
         AuthenticationResponse data = authenticationService.authenticate(request);
         ApiResponse<AuthenticationResponse> apiResponse = ApiResponse.<AuthenticationResponse>builder()
                 .code(200)
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<ApiResponse<User>> updateUser(@RequestBody UpdateRequest request) {
+    public ResponseEntity<ApiResponse<User>> updateUser(@Valid @RequestBody UpdateRequest request) {
         User user = userService.updateUser(request);
         ApiResponse<User> apiResponse = ApiResponse.<User>builder()
                 .code(200)
@@ -83,7 +83,7 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<ApiResponse<User>> changePassword(@RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse<User>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         User user = userService.changePassword(request);
         ApiResponse<User> apiResponse = ApiResponse.<User>builder()
                 .code(200)

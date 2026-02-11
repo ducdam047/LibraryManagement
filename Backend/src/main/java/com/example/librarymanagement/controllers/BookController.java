@@ -6,8 +6,11 @@ import com.example.librarymanagement.dtos.requests.book.BookAddRequest;
 import com.example.librarymanagement.dtos.requests.book.BookUpdateRequest;
 import com.example.librarymanagement.common.ApiResponse;
 import com.example.librarymanagement.entities.Book;
+import com.example.librarymanagement.enums.ErrorCode;
+import com.example.librarymanagement.exception.AppException;
 import com.example.librarymanagement.services.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,10 +72,12 @@ public class BookController {
 
     @PostMapping()
     public ResponseEntity<ApiResponse<BookModel>> addBook(
-            @RequestParam("bookData") String bookData,
-            @RequestParam("imageFile") MultipartFile imageFile,
-            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
-        BookAddRequest request = new ObjectMapper().readValue(bookData, BookAddRequest.class);
+            @Valid @RequestPart("bookData") BookAddRequest request,
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
+        if(imageFile.isEmpty())
+            throw new AppException(ErrorCode.IMAGE_REQUIRED);
+
         ApiResponse<BookModel> apiResponse = ApiResponse.<BookModel>builder()
                 .code(201)
                 .message("The book was added successfully")
