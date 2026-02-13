@@ -55,7 +55,7 @@ public class PendingService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.PENDING_APPROVE.name(), LoanStatus.PENDING_PAYMENT.name()));
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.PENDING_APPROVE, LoanStatus.PENDING_PAYMENT));
             return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class PendingService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Loan loan = loanRepository.findById(loanId)
                     .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
-            if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+            if(!LoanStatus.PENDING_APPROVE.equals(loan.getBorrowStatus()))
                 throw new IllegalStateException("The loan cannot be canceled in its current state");
             if(!loan.getUser().equals(userCurrent))
                 throw new AppException(ErrorCode.UNAUTHORIZED);

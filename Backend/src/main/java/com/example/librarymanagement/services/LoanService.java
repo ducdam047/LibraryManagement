@@ -93,7 +93,7 @@ public class LoanService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()));
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusIn(userCurrent.getUserId(), List.of(LoanStatus.ACTIVE, LoanStatus.OVERDUE));
             return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -109,7 +109,7 @@ public class LoanService {
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
 
-            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(userCurrent.getUserId(), LoanStatus.RETURNED.name());
+            List<Loan> loans = loanRepository.findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(userCurrent.getUserId(), LoanStatus.RETURNED);
             return loans.stream()
                     .map(this::toModel)
                     .collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class LoanService {
                     .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
             Book borrowedBook = bookRepository.findById(bookId)
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, borrowedBook, List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()))
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, borrowedBook, List.of(LoanStatus.ACTIVE, LoanStatus.OVERDUE))
                     .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
             return toModel(loan);
         }
@@ -157,14 +157,14 @@ public class LoanService {
             String email = jwt.getClaimAsString("sub");
             User userCurrent = userRepository.findByEmail(email)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            boolean bookRequest = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.PENDING_APPROVE.name());
-            boolean bookExists = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.ACTIVE.name());
+            boolean bookRequest = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.PENDING_APPROVE);
+            boolean bookExists = loanRepository.existsByUserAndTitleAndBorrowStatus(userCurrent, request.getTitle(), LoanStatus.ACTIVE);
 
-            if(UserStatus.BANNED.name().equals(userCurrent.getStatus()))
+            if(UserStatus.BANNED.equals(userCurrent.getStatus()))
                 throw new AppException(ErrorCode.ACCOUNT_BANNED);
 
-            int activeCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.ACTIVE.name());
-            int pendingCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.PENDING_APPROVE.name());
+            int activeCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.ACTIVE);
+            int pendingCount = loanRepository.countByUserAndBorrowStatus(userCurrent, LoanStatus.PENDING_APPROVE);
 
             if(bookRequest)
                 throw new AppException(ErrorCode.BOOK_REQUESTED);
@@ -199,7 +199,7 @@ public class LoanService {
     public LoanModel approveBorrow(int loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
-        if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PENDING_APPROVE.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
         loan.setDepositRequired(BigDecimal.valueOf(50000));
@@ -230,10 +230,10 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
-        if(!LoanStatus.PENDING_PAYMENT.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PENDING_PAYMENT.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.INVALID_LOAN_STATE);
 
-        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING.name())
+        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
@@ -250,14 +250,14 @@ public class LoanService {
     public LoanModel handoverBook(int loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
-        if(!LoanStatus.PAID.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PAID.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.PAYMENT_NOT_COMPLETED);
 
         String title = loan.getTitle();
         if(title==null && loan.getBook()!=null)
             title = loan.getBook().getTitle();
 
-        Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE.name())
+        Book book = bookRepository.findFirstByTitleAndStatus(title, BookStatus.AVAILABLE)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOK_OUT_OF_STOCK));
 
         LocalDate borrowDay = LocalDate.now();
@@ -287,7 +287,7 @@ public class LoanService {
     public LoanModel rejectBorrow(int loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
-        if(!LoanStatus.PENDING_APPROVE.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PENDING_APPROVE.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
         loan.setBorrowStatus(LoanStatus.REJECTED);
@@ -304,7 +304,7 @@ public class LoanService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookReturn = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(LoanStatus.ACTIVE.name(), LoanStatus.OVERDUE.name()))
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatusIn(userCurrent, bookReturn, List.of(LoanStatus.ACTIVE, LoanStatus.OVERDUE))
                     .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
             loan.setBorrowStatus(LoanStatus.PENDING_RETURN);
@@ -319,7 +319,7 @@ public class LoanService {
     public String confirmReturn(int loanId) {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
-        if(!LoanStatus.PENDING_RETURN.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PENDING_RETURN.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.LOAN_NOT_FOUND);
 
         Book book = loan.getBook();
@@ -351,7 +351,7 @@ public class LoanService {
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             Book bookExtend = bookRepository.findById(request.getBookId())
                     .orElseThrow(() -> new AppException(ErrorCode.BOOK_NOT_FOUND));
-            Loan loan = loanRepository.findByUserAndBookAndBorrowStatus(userCurrent, bookExtend, LoanStatus.ACTIVE.name())
+            Loan loan = loanRepository.findByUserAndBookAndBorrowStatus(userCurrent, bookExtend, LoanStatus.ACTIVE)
                     .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
             if(loan.getExtendCount()==2)
@@ -378,10 +378,10 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_NOT_FOUND));
 
-        if(!LoanStatus.PENDING_PAYMENT.name().equals(loan.getBorrowStatus()))
+        if(!LoanStatus.PENDING_PAYMENT.equals(loan.getBorrowStatus()))
             throw new AppException(ErrorCode.INVALID_LOAN_STATE);
 
-        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING.name())
+        Payment payment = paymentRepository.findByLoanAndStatus(loan, PaymentStatus.PENDING)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
         return vnPayService.createPaymentUrl(payment, clientIp);

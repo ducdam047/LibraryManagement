@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -70,7 +71,7 @@ public class BookController {
                 .build();
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<BookModel>> addBook(
             @Valid @RequestPart("bookData") BookAddRequest request,
             @RequestPart("imageFile") MultipartFile imageFile,
@@ -87,13 +88,12 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
-    @PutMapping("/{bookId}")
+    @PutMapping(value = "/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Book>> updateBook(
             @PathVariable int bookId,
-            @RequestParam("bookData") String bookData,
-            @RequestParam("imageFile") MultipartFile imageFile,
-            @RequestParam(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
-        BookUpdateRequest request = new ObjectMapper().readValue(bookData, BookUpdateRequest.class);
+            @Valid @RequestPart("bookData") BookUpdateRequest request,
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile) throws IOException {
         ApiResponse<Book> apiResponse = ApiResponse.<Book>builder()
                 .code(200)
                 .message("Book update successfully")

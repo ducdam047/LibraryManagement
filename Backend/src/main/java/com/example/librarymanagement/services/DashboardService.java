@@ -84,12 +84,12 @@ public class DashboardService {
     @PreAuthorize("hasRole('ADMIN')")
     public DashboardResponse getSummary() {
         long totalBooks = bookRepository.count();
-        long availableBooks = bookRepository.countByStatus(BookStatus.AVAILABLE.name());
-        long borrowedBooks = bookRepository.countByStatus(BookStatus.BORROWED.name());
+        long availableBooks = bookRepository.countByStatus(BookStatus.AVAILABLE);
+        long borrowedBooks = bookRepository.countByStatus(BookStatus.BORROWED);
 
         long totalUser = userRepository.count();
         long borrowingUsers = loanRepository.countDistinctUserByBorrowStatus(LoanStatus.ACTIVE.name());
-        long bannedUsers = userRepository.countByStatus(UserStatus.BANNED.name());
+        long bannedUsers = userRepository.countByStatus(UserStatus.BANNED);
 
         List<LoanModel> pendingApproveLoans = loanRepository.getPendingApproveLoans()
                 .stream()

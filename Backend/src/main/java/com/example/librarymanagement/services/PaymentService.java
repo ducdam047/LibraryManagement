@@ -21,7 +21,6 @@ import java.util.Map;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final LoanRepository loanRepository;
     private final VnPayService vnpayService;
 
     public void confirmPayment(Map<String, String> params) {
@@ -33,7 +32,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findByTransactionRef(txnRef)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
-        if(PaymentStatus.SUCCESS.name().equals(payment.getStatus()))
+        if(PaymentStatus.SUCCESS.equals(payment.getStatus()))
             return;
 
         String responseCode = params.get("vnp_ResponseCode");

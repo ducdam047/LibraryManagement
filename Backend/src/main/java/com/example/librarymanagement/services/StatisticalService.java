@@ -27,17 +27,17 @@ public class StatisticalService {
     }
 
     public long countBookAvailable() {
-        return bookRepository.countByStatus(BookStatus.AVAILABLE.name());
+        return bookRepository.countByStatus(BookStatus.AVAILABLE);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public long countBookBorrowing() {
-        return bookRepository.countByStatus(BookStatus.BORROWED.name());
+        return bookRepository.countByStatus(BookStatus.BORROWED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<BookModel> bookBorrowing() {
-        List<Book> books = bookRepository.findByStatus(BookStatus.BORROWED.name());
+        List<Book> books = bookRepository.findByStatus(BookStatus.BORROWED);
         List<BookModel> bookModels = new ArrayList<>();
         for(Book book : books) {
             BookModel bookModel = bookService.toModel(book);
@@ -48,11 +48,11 @@ public class StatisticalService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public long countUserLocked() {
-        return userRepository.countByStatus(UserStatus.LOCKED.name());
+        return userRepository.countByStatus(UserStatus.LOCKED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> userLocked() {
-        return userRepository.findByStatus(UserStatus.LOCKED.name());
+        return userRepository.findByStatus(UserStatus.LOCKED);
     }
 }

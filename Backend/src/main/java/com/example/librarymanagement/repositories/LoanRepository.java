@@ -20,18 +20,18 @@ public interface LoanRepository extends JpaRepository<Loan, Integer> {
     List<Loan> findByUser_UserIdOrderByBorrowDayDesc(int userId);
     List<Loan> findByUser_UserId(int userId);
     List<Loan> findByBorrowStatus(String status);
-    int countByUserAndBorrowStatus(User user, String status);
-    Optional<Loan> findByUserAndBookAndBorrowStatus(User user, Book book, String status);
-    Optional<Loan> findByUserAndBookAndBorrowStatusIn(User user, Book book, List<String> statusList);
+    int countByUserAndBorrowStatus(User user, LoanStatus status);
+    Optional<Loan> findByUserAndBookAndBorrowStatus(User user, Book book, LoanStatus status);
+    Optional<Loan> findByUserAndBookAndBorrowStatusIn(User user, Book book, List<LoanStatus> statusList);
     Optional<Loan> findFirstByUserAndBookAndBorrowStatusOrderByReturnedDayDesc(User user, Book book, String status);
     Optional<Loan> findFirstByUserAndBook(User user, Book book);
-    boolean existsByUserAndTitleAndBorrowStatus(User user, String title, String status);
+    boolean existsByUserAndTitleAndBorrowStatus(User user, String title, LoanStatus status);
     boolean existsByUserAndBorrowStatus(User user, LoanStatus status);
     Optional<Loan> findByBookAndBorrowStatus(Book book, String status);
     List<Loan> findByBorrowStatusAndDueDayBefore(LoanStatus status, LocalDate currentDate);
     List<Loan> findByUser_UserIdAndBorrowStatus(int userId, LoanStatus status);
-    List<Loan> findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(int userId, String status);
-    List<Loan> findByUser_UserIdAndBorrowStatusIn(int userId, List<String> status);
+    List<Loan> findByUser_UserIdAndBorrowStatusOrderByReturnedDayAsc(int userId, LoanStatus status);
+    List<Loan> findByUser_UserIdAndBorrowStatusIn(int userId, List<LoanStatus> status);
     @Query("select r from Loan r where r.borrowStatus = 'PENDING_APPROVE'")
     List<Loan> getPendingApproveLoans();
     @Query("select r from Loan r where r.borrowStatus = 'PAID'")

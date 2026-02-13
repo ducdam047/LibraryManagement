@@ -1,6 +1,7 @@
 package com.example.librarymanagement.repositories;
 
 import com.example.librarymanagement.entities.User;
+import com.example.librarymanagement.enums.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     List<User> findByStatus(String status);
-    long countByStatus(String status);
+    List<User> findByStatus(UserStatus status);
+    long countByStatus(UserStatus status);
     long countByBanUtilAfter(LocalDate now);
 }

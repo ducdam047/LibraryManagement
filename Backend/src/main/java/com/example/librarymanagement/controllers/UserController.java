@@ -24,9 +24,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<User>> signupUser(@Valid @RequestBody SignupRequest request) {
